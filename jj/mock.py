@@ -29,4 +29,4 @@ class Mock:
         return self
 
     def run(self, host='127.0.0.1', port=8080, debug=False):
-        run_simple(host, port, self, use_reloader=debug, use_debugger=debug, threaded=True)
+        run_simple(host, int(port), self, use_reloader=debug, use_debugger=debug, threaded=True)

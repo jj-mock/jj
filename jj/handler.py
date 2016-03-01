@@ -54,6 +54,8 @@ class Handler:
         if headers.get('Content-Length', None) == '':
             headers.pop('Content-Length', None)
 
+        headers['Host'] = urlsplit(url).netloc
+
         data = dict(request.form.items())
         if request.headers.get('Content-Type', '').lower().startswith('multipart/form-data'):
             data = MultipartEncoder(data)
