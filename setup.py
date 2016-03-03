@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='jj',
     description='A simple testing tool for mocking HTTP responses',
-    version='0.1.1',
+    version='0.1.2',
     url='https://github.com/nikitanovosibirsk/jj',
     author='Nikita Tsvetkov',
     author_email='nikitanovosibirsk@yandex.com',

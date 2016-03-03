@@ -1,6 +1,7 @@
 import requests
 import time
 import socket
+from io import IOBase
 from urllib.parse import urlsplit
 from werkzeug.wrappers import Response
 from requests_toolbelt import MultipartEncoder
@@ -24,7 +25,13 @@ class Handler:
         return int(self._status) if (self._status is not None) else default
 
     def body(self, default=None):
-        return self._body if (self._body is not None) else default
+        if self._body is None:
+            return default
+        elif isinstance(self._body, IOBase):
+            self._body.seek(0)
+            return self._body.read()
+        else:
+            return self._body
 
     def headers(self, default=None):
         headers = default if (default is not None) else {}
