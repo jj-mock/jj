@@ -3,11 +3,12 @@ import re
 
 class Rule:
 
-    def __init__(self, method, route, params, headers):
+    def __init__(self, method, route, params, headers, data):
         self._method = str(method).upper() if (method is not None) else 'ANY'
         self._route = str(route) if (route is not None) else '/'
         self._params = dict(params) if (params is not None) else {}
         self._headers = dict(headers) if (headers is not None) else {}
+        self._data = dict(data) if (data is not None) else {}
 
     def __match_method(self, method):
         return self._method == 'ANY' or method.upper() == self._method
@@ -28,8 +29,15 @@ class Rule:
                 return False
         return True
 
+    def __match_data(self, data):
+        for key, value in self._data.items():
+            if key not in data or value != data[key]:
+                return False
+        return True
+
     def match(self, request):
         return self.__match_method(request.method) and \
                self.__match_route(request.path) and \
                self.__match_params(request.args) and \
-               self.__match_headers(request.headers)
+               self.__match_headers(request.headers) and \
+               self.__match_data(eval(request.data))

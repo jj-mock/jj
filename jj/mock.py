@@ -17,8 +17,8 @@ class Mock:
                 return handler(request)(environ, start_response)
         return Response(status=204)(environ, start_response)
 
-    def when(self, method=None, route=None, params=None, headers=None):
-        self.last_rule = Rule(method, route, params, headers)
+    def when(self, method=None, route=None, params=None, headers=None, data=None):
+        self.last_rule = Rule(method, route, params, headers, data)
         return self
 
     def then(self, status=None, body=None, json=None, headers=None, latency=None,
