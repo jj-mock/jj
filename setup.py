@@ -10,7 +10,7 @@ setup(
     license='MIT',
     packages=find_packages(),
     install_requires=[
-        'Werkzeug==0.11.4',
+        'Werkzeug==0.14.1',
         'requests==2.9.1',
         'requests-toolbelt==0.6.0'
     ]
