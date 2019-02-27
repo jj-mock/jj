@@ -13,9 +13,9 @@ steps:
   image: plugins/codecov
   settings:
     token:
-      from_secret: CODECOV_TOKEN
+      from_secret: codecov-token
     files:
-    - "*.xml"
+    - coverage.xml
 
 ---
 kind: pipeline
