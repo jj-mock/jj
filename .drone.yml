@@ -1,9 +1,27 @@
+---
 kind: pipeline
-name: default
+name: python3-6
 
 steps:
 - name: test
   image: python:3.6
+  commands:
+  - pip3 install -r requirements.txt
+  - pip3 install -r requirements-dev.txt
+  - coverage run --source=jj -m unittest tests
+- name: coverage
+  image: plugins/codecov
+  settings:
+    token:
+      from_secret: CODECOV_TOKEN
+
+---
+kind: pipeline
+name: python3-7
+
+steps:
+- name: test
+  image: python:3.7
   commands:
   - pip3 install -r requirements.txt
   - pip3 install -r requirements-dev.txt
