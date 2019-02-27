@@ -1,0 +1,4 @@
+asynctest==0.12.2
+mypy==0.670
+flake8==3.7.7
+coverage==4.5.2
