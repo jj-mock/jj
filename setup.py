@@ -23,6 +23,7 @@ setup(
         "mypy==0.670",
         "flake8==3.7.7",
         "coverage==4.5.2",
+        "codecov==2.0.15",
     ],
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
