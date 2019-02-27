@@ -14,6 +14,8 @@ steps:
   settings:
     token:
       from_secret: CODECOV_TOKEN
+    files:
+    - "*.xml"
 
 ---
 kind: pipeline
