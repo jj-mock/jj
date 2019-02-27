@@ -12,6 +12,7 @@ steps:
 - name: coverage
   image: plugins/codecov
   settings:
+    required: true
     token:
       from_secret: codecov-token
     files:
@@ -31,6 +32,22 @@ steps:
   commands:
   - pip3 install -r requirements.txt -r requirements-dev.txt
   - python3 -m unittest tests
+
+trigger:
+  event:
+    - push
+
+---
+kind: pipeline
+name: pypy3-6
+
+steps:
+- name: test
+  image: pypy:3.6-7.0-slim
+  commands:
+  - pip3 install -r requirements.txt
+  - pip3 install asynctest
+  - pypy3 -m unittest tests
 
 trigger:
   event:
