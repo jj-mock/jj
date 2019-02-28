@@ -4,6 +4,9 @@ from typing import Type, Any, List
 from aiohttp.web_runner import BaseRunner, TCPSite
 
 
+__all__ = ("Server",)
+
+
 class Server:
     def __init__(self, loop: AbstractEventLoop,
                  runner_factory: Type[BaseRunner],

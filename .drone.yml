@@ -1,22 +1,40 @@
 ---
 kind: pipeline
-name: python3-6
+name: python3.6
 
 steps:
-- name: test
-  image: python:3.6
-  commands:
-  - pip3 install -r requirements.txt -r requirements-dev.txt
-  - coverage run --source=jj -m unittest tests
-  - coverage xml
-- name: coverage
-  image: plugins/codecov
-  settings:
-    required: true
-    token:
-      from_secret: codecov-token
-    files:
-    - coverage.xml
+  - name: lint
+    image: python:3.6
+    commands:
+      - python3 setup.py install
+      - pip3 install -r requirements-dev.txt
+      - python3 -m mypy jj --ignore-missing-imports
+      - python3 -m flake8 jj --max-line-length=99
+  - name: test
+    image: python:3.6
+    volumes:
+      - name: artifacts
+        path: /tmp/artifacts
+    commands:
+      - python3 setup.py install
+      - pip3 install -r requirements-dev.txt
+      - coverage run --source=jj -m unittest tests
+      - coverage xml -o /tmp/artifacts/coverage.xml
+  - name: coverage
+    image: plugins/codecov
+    volumes:
+      - name: artifacts
+        path: /tmp/artifacts
+    settings:
+      required: true
+      token:
+        from_secret: codecov-token
+      files:
+        - /tmp/artifacts/coverage.xml
+
+volumes:
+  - name: artifacts
+    temp: {}
 
 trigger:
   event:
@@ -24,14 +42,15 @@ trigger:
 
 ---
 kind: pipeline
-name: python3-7
+name: python3.7
 
 steps:
-- name: test
-  image: python:3.7
-  commands:
-  - pip3 install -r requirements.txt -r requirements-dev.txt
-  - python3 -m unittest tests
+  - name: test
+    image: python:3.7
+    commands:
+      - python3 setup.py install
+      - pip3 install -r requirements-dev.txt
+      - python3 -m unittest tests
 
 trigger:
   event:
@@ -39,20 +58,16 @@ trigger:
 
 ---
 kind: pipeline
-name: pypy3-6
+name: pypy3.6
 
 steps:
-- name: test
-  image: pypy:3.6-7.0-slim
-  commands:
-  - pip3 install -r requirements.txt
-  - pip3 install asynctest
-  - pypy3 -m unittest tests
+  - name: test
+    image: pypy:3.6-7.0-slim
+    commands:
+      - pypy3 setup.py install
+      - pip3 install asynctest
+      - pypy3 -m unittest tests
 
 trigger:
   event:
     - push
-
----
-kind: signature
-hmac: f1a2e909c45d94818427f0f077b8540c8fcb39f1ad48f33107281934225b61b5

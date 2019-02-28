@@ -14,6 +14,9 @@ from ..resolvers import Resolver
 from ..responses import Response
 
 
+__all__ = ("AppRunner",)
+
+
 class AppRunner(BaseRunner):
     def __init__(self, app: AbstractApp,
                  resolver: Resolver,
