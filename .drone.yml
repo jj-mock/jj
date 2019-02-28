@@ -18,7 +18,7 @@ steps:
       - pip3 install -r requirements.txt -r requirements-dev.txt
       - coverage run --source=jj -m unittest tests
       - coverage xml -o /tmp/artifacts/coverage.xml
-  - name: upload_coverage
+  - name: coverage
     image: plugins/codecov
     volumes:
       - name: artifacts
