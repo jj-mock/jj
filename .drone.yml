@@ -8,6 +8,7 @@ steps:
     commands:
       - pip3 install -r requirements.txt -r requirements-dev.txt
       - python3 -m mypy jj --ignore-missing-imports
+      - python3 -m flake8 jj --max-line-length=99
   - name: test
     image: python:3.6
     volumes:
@@ -67,7 +68,3 @@ steps:
 trigger:
   event:
     - push
-
----
-kind: signature
-hmac: f1a2e909c45d94818427f0f077b8540c8fcb39f1ad48f33107281934225b61b5
