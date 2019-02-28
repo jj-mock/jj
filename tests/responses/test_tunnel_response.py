@@ -18,7 +18,6 @@ class TestTunnelResponse(asynctest.TestCase):
             resolver = self.resolver
             @MethodMatcher(self.resolver, "*")
             async def handler(request):
-                await request.read()
                 return TunnelResponse(*args, **kwargs)
         return App()
 
@@ -233,5 +232,7 @@ class TestTunnelResponse(asynctest.TestCase):
                 self.assertEqual(body["headers"].get("Host"), ["{}:{}".format(server.host, server.port)])
                 self.assertEqual(body["headers"].get("Accept"), ["*/*"])
                 self.assertEqual(body["headers"].get("Accept-Encoding"), ["gzip, deflate"])
+                self.assertEqual(body["headers"].get("Content-Type"), ["application/octet-stream"])
+                self.assertEqual(body["headers"].get("Transfer-Encoding"), ["chunked"])
                 self.assertIsNotNone(body["headers"].get("User-Agent"))
-                self.assertEqual(len(body["headers"]), 4)
+                self.assertEqual(len(body["headers"]), 6)
