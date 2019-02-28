@@ -1,10 +1,9 @@
 from setuptools import setup, find_packages
-import jj
 
 
 setup(
     name="jj",
-    version=jj.__version__,
+    version="2.0.0-dev.1",
     description="",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",

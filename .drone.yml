@@ -6,7 +6,8 @@ steps:
   - name: lint
     image: python:3.6
     commands:
-      - pip3 install -r requirements.txt -r requirements-dev.txt
+      - python3 setup.py install
+      - pip3 install -r requirements-dev.txt
       - python3 -m mypy jj --ignore-missing-imports
       - python3 -m flake8 jj --max-line-length=99
   - name: test
@@ -15,7 +16,8 @@ steps:
       - name: artifacts
         path: /tmp/artifacts
     commands:
-      - pip3 install -r requirements.txt -r requirements-dev.txt
+      - python3 setup.py install
+      - pip3 install -r requirements-dev.txt
       - coverage run --source=jj -m unittest tests
       - coverage xml -o /tmp/artifacts/coverage.xml
   - name: coverage
@@ -46,7 +48,8 @@ steps:
   - name: test
     image: python:3.7
     commands:
-      - pip3 install -r requirements.txt -r requirements-dev.txt
+      - python3 setup.py install
+      - pip3 install -r requirements-dev.txt
       - python3 -m unittest tests
 
 trigger:
@@ -61,7 +64,7 @@ steps:
   - name: test
     image: pypy:3.6-7.0-slim
     commands:
-      - pip3 install -r requirements.txt
+      - pypy3 setup.py install
       - pip3 install asynctest
       - pypy3 -m unittest tests
 

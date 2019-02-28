@@ -7,6 +7,9 @@ from aiohttp import web
 from ._stream_response import StreamResponse
 
 
+__all__ = ("Response",)
+
+
 class Response(web.Response, StreamResponse):
     def __init__(self, *,
                  json: Any = nil,

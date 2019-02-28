@@ -5,6 +5,9 @@ from aiohttp import web
 from .._version import server_version
 
 
+__all__ = ("StreamResponse",)
+
+
 class StreamResponse(web.StreamResponse):
     def __init__(self, *,
                  status: int = 200,
