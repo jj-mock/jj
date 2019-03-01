@@ -1,17 +1,18 @@
+from typing import Optional
 from urllib.parse import urljoin
 
 from aiohttp import ClientSession
-from aiohttp.client_reqrep import ClientResponse
+from aiohttp.web_request import BaseRequest
+from aiohttp.abc import AbstractStreamWriter
 from multidict import MultiDict, CIMultiDict
 
-from ..requests import Request
 from ._stream_response import StreamResponse
 
 
 __all__ = ("TunnelResponse",)
 
 
-# # http://tools.ietf.org/html/rfc2616#section-13.5.1
+# http://tools.ietf.org/html/rfc2616#section-13.5.1
 _HOP_BY_HOP_HEADERS = (
     "connection",
     "keep-alive",
@@ -34,7 +35,7 @@ class TunnelResponse(StreamResponse):
     def target(self) -> str:
         return self._target
 
-    async def prepare(self, request):
+    async def prepare(self, request: BaseRequest) -> Optional[AbstractStreamWriter]:
         url = urljoin(self._target, request.path)
 
         headers: MultiDict = MultiDict()
