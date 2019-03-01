@@ -1,16 +1,18 @@
+from typing import Optional
 from urllib.parse import urljoin
 
 from aiohttp import ClientSession
-from aiohttp.client_reqrep import ClientResponse
+from aiohttp.web_request import BaseRequest
+from aiohttp.abc import AbstractStreamWriter
 from multidict import MultiDict, CIMultiDict
 
-from ..requests import Request
-from ._response import Response
+from ._stream_response import StreamResponse
 
 
 __all__ = ("TunnelResponse",)
 
 
+# http://tools.ietf.org/html/rfc2616#section-13.5.1
 _HOP_BY_HOP_HEADERS = (
     "connection",
     "keep-alive",
@@ -24,7 +26,7 @@ _HOP_BY_HOP_HEADERS = (
 _FILTERED_HEADERS = _HOP_BY_HOP_HEADERS + ("host", "content-length")
 
 
-class TunnelResponse(Response):
+class TunnelResponse(StreamResponse):
     def __init__(self, *, target: str) -> None:
         super().__init__()
         self._target = target
@@ -33,7 +35,7 @@ class TunnelResponse(Response):
     def target(self) -> str:
         return self._target
 
-    async def forward(self, request: Request) -> ClientResponse:
+    async def prepare(self, request: BaseRequest) -> Optional[AbstractStreamWriter]:
         url = urljoin(self._target, request.path)
 
         headers: MultiDict = MultiDict()
@@ -41,19 +43,20 @@ class TunnelResponse(Response):
             if key.lower() not in _FILTERED_HEADERS:
                 headers[key] = value
 
-        params = request.query
-        data = await request.read()
         async with ClientSession(auto_decompress=False) as session:
             async with session.request(request.method, url,
-                                       params=params, headers=headers, data=data) as response:
-                response.body = await response.read()  # type: ignore
-                return response
+                                       params=request.query,
+                                       headers=headers,
+                                       data=request.content,
+                                       allow_redirects=True) as response:
+                self.set_status(response.status, response.reason)
+                self._headers = CIMultiDict(response.headers)
 
-    async def _start(self, request):
-        response = await self.forward(request)
+                await super().prepare(request)
 
-        self.set_status(response.status, response.reason)
-        self._headers = CIMultiDict(response.headers)
-        self.body = response.body
+                async for data in response.content.iter_any():
+                    await self.write(data)
 
-        return await super()._start(request)
+                await self.write_eof()
+
+        return await super().prepare(request)
