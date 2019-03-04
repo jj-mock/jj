@@ -113,8 +113,7 @@ steps:
     - sdist
     - bdist_wheel
     password:
-      from_secret: test-pypi-secret
-    repository: https://test.pypi.org/legacy/
+      from_secret: pypi-secret
     username: nikitanovosibirsk
   volumes:
   - name: artifacts
@@ -127,9 +126,7 @@ volumes:
 trigger:
   branch:
   - master
-  - pypi-release
   event:
-  - push
   - tag
   status:
   - success
