@@ -98,6 +98,14 @@ platform:
   arch: amd64
 
 steps:
+- name: build
+  image: python:3.6
+  commands:
+  - python3 setup.py sdist bdist_wheel
+  volumes:
+  - name: artifacts
+    path: /tmp/artifacts
+
 - name: pypi
   image: plugins/pypi
   settings:
@@ -108,13 +116,20 @@ steps:
       from_secret: test-pypi-secret
     repository: https://test.pypi.org/legacy/
     username: nikitanovosibirsk
+  volumes:
+  - name: artifacts
+    path: /tmp/artifacts
+
+volumes:
+- name: artifacts
+  temp: {}
 
 trigger:
   branch:
   - master
-  - pypi-release # debug
+  - pypi-release
   event:
-  - push # debug
+  - push
   - tag
   status:
   - success
