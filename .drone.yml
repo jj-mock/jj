@@ -2,72 +2,126 @@
 kind: pipeline
 name: python3.6
 
+platform:
+  os: linux
+  arch: amd64
+
 steps:
-  - name: lint
-    image: python:3.6
-    commands:
-      - python3 setup.py install
-      - pip3 install -r requirements-dev.txt
-      - python3 -m mypy jj --ignore-missing-imports
-      - python3 -m flake8 jj --max-line-length=99
-  - name: test
-    image: python:3.6
-    volumes:
-      - name: artifacts
-        path: /tmp/artifacts
-    commands:
-      - python3 setup.py install
-      - pip3 install -r requirements-dev.txt
-      - coverage run --source=jj -m unittest tests
-      - coverage xml -o /tmp/artifacts/coverage.xml
-  - name: coverage
-    image: plugins/codecov
-    volumes:
-      - name: artifacts
-        path: /tmp/artifacts
-    settings:
-      required: true
-      token:
-        from_secret: codecov-token
-      files:
-        - /tmp/artifacts/coverage.xml
+- name: lint
+  image: python:3.6
+  commands:
+  - python3 setup.py install
+  - pip3 install -r requirements-dev.txt
+  - python3 -m mypy jj --ignore-missing-imports
+  - python3 -m flake8 jj --max-line-length=99
+
+- name: test
+  image: python:3.6
+  commands:
+  - python3 setup.py install
+  - pip3 install -r requirements-dev.txt
+  - coverage run --source=jj -m unittest tests
+  - coverage xml -o /tmp/artifacts/coverage.xml
+  volumes:
+  - name: artifacts
+    path: /tmp/artifacts
+
+- name: coverage
+  image: plugins/codecov
+  settings:
+    files:
+    - /tmp/artifacts/coverage.xml
+    required: true
+    token:
+      from_secret: codecov-token
+  volumes:
+  - name: artifacts
+    path: /tmp/artifacts
 
 volumes:
-  - name: artifacts
-    temp: {}
+- name: artifacts
+  temp: {}
 
 trigger:
   event:
-    - push
+  - push
+  - tag
 
 ---
 kind: pipeline
 name: python3.7
 
+platform:
+  os: linux
+  arch: amd64
+
 steps:
-  - name: test
-    image: python:3.7
-    commands:
-      - python3 setup.py install
-      - pip3 install -r requirements-dev.txt
-      - python3 -m unittest tests
+- name: test
+  image: python:3.7
+  commands:
+  - python3 setup.py install
+  - pip3 install -r requirements-dev.txt
+  - python3 -m unittest tests
 
 trigger:
   event:
-    - push
+  - push
+  - tag
 
 ---
 kind: pipeline
 name: pypy3.6
 
+platform:
+  os: linux
+  arch: amd64
+
 steps:
-  - name: test
-    image: pypy:3.6-7.0-slim
-    commands:
-      - pypy3 setup.py install
-      - pip3 install asynctest
-      - pypy3 -m unittest tests
+- name: test
+  image: pypy:3.6-7.0-slim
+  commands:
+  - pypy3 setup.py install
+  - pip3 install asynctest
+  - pypy3 -m unittest tests
 
 trigger:
   event:
-    - push
+  - push
+  - tag
+
+---
+kind: pipeline
+name: release
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: pypi
+  image: plugins/pypi
+  settings:
+    distributions:
+    - sdist
+    - bdist_wheel
+    password:
+      from_secret: test-pypi-secret
+    repository: https://test.pypi.org/legacy/
+    username: nikitanovosibirsk
+
+trigger:
+  branch:
+  - master
+  - pypi-release # debug
+  event:
+  - push # debug
+  - tag
+  status:
+  - success
+
+depends_on:
+- python3.6
+- python3.7
+- pypy3.6
+
+...
