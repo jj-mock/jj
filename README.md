@@ -82,6 +82,8 @@ async def handler(request):
     return jj.Response(body=f"Segments: {request.segments}")
 ```
 
+More information available here https://docs.aiohttp.org/en/stable/web_quickstart.html#variable-resources
+
 #### Params
 
 ##### match_param(`name`, `val`)
