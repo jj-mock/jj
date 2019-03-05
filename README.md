@@ -29,6 +29,7 @@ jj.serve()
 * [Matchers](#matchers)
     * [Method](#method)
     * [Path](#path)
+    * [Segments](#segments)
     * [Params](#params)
     * [Headers](#headers)
     * [Combining Matchers](#combining-matchers)
@@ -71,6 +72,14 @@ async def handler(request):
 @jj.match_path("/users")
 async def handler(request):
     return jj.Response(body="Path: " + request.path)
+```
+
+#### Segments
+
+```python
+@jj.match_path("/users/{users_id}")
+async def handler(request):
+    return jj.Response(body=f"Segments: {request.segments}")
 ```
 
 #### Params
