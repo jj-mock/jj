@@ -17,7 +17,6 @@ class TestResponse(asynctest.TestCase):
             resolver = self.resolver
             @MethodMatcher(self.resolver, "*")
             async def handler(request):
-                await request.read()
                 return Response(*args, **kwargs)
         return App()
 

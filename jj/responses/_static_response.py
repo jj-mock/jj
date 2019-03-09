@@ -12,7 +12,5 @@ __all__ = ("StaticResponse",)
 class StaticResponse(web.FileResponse, StreamResponse):
     def __init__(self, path: Union[str, Path], *,
                  chunk_size: int = 256 * 1024,
-                 status: int = 200,
-                 reason: Optional[str] = None,
                  headers: MutableMapping[str, str] = None) -> None:
-        super().__init__(path, chunk_size, status, reason, headers)
+        super().__init__(path, chunk_size, headers=headers)

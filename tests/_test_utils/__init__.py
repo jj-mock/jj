@@ -1,3 +1,5 @@
+import asyncio
+
 from aiohttp.test_utils import TestClient
 
 from ._request_formatter import RequestFormatter
@@ -8,4 +10,5 @@ __all__ = ("TestClient", "TestServer", "RequestFormatter", "run",)
 
 
 def run(app, resolver=None, middlewares=None):
-    return TestClient(TestServer(app, resolver, middlewares))
+    loop = asyncio.get_event_loop()
+    return TestClient(TestServer(app, resolver, middlewares, loop=loop), loop=loop)

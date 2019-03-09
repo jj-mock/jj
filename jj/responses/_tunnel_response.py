@@ -36,7 +36,7 @@ class TunnelResponse(StreamResponse):
         return self._target
 
     async def prepare(self, request: BaseRequest) -> Optional[AbstractStreamWriter]:
-        url = urljoin(self._target, request.path)
+        url = urljoin(self.target, request.path)
 
         headers: MultiDict = MultiDict()
         for key, value in request.headers.items():
