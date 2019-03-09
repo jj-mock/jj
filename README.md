@@ -39,6 +39,7 @@ jj.serve()
         * [HTML Response](#html-response)
         * [Binary Response](#binary-response)
         * [Not Found Response](#not-found-response)
+    * [StaticResponse](#staticresponse)
     * [TunnelResponse](#tunnelresponse-β)
 * [Apps](#apps)
     * [Single App](#single-app)
@@ -193,10 +194,23 @@ async def handler(request):
 ```
 
 ##### Not Found Response
+
 ```python
 @jj.match("*")
 async def handler(request):
     return jj.Response(status=404, reason="Not Found")
+```
+
+#### StaticResponse
+
+##### Fixture
+
+```python
+from jj.http import GET
+
+@jj.match(GET, "/users")
+async def handler(request):
+    return jj.StaticResponse("fixtures/users.json")
 ```
 
 #### TunnelResponse `β`
