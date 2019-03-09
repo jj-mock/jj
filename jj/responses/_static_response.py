@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Union, MutableMapping
+from typing import Union, MutableMapping
 
 from aiohttp import web
 
