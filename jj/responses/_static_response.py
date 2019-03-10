@@ -1,3 +1,4 @@
+import mimetypes
 from pathlib import Path
 from typing import Union, MutableMapping
 
@@ -14,3 +15,4 @@ class StaticResponse(web.FileResponse, StreamResponse):
                  chunk_size: int = 256 * 1024,
                  headers: MutableMapping[str, str] = None) -> None:
         super().__init__(path, chunk_size, headers=headers)
+        mimetypes.add_type(".json", "application/json")
