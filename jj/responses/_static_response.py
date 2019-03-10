@@ -1,4 +1,3 @@
-import mimetypes
 from pathlib import Path
 from typing import Union, Optional, MutableMapping
 
@@ -21,7 +20,5 @@ class StaticResponse(web.FileResponse, StreamResponse):
             headers["Content-Disposition"] = "attachment; filename=\"{}\"".format(attachment)
         elif attachment is not False:
             headers["Content-Disposition"] = "attachment"
-
-        mimetypes.add_type("application/json", ".json")
 
         super().__init__(path, chunk_size, headers=headers)
