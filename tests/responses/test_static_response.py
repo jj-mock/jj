@@ -77,6 +77,40 @@ class TestStaticResponse(asynctest.TestCase):
             raw = await response.read()
             self.assertEqual(raw, body)
 
+    # Attachment
+
+    async def test_response_with_attachment(self):
+        path = self.make_path("fixtures/users.json")
+        app = self.make_app_with_response(path, attachment=True)
+
+        async with run(app) as client:
+            response = await client.get("/")
+            self.assertEqual(response.headers.get("Content-Type"), "application/json")
+            self.assertEqual(response.headers.get("Content-Disposition"), "attachment")
+
+    async def test_response_with_attachment_and_custom_header(self):
+        path = self.make_path("fixtures/users.json")
+        custom_header_key, custom_header_val = "Cutom-Header", "Value"
+        app = self.make_app_with_response(path, attachment=True, headers={
+            custom_header_key: custom_header_val
+        })
+
+        async with run(app) as client:
+            response = await client.get("/")
+            self.assertEqual(response.headers.get("Content-Type"), "application/json")
+            self.assertEqual(response.headers.get("Content-Disposition"), "attachment")
+            self.assertEqual(response.headers.get(custom_header_key), custom_header_val)
+
+    async def test_response_with_attachment_and_filename(self):
+        path = self.make_path("fixtures/users.json")
+        app = self.make_app_with_response(path, attachment="users.json")
+
+        async with run(app) as client:
+            response = await client.get("/")
+            self.assertEqual(response.headers.get("Content-Type"), "application/json")
+            self.assertEqual(response.headers.get("Content-Disposition"),
+                             'attachment; filename="users.json"')
+
     # Headers
 
     async def test_response_headers(self):
