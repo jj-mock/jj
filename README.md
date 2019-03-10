@@ -39,6 +39,10 @@ jj.serve()
         * [HTML Response](#html-response)
         * [Binary Response](#binary-response)
         * [Not Found Response](#not-found-response)
+        * [Predefined Body](#predefined-body)
+    * [StaticResponse](#staticresponse)
+        * [Inline Content](#inline-content)
+        * [Downloadable File](#downloadable-file)
     * [TunnelResponse](#tunnelresponse-β)
 * [Apps](#apps)
     * [Single App](#single-app)
@@ -193,11 +197,62 @@ async def handler(request):
 ```
 
 ##### Not Found Response
+
 ```python
 @jj.match("*")
 async def handler(request):
     return jj.Response(status=404, reason="Not Found")
 ```
+
+##### Predefined Body
+
+```python
+from jj.http import GET
+
+@jj.match(GET, "/users")
+async def handler(request):
+    return jj.Response(body=open("responses/users.json", "rb"))
+```
+
+```python
+from jj.http import POST, CREATED
+
+@jj.match(POST, "/users")
+async def handler(request):
+    return jj.Response(body=open("responses/created.json", "rb"), status=CREATED)
+```
+
+#### StaticResponse
+
+##### Inline Content
+
+```python
+from jj.http import GET
+
+@jj.match(GET, "/image")
+async def handler(request):
+    return jj.StaticResponse("public/image.jpg")
+```
+
+##### Downloadable File
+
+```python
+from jj.http import GET
+
+@jj.match(GET, "/report")
+async def handler(request):
+    return jj.StaticResponse("public/report.csv", attachment=True)
+```
+
+```python
+from jj.http import GET
+
+@jj.match(GET, "/")
+async def handler(request):
+    return jj.StaticResponse("public/report.csv", attachment="report.csv")
+```
+
+For more information visit https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
 
 #### TunnelResponse `β`
 

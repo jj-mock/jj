@@ -286,6 +286,10 @@ class TestImports(unittest.TestCase):
         from jj.responses import Response
         from jj import Response
 
+    def test_import_static_response(self):
+        from jj.responses import StaticResponse
+        from jj import StaticResponse
+
     def test_import_stream_response(self):
         from jj.responses import StreamResponse
         from jj import StreamResponse

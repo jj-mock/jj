@@ -17,7 +17,6 @@ class TestStreamResponse(asynctest.TestCase):
             resolver = self.resolver
             @MethodMatcher(self.resolver, "*")
             async def handler(request):
-                await request.read()
                 return StreamResponse(*args, **kwargs)
         return App()
 
