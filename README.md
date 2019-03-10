@@ -29,6 +29,7 @@ jj.serve()
 * [Matchers](#matchers)
     * [Method](#method)
     * [Path](#path)
+    * [Segments](#segments)
     * [Params](#params)
     * [Headers](#headers)
     * [Combining Matchers](#combining-matchers)
@@ -38,7 +39,7 @@ jj.serve()
         * [HTML Response](#html-response)
         * [Binary Response](#binary-response)
         * [Not Found Response](#not-found-response)
-    * [TunnelResponse](#tunnelresponse)
+    * [TunnelResponse](#tunnelresponse-β)
 * [Apps](#apps)
     * [Single App](#single-app)
     * [Multiple Apps](#multiple-apps)
@@ -72,6 +73,16 @@ async def handler(request):
 async def handler(request):
     return jj.Response(body="Path: " + request.path)
 ```
+
+#### Segments
+
+```python
+@jj.match_path("/users/{users_id}")
+async def handler(request):
+    return jj.Response(body=f"Segments: {request.segments}")
+```
+
+More information available here https://docs.aiohttp.org/en/stable/web_quickstart.html#variable-resources
 
 #### Params
 

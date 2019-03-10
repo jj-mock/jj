@@ -124,8 +124,6 @@ volumes:
   temp: {}
 
 trigger:
-  branch:
-  - master
   event:
   - tag
   status:

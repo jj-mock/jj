@@ -1,6 +1,7 @@
 from typing import Union, Tuple, Dict, List
 
-from .attribute_matchers import AttributeMatcher, EqualMatcher, RouteMatcher, MultiDictMatcher
+from .attribute_matchers import (AttributeMatcher, EqualMatcher, RouteMatcher,
+                                 MultiDictMatcher)
 from .resolvable_matcher import ResolvableMatcher
 from ..resolvers import Resolver
 from ..requests import Request
@@ -28,7 +29,10 @@ class RequestMatcher(ResolvableMatcher):
 class MethodMatcher(RequestMatcher):
     def __init__(self, resolver: Resolver, method: StrOrAttrMatcher) -> None:
         super().__init__(resolver)
-        self._matcher = method if isinstance(method, AttributeMatcher) else EqualMatcher(method)
+        if isinstance(method, AttributeMatcher):
+            self._matcher = method
+        else:
+            self._matcher = EqualMatcher(method)
 
     async def match(self, request: Request) -> bool:
         return self._matcher.match("*") or self._matcher.match(request.method)
@@ -37,10 +41,18 @@ class MethodMatcher(RequestMatcher):
 class PathMatcher(RequestMatcher):
     def __init__(self, resolver: Resolver, path: StrOrAttrMatcher) -> None:
         super().__init__(resolver)
-        self._matcher = path if isinstance(path, AttributeMatcher) else RouteMatcher(path)
+        if isinstance(path, AttributeMatcher):
+            self._matcher = path
+        else:
+            self._matcher = RouteMatcher(path)
 
     async def match(self, request: Request) -> bool:
-        return self._matcher.match(request.path)
+        matched = self._matcher.match(request.path)
+        if matched and isinstance(self._matcher, RouteMatcher):
+            request.segments = self._matcher.get_segments(request.path)
+        else:
+            request.segments = None  # type: ignore
+        return matched
 
 
 class ParamMatcher(RequestMatcher):
