@@ -15,8 +15,7 @@ class StaticResponse(web.FileResponse, StreamResponse):
                  chunk_size: int = 256 * 1024,
                  attachment: Union[bool, str] = False,
                  headers: Optional[MutableMapping[str, str]] = None) -> None:
-        if headers is None:
-            headers = {}
+        headers = headers or {}
 
         if isinstance(attachment, str):
             headers["Content-Disposition"] = "attachment; filename=\"{}\"".format(attachment)

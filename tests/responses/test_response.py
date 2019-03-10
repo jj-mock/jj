@@ -1,3 +1,5 @@
+import os
+
 import asynctest
 
 import jj
@@ -19,6 +21,9 @@ class TestResponse(asynctest.TestCase):
             async def handler(request):
                 return Response(*args, **kwargs)
         return App()
+
+    def make_path(self, path):
+        return os.path.join(os.path.dirname(__file__), path)
 
     def setUp(self):
         self.default_app = create_app()
@@ -144,6 +149,33 @@ class TestResponse(asynctest.TestCase):
 
             self.assertEqual(response.headers.get("Content-Length"), str(len(body)))
             self.assertEqual(response.headers.get("Content-Type"), "application/octet-stream")
+
+    async def test_response_predefined_text_body(self):
+        path = self.make_path("fixtures/users.json")
+        with open(path, "rt") as f:
+            body = f.read()
+        app = self.make_app_with_response(body=open(path, "rt"))
+
+        async with run(app) as client:
+            response = await client.get("/")
+            self.assertEqual(await response.text(), body)
+            self.assertEqual(response.headers.get("Content-Length"), str(len(body)))
+            self.assertEqual(response.headers.get("Content-Type"), "text/plain; charset=utf-8")
+            self.assertEqual(response.headers.get("Content-Disposition"), "inline")
+
+    async def test_response_predefined_binary_body(self):
+        path = self.make_path("fixtures/users.json")
+        with open(path, "rb") as f:
+            body = f.read()
+        app = self.make_app_with_response(body=open(path, "rb"))
+
+        async with run(app) as client:
+            response = await client.get("/")
+            self.assertEqual(await response.text(), body.decode())
+            self.assertEqual(await response.read(), body)
+            self.assertEqual(response.headers.get("Content-Length"), str(len(body)))
+            self.assertEqual(response.headers.get("Content-Type"), "application/json")
+            self.assertEqual(response.headers.get("Content-Disposition"), "inline")
 
     # Headers
 
