@@ -17,7 +17,10 @@ setup(
         "aiohttp==3.5.4",
         "undecorated==0.3.0",
     ],
+    setup_requires=["pytest-runner"],
     tests_require=[
+        "pytest==4.4.1",
+        "pytest-asyncio==0.10.0",
         "asynctest==0.12.2",
         "mypy==0.670",
         "flake8==3.7.7",
