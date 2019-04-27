@@ -2,7 +2,7 @@ from typing import Union, Tuple, Dict, List
 
 from .attribute_matchers import (AttributeMatcher, EqualMatcher, RouteMatcher,
                                  MultiDictMatcher)
-from .resolvable_matcher import ResolvableMatcher
+from ._resolvable_matcher import ResolvableMatcher
 from ..resolvers import Resolver
 from ..requests import Request
 

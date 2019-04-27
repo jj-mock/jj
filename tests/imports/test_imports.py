@@ -204,7 +204,6 @@ class TestImports(unittest.TestCase):
             from jj import HeaderMatcher
 
     def test_import_resolvable_matcher(self):
-        from jj.matchers.resolvable_matcher import ResolvableMatcher
         from jj.matchers import ResolvableMatcher
         with self.assertRaises(ImportError):
             from jj import ResolvableMatcher

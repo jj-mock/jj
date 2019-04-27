@@ -5,7 +5,7 @@ from .attribute_matchers import (AttributeMatcher, EqualMatcher, NotEqualMatcher
 from .logical_matchers import LogicalMatcher, AllMatcher, AnyMatcher
 from .request_matchers import (RequestMatcher, MethodMatcher, PathMatcher,
                                ParamMatcher, HeaderMatcher)
-from .resolvable_matcher import ResolvableMatcher
+from ._resolvable_matcher import ResolvableMatcher
 
 
 __all__ = (

@@ -11,7 +11,7 @@ from .logs import Logger, logger as default_logger
 from .servers import Server
 from .runners import AppRunner
 from .middlewares import BaseMiddleware, SelfMiddleware, LoggerMiddleware
-from .matchers.resolvable_matcher import ResolvableMatcher
+from .matchers import ResolvableMatcher
 from .matchers.logical_matchers import AllMatcher, AnyMatcher
 from .matchers.request_matchers import (MethodMatcher, PathMatcher,
                                         HeaderMatcher, ParamMatcher, StrOrAttrMatcher,
