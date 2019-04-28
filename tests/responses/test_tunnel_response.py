@@ -9,7 +9,8 @@ from jj.handlers import default_handler
 from jj.resolvers import Registry, ReversedResolver
 from jj.http.methods import GET, DELETE, POST
 
-from .._test_utils import TestServer, RequestFormatter, run
+from .._test_utils import run, TestServer
+from ._request_formatter import RequestFormatter
 
 
 class TestTunnelResponse(asynctest.TestCase):
