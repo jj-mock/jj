@@ -4,8 +4,8 @@ from asynctest.mock import Mock
 
 from jj.matchers import AnyMatcher, LogicalMatcher, ResolvableMatcher
 
-from .._test_utils.fixtures import request_, resolver_
-from .._test_utils.steps import given, then, when
+from ..._test_utils.fixtures import request_, resolver_
+from ..._test_utils.steps import given, then, when
 
 
 @pytest.mark.asyncio
