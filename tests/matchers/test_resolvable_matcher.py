@@ -1,13 +1,11 @@
 import pytest
-from asynctest.mock import CoroutineMock, Mock, sentinel
+from asynctest.mock import Mock
 from pytest import raises
 
 from jj.matchers import ResolvableMatcher
-from jj.requests import Request
-from jj.resolvers import Resolver
 
+from .._test_utils.fixtures import handler_, request_, resolver_
 from .._test_utils.steps import given, then, when
-from .._test_utils.fixtures import resolver_, request_, handler_
 
 
 @pytest.mark.asyncio
