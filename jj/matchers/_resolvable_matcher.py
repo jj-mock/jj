@@ -1,7 +1,6 @@
-from ..resolvers import Resolver
-from ..requests import Request
 from ..handlers import HandlerFunction
-
+from ..requests import Request
+from ..resolvers import Resolver
 
 __all__ = ("ResolvableMatcher",)
 
