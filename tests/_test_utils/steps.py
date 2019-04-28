@@ -1,3 +1,5 @@
+__all__ = ("given", "when", "then",)
+
 class Context:
     def __enter__(self):
         pass
@@ -19,3 +21,8 @@ class When(Context):
 
 class Then(Context):
     pass
+
+
+given = Given()
+when = When()
+then = Then()

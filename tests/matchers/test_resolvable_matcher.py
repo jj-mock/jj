@@ -6,22 +6,8 @@ from jj.matchers import ResolvableMatcher
 from jj.requests import Request
 from jj.resolvers import Resolver
 
-from .._test_utils import given, then, when
-
-
-@pytest.fixture
-def resolver_():
-    return Mock(Resolver)
-
-
-@pytest.fixture
-def request_():
-    return Mock(Request)
-
-
-@pytest.fixture
-def handler_():
-    return CoroutineMock(return_value=sentinel.response)
+from .._test_utils.steps import given, then, when
+from .._test_utils.fixtures import resolver_, request_, handler_
 
 
 @pytest.mark.asyncio
@@ -33,7 +19,7 @@ async def test_abstract_match_method_raises_error(resolver_, request_):
         await matcher.match(request_)
 
     with then:
-        assert exception.type == NotImplementedError
+        assert exception.type is NotImplementedError
 
 
 @pytest.mark.asyncio
@@ -66,5 +52,5 @@ async def test_decorator_registers_matcher(resolver_, handler_):
     with then:
         assert actual == handler_
         assert (resolver_.register_matcher
-                             .assert_called_once_with(matcher.match, handler_)) is None
+                         .assert_called_once_with(matcher.match, handler_)) is None
         assert handler_.assert_not_called() is None
