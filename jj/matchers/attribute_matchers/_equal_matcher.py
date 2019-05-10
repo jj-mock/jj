@@ -10,9 +10,9 @@ class EqualMatcher(AttributeMatcher):
         self._expected = expected
 
     def match(self, actual: Any) -> bool:
-        return self._expected == actual
+        return bool(self._expected == actual)  # type casting for mypy
 
 
 class NotEqualMatcher(EqualMatcher):
     def match(self, actual: Any) -> bool:
-        return self._expected != actual
+        return bool(self._expected != actual)  # type casting for mypy
