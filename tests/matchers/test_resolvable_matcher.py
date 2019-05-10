@@ -1,5 +1,5 @@
 import pytest
-from asynctest.mock import Mock
+from asynctest.mock import Mock, CoroutineMock as CoroMock
 from pytest import raises
 
 from jj.matchers import ResolvableMatcher
@@ -23,20 +23,14 @@ async def test_abstract_match_method_raises_error(*, resolver_, request_):
 @pytest.mark.asyncio
 async def test_concrete_match_method_not_raises_error(*, resolver_, request_):
     with given:
-        rec_ = Mock(return_value=True)
-
-        class CustomResolvableMatcher(ResolvableMatcher):
-            async def match(self, request):
-                return rec_(request)
-
-        matcher = CustomResolvableMatcher(resolver_)
+        matcher_ = Mock(ResolvableMatcher, match=CoroMock(return_value=True))
 
     with when:
-        actual = await matcher.match(request_)
+        actual = await matcher_.match(request_)
 
     with then:
         assert actual is True
-        assert rec_.assert_called_once_with(request_) is None
+        assert matcher_.match.assert_called_once_with(request_) is None
 
 
 @pytest.mark.asyncio

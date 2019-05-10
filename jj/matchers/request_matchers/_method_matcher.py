@@ -12,7 +12,7 @@ class MethodMatcher(RequestMatcher):
         if isinstance(method, AttributeMatcher):
             self._matcher = method
         else:
-            self._matcher = EqualMatcher(method)
+            self._matcher = EqualMatcher(str.upper(method))
 
     async def match(self, request: Request) -> bool:
         return self._matcher.match("*") or self._matcher.match(request.method)

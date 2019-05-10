@@ -7,13 +7,14 @@ from ._attribute_matcher import AttributeMatcher
 __all__ = ("RouteMatcher",)
 
 
-class RouteMatcher(AttributeMatcher):
-    class Resource(DynamicResource):
-        def match(self, path: str) -> Union[Dict[str, str], None]:
-            return self._match(path)
+class _Resource(DynamicResource):
+    def match(self, path: str) -> Union[Dict[str, str], None]:
+        return self._match(path)
 
+
+class RouteMatcher(AttributeMatcher):
     def __init__(self, path: str) -> None:
-        self._resource = self.Resource(path)
+        self._resource = _Resource(path)
 
     def get_segments(self, path: str) -> Dict[str, str]:
         return self._resource.match(path) or {}
