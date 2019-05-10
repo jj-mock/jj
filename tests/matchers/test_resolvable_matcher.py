@@ -9,7 +9,7 @@ from .._test_utils.steps import given, then, when
 
 
 @pytest.mark.asyncio
-async def test_abstract_match_method_raises_error(resolver_, request_):
+async def test_abstract_match_method_raises_error(*, resolver_, request_):
     with given:
         matcher = ResolvableMatcher(resolver_)
 
@@ -21,7 +21,7 @@ async def test_abstract_match_method_raises_error(resolver_, request_):
 
 
 @pytest.mark.asyncio
-async def test_concrete_match_method_not_raises_error(resolver_, request_):
+async def test_concrete_match_method_not_raises_error(*, resolver_, request_):
     with given:
         rec_ = Mock(return_value=True)
 
@@ -40,7 +40,7 @@ async def test_concrete_match_method_not_raises_error(resolver_, request_):
 
 
 @pytest.mark.asyncio
-async def test_decorator_registers_matcher(resolver_, handler_):
+async def test_decorator_registers_matcher(*, resolver_, handler_):
     with given:
         matcher = ResolvableMatcher(resolver_)
 
