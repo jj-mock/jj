@@ -4,7 +4,7 @@ from asynctest.mock import Mock
 
 from jj.matchers import AllMatcher, LogicalMatcher, ResolvableMatcher
 
-from ..._test_utils.fixtures import request_, resolver_
+from ..._test_utils.fixtures import request_, resolver_  # noqa: F401
 from ..._test_utils.steps import given, then, when
 
 
@@ -75,4 +75,4 @@ def test_is_instance_of_logical_matcher(*, resolver_):
         actual = isinstance(matcher, LogicalMatcher)
 
     with then:
-        actual is True
+        assert actual is True
