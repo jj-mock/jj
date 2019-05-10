@@ -12,6 +12,7 @@ from ..._test_utils.steps import given, then, when
     ("*", "GET", True),
     ("*", "POST", True),
     ("*", "CUSTOM", True),
+
     ("GET", "GET", True),
     ("get", "GET", True),
     ("POST", "POST", True),
