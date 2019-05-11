@@ -1,5 +1,6 @@
 import pytest
-from asynctest.mock import Mock, CoroutineMock as CoroMock
+from asynctest.mock import CoroutineMock as CoroMock
+from asynctest.mock import Mock
 from pytest import raises
 
 from jj.matchers import ResolvableMatcher

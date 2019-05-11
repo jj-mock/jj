@@ -2,7 +2,7 @@ import pytest
 from asynctest.mock import Mock, call
 from multidict import CIMultiDict
 
-from jj.matchers import HeaderMatcher, RequestMatcher, AttributeMatcher
+from jj.matchers import AttributeMatcher, HeaderMatcher, RequestMatcher
 
 from ..._test_utils.fixtures import request_, resolver_  # noqa: F401
 from ..._test_utils.steps import given, then, when

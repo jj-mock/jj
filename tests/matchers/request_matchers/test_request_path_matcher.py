@@ -1,7 +1,7 @@
 import pytest
 from asynctest.mock import Mock, call
 
-from jj.matchers import PathMatcher, RequestMatcher, AttributeMatcher
+from jj.matchers import AttributeMatcher, PathMatcher, RequestMatcher
 
 from ..._test_utils.fixtures import request_, resolver_  # noqa: F401
 from ..._test_utils.steps import given, then, when
