@@ -19,5 +19,5 @@ class RouteMatcher(AttributeMatcher):
     def get_segments(self, path: str) -> Dict[str, str]:
         return self._resource.match(path) or {}
 
-    def match(self, path: str) -> bool:
+    async def match(self, path: str) -> bool:
         return self._resource.match(path) is not None

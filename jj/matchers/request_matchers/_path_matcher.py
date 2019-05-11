@@ -15,7 +15,7 @@ class PathMatcher(RequestMatcher):
             self._matcher = RouteMatcher(path)
 
     async def match(self, request: Request) -> bool:
-        matched = self._matcher.match(request.path)
+        matched = await self._matcher.match(request.path)
         if matched and isinstance(self._matcher, RouteMatcher):
             request.segments = self._matcher.get_segments(request.path)
         else:

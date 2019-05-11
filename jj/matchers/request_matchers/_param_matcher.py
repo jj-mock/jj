@@ -20,4 +20,4 @@ class ParamMatcher(RequestMatcher):
             self._matcher = MultiDictMatcher(params)
 
     async def match(self, request: Request) -> bool:
-        return self._matcher.match(request.query)
+        return await self._matcher.match(request.query)

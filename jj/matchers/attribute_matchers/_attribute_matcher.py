@@ -4,5 +4,5 @@ __all__ = ("AttributeMatcher",)
 
 
 class AttributeMatcher:
-    def match(self, actual: Any) -> bool:
+    async def match(self, actual: Any) -> bool:
         raise NotImplementedError()

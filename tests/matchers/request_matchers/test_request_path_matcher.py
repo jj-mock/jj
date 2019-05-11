@@ -1,4 +1,5 @@
 import pytest
+from asynctest.mock import CoroutineMock as CoroMock
 from asynctest.mock import Mock, call
 
 from jj.matchers import AttributeMatcher, PathMatcher, RequestMatcher
@@ -43,7 +44,7 @@ async def test_path_matcher(expected, actual, res, *, resolver_, request_):
 async def test_path_matcher_with_custom_submatcher(ret_val, path, *, resolver_, request_):
     with given:
         request_.path = path
-        submatcher_ = Mock(AttributeMatcher, match=Mock(return_value=ret_val))
+        submatcher_ = Mock(AttributeMatcher, match=CoroMock(return_value=ret_val))
         matcher = PathMatcher(resolver_, submatcher_)
 
     with when:

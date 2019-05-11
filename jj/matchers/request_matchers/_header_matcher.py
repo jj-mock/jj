@@ -20,4 +20,4 @@ class HeaderMatcher(RequestMatcher):
             self._matcher = MultiDictMatcher(headers)
 
     async def match(self, request: Request) -> bool:
-        return self._matcher.match(request.headers)
+        return await self._matcher.match(request.headers)

@@ -15,4 +15,4 @@ class MethodMatcher(RequestMatcher):
             self._matcher = EqualMatcher(str.upper(method))
 
     async def match(self, request: Request) -> bool:
-        return self._matcher.match("*") or self._matcher.match(request.method)
+        return await self._matcher.match("*") or await self._matcher.match(request.method)

@@ -1,4 +1,5 @@
 import pytest
+from asynctest.mock import CoroutineMock as CoroMock
 from asynctest.mock import Mock, call
 
 from jj.matchers import AttributeMatcher, MethodMatcher, RequestMatcher
@@ -41,7 +42,7 @@ async def test_method_matcher_with_custom_submatcher(ret_vals, res, called_with,
                                                      resolver_, request_):
     with given:
         request_.method = "GET"
-        submatcher_ = Mock(AttributeMatcher, match=Mock(side_effect=ret_vals))
+        submatcher_ = Mock(AttributeMatcher, match=CoroMock(side_effect=ret_vals))
         matcher = MethodMatcher(resolver_, submatcher_)
 
     with when:
