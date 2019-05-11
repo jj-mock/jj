@@ -1,5 +1,5 @@
 import pytest
-from asynctest.mock import Mock
+from asynctest.mock import Mock, call
 from multidict import MultiDict
 
 from jj.matchers import ParamMatcher, RequestMatcher, AttributeMatcher
@@ -31,9 +31,11 @@ from ..._test_utils.steps import given, then, when
     ({"key": "1"}, [("key", "1"), ("key", "2")], True),
     ({"key": "1"}, [("key", "3"), ("key", "2")], False),
 
-    ({"q": "g"}, {"q": "g"}, True),
-    ({"q": "g"}, {"Q": "g"}, False),
-    ({"q": "g"}, {"q": "G"}, False),
+    ({"a": "b"}, {"a": "b"}, True),
+    ({"a": "b"}, {"A": "b"}, False),
+    ({"A": "b"}, {"a": "b"}, False),
+    ({"a": "b"}, {"a": "B"}, False),
+    ({"a": "B"}, {"a": "b"}, False),
 ])
 async def test_param_matcher(expected, actual, res, *, resolver_, request_):
     with given:
@@ -65,12 +67,55 @@ async def test_param_matcher_with_custom_submatcher(ret_val, params, *, resolver
 
     with then:
         assert actual is ret_val
-        assert submatcher_.match.assert_called_once_with(request_.query) is None
+        assert submatcher_.mock_calls == [call.match(request_.query)]
 
 
 @pytest.mark.asyncio
-async def test_param_matcher_with_custom_value_submatcher():
-    pass
+async def test_param_matcher_with_value_submatchers_superset(request_):
+    with given:
+        request_.query = MultiDict([
+            ("key1", "1.1"),
+            ("key1", "1.2"),
+        ])
+        submatcher1_ = Mock(AttributeMatcher, match=Mock(return_value=True))
+        submatcher2_ = Mock(AttributeMatcher)
+        matcher = ParamMatcher(resolver_, {
+            "key1": submatcher1_,
+            "key2": submatcher2_,
+        })
+
+    with when:
+        actual = await matcher.match(request_)
+
+    with then:
+        assert actual is False
+        assert submatcher1_.mock_calls == [call.match("1.1")]
+        assert submatcher2_.mock_calls == []
+
+
+@pytest.mark.asyncio
+async def test_param_matcher_with_value_submatchers_subset(request_):
+    with given:
+        request_.query = MultiDict([
+            ("key1", "1"),
+            ("key2", "2.1"),
+            ("key2", "2.2"),
+            ("key3", "3"),
+        ])
+        submatcher1_ = Mock(AttributeMatcher, match=Mock(side_effect=(True,)))
+        submatcher2_ = Mock(AttributeMatcher, match=Mock(side_effect=(False, True)))
+        matcher = ParamMatcher(resolver_, {
+            "key1": submatcher1_,
+            "key2": submatcher2_,
+        })
+
+    with when:
+        actual = await matcher.match(request_)
+
+    with then:
+        assert actual is True
+        assert submatcher1_.mock_calls == [call.match("1")]
+        assert submatcher2_.mock_calls == [call.match("2.1"), call.match("2.2")]
 
 
 def test_is_instance_of_request_matcher(*, resolver_):

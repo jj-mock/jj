@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple, Union
 from multidict import MultiDict, MultiDictProxy
 
 from ._attribute_matcher import AttributeMatcher
-from ._contain_matcher import ContainMatcher
+from ._equal_matcher import EqualMatcher
 
 __all__ = ("MultiDictMatcher",)
 
@@ -21,7 +21,8 @@ class MultiDictMatcher(AttributeMatcher):
 
     def match(self, actual: Union[MultiDict, MultiDictProxy]) -> bool:
         for key, val in self._expected.items():
-            matcher = val if isinstance(val, AttributeMatcher) else ContainMatcher(val)
-            if not matcher.match(actual.getall(key, [])):
+            submatcher = val if isinstance(val, AttributeMatcher) else EqualMatcher(val)
+            values = actual.getall(key, [])
+            if not any(submatcher.match(value) for value in values):
                 return False
         return True

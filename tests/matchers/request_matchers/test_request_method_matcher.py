@@ -49,8 +49,7 @@ async def test_method_matcher_with_custom_submatcher(ret_vals, res, called_with,
 
     with then:
         assert actual is res
-        assert submatcher_.match.assert_has_calls(call(x) for x in called_with) is None
-        assert submatcher_.match.call_count == len(called_with)
+        assert submatcher_.mock_calls == [call.match(x) for x in called_with]
 
 
 def test_is_instance_of_request_matcher(*, resolver_):

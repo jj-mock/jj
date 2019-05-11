@@ -1,5 +1,5 @@
 import pytest
-from asynctest.mock import Mock
+from asynctest.mock import Mock, call
 
 from jj.matchers import PathMatcher, RequestMatcher, AttributeMatcher
 
@@ -51,7 +51,7 @@ async def test_path_matcher_with_custom_submatcher(ret_val, path, *, resolver_, 
 
     with then:
         assert actual is ret_val
-        assert submatcher_.match.assert_called_once_with(path) is None
+        assert submatcher_.mock_calls == [call.match(path)]
 
 
 def test_is_instance_of_request_matcher(*, resolver_):
