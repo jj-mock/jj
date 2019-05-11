@@ -14,6 +14,7 @@ class _Resource(DynamicResource):
 
 class RouteMatcher(AttributeMatcher):
     def __init__(self, path: str) -> None:
+        self._path = path
         self._resource = _Resource(path)
 
     def get_segments(self, path: str) -> Dict[str, str]:
@@ -21,3 +22,6 @@ class RouteMatcher(AttributeMatcher):
 
     async def match(self, path: str) -> bool:
         return self._resource.match(path) is not None
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}({self._path!r})"

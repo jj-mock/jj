@@ -1,5 +1,5 @@
 import pytest
-from asynctest.mock import MagicMock, Mock, call, sentinel
+from asynctest.mock import Mock, call, sentinel
 
 from jj.matchers import AttributeMatcher, EqualMatcher, NotEqualMatcher
 
@@ -46,9 +46,9 @@ async def test_not_equal_matcher(expected, actual, res):
     True,
     False,
 ])
-async def test_equal_matcher_with_magic_method(*, ret_val):
+async def test_equal_matcher_with_magic_method(ret_val):
     with given:
-        rec_ = MagicMock(__eq__=Mock(return_value=ret_val))
+        rec_ = Mock(__eq__=Mock(return_value=ret_val))
         matcher = EqualMatcher(sentinel.expected)
 
     with when:
@@ -64,9 +64,9 @@ async def test_equal_matcher_with_magic_method(*, ret_val):
     True,
     False,
 ])
-async def test_not_equal_matcher_with_magic_method(*, ret_val):
+async def test_not_equal_matcher_with_magic_method(ret_val):
     with given:
-        rec_ = MagicMock(__ne__=Mock(return_value=ret_val))
+        rec_ = Mock(__ne__=Mock(return_value=ret_val))
         matcher = NotEqualMatcher(sentinel.expected)
 
     with when:
@@ -81,7 +81,7 @@ async def test_not_equal_matcher_with_magic_method(*, ret_val):
     EqualMatcher,
     NotEqualMatcher,
 ])
-def test_is_instance_of_attribute_matcher(*, matcher_class):
+def test_is_instance_of_attribute_matcher(matcher_class):
     with given:
         matcher = matcher_class(sentinel.expected)
 
@@ -90,3 +90,18 @@ def test_is_instance_of_attribute_matcher(*, matcher_class):
 
     with then:
         assert actual is True
+
+
+@pytest.mark.parametrize(("expected", "matcher_class"), [
+    ("EqualMatcher('smth')", EqualMatcher),
+    ("NotEqualMatcher('smth')", NotEqualMatcher),
+])
+def test_repr(expected, matcher_class):
+    with given:
+        matcher = matcher_class("smth")
+
+    with when:
+        actual = repr(matcher)
+
+    with then:
+        assert actual == expected

@@ -18,3 +18,14 @@ async def test_abstract_match_method_raises_exception():
 
     with then:
         assert exception.type is NotImplementedError
+
+
+def test_repr():
+    with given:
+        matcher = AttributeMatcher()
+
+    with when:
+        actual = repr(matcher)
+
+    with then:
+        assert actual == "AttributeMatcher()"

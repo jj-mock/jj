@@ -90,3 +90,14 @@ def test_is_instance_of_attribute_matcher():
 
     with then:
         assert actual is True
+
+
+def test_repr():
+    with given:
+        matcher = MultiDictMatcher({})
+
+    with when:
+        actual = repr(matcher)
+
+    with then:
+        assert actual == "MultiDictMatcher(<MultiDictProxy()>)"

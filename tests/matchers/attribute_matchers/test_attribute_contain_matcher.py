@@ -1,5 +1,5 @@
 import pytest
-from asynctest.mock import MagicMock, Mock, call, sentinel
+from asynctest.mock import Mock, call, sentinel
 
 from jj.matchers import AttributeMatcher, ContainMatcher, NotContainMatcher
 
@@ -48,9 +48,9 @@ async def test_not_not_contain_matcher(expected, actual, res):
     True,
     False,
 ])
-async def test_contain_matcher_with_magic_method(*, ret_val):
+async def test_contain_matcher_with_magic_method(ret_val):
     with given:
-        rec_ = MagicMock(__contains__=Mock(return_value=ret_val))
+        rec_ = Mock(__contains__=Mock(return_value=ret_val))
         matcher = ContainMatcher(sentinel.expected)
 
     with when:
@@ -66,9 +66,9 @@ async def test_contain_matcher_with_magic_method(*, ret_val):
     True,
     False,
 ])
-async def test_not_contain_matcher_with_magic_method(*, ret_val):
+async def test_not_contain_matcher_with_magic_method(ret_val):
     with given:
-        rec_ = MagicMock(__contains__=Mock(return_value=not ret_val))
+        rec_ = Mock(__contains__=Mock(return_value=not ret_val))
         matcher = NotContainMatcher(sentinel.expected)
 
     with when:
@@ -83,7 +83,7 @@ async def test_not_contain_matcher_with_magic_method(*, ret_val):
     ContainMatcher,
     NotContainMatcher,
 ])
-def test_is_instance_of_attribute_matcher(*, matcher_class):
+def test_is_instance_of_attribute_matcher(matcher_class):
     with given:
         matcher = matcher_class(sentinel.expected)
 
@@ -92,3 +92,18 @@ def test_is_instance_of_attribute_matcher(*, matcher_class):
 
     with then:
         assert actual is True
+
+
+@pytest.mark.parametrize(("expected", "matcher_class"), [
+    ("ContainMatcher('smth')", ContainMatcher),
+    ("NotContainMatcher('smth')", NotContainMatcher),
+])
+def test_repr(expected, matcher_class):
+    with given:
+        matcher = matcher_class("smth")
+
+    with when:
+        actual = repr(matcher)
+
+    with then:
+        assert actual == expected

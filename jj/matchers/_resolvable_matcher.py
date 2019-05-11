@@ -15,3 +15,6 @@ class ResolvableMatcher:
     def __call__(self, handler: HandlerFunction) -> HandlerFunction:
         self._resolver.register_matcher(self.match, handler)
         return handler
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}({self._resolver!r})"

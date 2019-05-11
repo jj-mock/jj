@@ -46,3 +46,15 @@ async def test_decorator_registers_matcher(*, resolver_, handler_):
         assert actual == handler_
         assert resolver_.mock_calls == [call.register_matcher(matcher.match, handler_)]
         assert handler_.mock_calls == []
+
+
+def test_repr(*, resolver_):
+    with given:
+        resolver_.__repr__ = Mock(return_value="<Resolver>")
+        matcher = ResolvableMatcher(resolver_)
+
+    with when:
+        actual = repr(matcher)
+
+    with then:
+        assert actual == f"ResolvableMatcher(<Resolver>)"

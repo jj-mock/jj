@@ -11,3 +11,7 @@ class LogicalMatcher(ResolvableMatcher):
         super().__init__(resolver)
         assert len(matchers) > 0
         self._matchers = matchers
+
+    def __repr__(self) -> str:
+        return (f"{self.__class__.__qualname__}"
+                f"({self._resolver!r}, matchers={self._matchers!r})")

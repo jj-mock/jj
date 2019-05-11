@@ -76,3 +76,18 @@ def test_is_instance_of_logical_matcher(*, resolver_):
 
     with then:
         assert actual is True
+
+
+def test_repr(*, resolver_):
+    with given:
+        resolver_.__repr__ = Mock(return_value="<Resolver>")
+        matcher = AnyMatcher(resolver_, matchers=[
+            Mock(ResolvableMatcher, __repr__=Mock(return_value="<SubMatcher1>")),
+            Mock(ResolvableMatcher, __repr__=Mock(return_value="<SubMatcher2>")),
+        ])
+
+    with when:
+        actual = repr(matcher)
+
+    with then:
+        assert actual == f"AnyMatcher(<Resolver>, matchers=[<SubMatcher1>, <SubMatcher2>])"
