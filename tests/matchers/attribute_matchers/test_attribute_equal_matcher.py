@@ -1,5 +1,5 @@
 import pytest
-from asynctest.mock import MagicMock, Mock, sentinel
+from asynctest.mock import MagicMock, Mock, call, sentinel
 
 from jj.matchers import AttributeMatcher, EqualMatcher, NotEqualMatcher
 
@@ -53,7 +53,7 @@ def test_equal_matcher_with_magic_method(*, ret_val):
 
     with then:
         assert actual is ret_val
-        assert rec_.__eq__.assert_called_with(sentinel.expected) is None
+        assert rec_.__eq__.mock_calls == [call(sentinel.expected)]
 
 
 @pytest.mark.parametrize("ret_val", [
@@ -70,7 +70,7 @@ def test_not_equal_matcher_with_magic_method(*, ret_val):
 
     with then:
         assert actual is ret_val
-        assert rec_.__ne__.assert_called_with(sentinel.expected) is None
+        assert rec_.__ne__.mock_calls == [call(sentinel.expected)]
 
 
 @pytest.mark.parametrize("matcher_class", [

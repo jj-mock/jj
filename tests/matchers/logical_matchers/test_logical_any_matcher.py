@@ -1,6 +1,6 @@
 import pytest
 from asynctest.mock import CoroutineMock as CoroMock
-from asynctest.mock import Mock
+from asynctest.mock import Mock, call
 
 from jj.matchers import AnyMatcher, LogicalMatcher, ResolvableMatcher
 
@@ -23,7 +23,7 @@ async def test_single_submatcher(ret_val, res, *, resolver_, request_):
 
     with then:
         assert actual is res
-        assert submatcher_.match.assert_called_once_with(request_) is None
+        assert submatcher_.mock_calls == [call.match(request_)]
 
 
 @pytest.mark.asyncio
@@ -42,8 +42,8 @@ async def test_multiple_truthy_submatchers(ret_val1, ret_val2, res, *, resolver_
 
     with then:
         assert actual is res
-        assert submatcher1_.match.assert_called_once_with(request_) is None
-        assert submatcher2_.match.assert_not_called() is None
+        assert submatcher1_.mock_calls == [call.match(request_)]
+        assert submatcher2_.mock_calls == []
 
 
 @pytest.mark.asyncio
@@ -62,8 +62,8 @@ async def test_multiple_false_submatchers(ret_val1, ret_val2, res, *, resolver_,
 
     with then:
         assert actual is res
-        assert submatcher1_.match.assert_called_once_with(request_) is None
-        assert submatcher2_.match.assert_called_once_with(request_) is None
+        assert submatcher1_.mock_calls == [call.match(request_)]
+        assert submatcher2_.mock_calls == [call.match(request_)]
 
 
 def test_is_instance_of_logical_matcher(*, resolver_):

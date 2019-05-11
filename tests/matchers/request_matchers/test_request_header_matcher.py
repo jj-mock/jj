@@ -67,7 +67,7 @@ async def test_header_matcher_with_custom_submatcher(ret_val, headers, *, resolv
 
     with then:
         assert actual is ret_val
-        assert submatcher_.match.assert_called_once_with(request_.headers) is None
+        assert submatcher_.mock_calls == [call.match(request_.headers)]
 
 
 @pytest.mark.asyncio

@@ -1,6 +1,6 @@
 import pytest
 from asynctest.mock import CoroutineMock as CoroMock
-from asynctest.mock import Mock
+from asynctest.mock import Mock, call
 from pytest import raises
 
 from jj.matchers import ResolvableMatcher
@@ -31,7 +31,7 @@ async def test_concrete_match_method_not_raises_error(*, resolver_, request_):
 
     with then:
         assert actual is True
-        assert matcher_.match.assert_called_once_with(request_) is None
+        assert matcher_.mock_calls == [call.match(request_)]
 
 
 @pytest.mark.asyncio
@@ -44,6 +44,5 @@ async def test_decorator_registers_matcher(*, resolver_, handler_):
 
     with then:
         assert actual == handler_
-        assert (resolver_.register_matcher
-                         .assert_called_once_with(matcher.match, handler_)) is None
-        assert handler_.assert_not_called() is None
+        assert resolver_.mock_calls == [call.register_matcher(matcher.match, handler_)]
+        assert handler_.mock_calls == []
