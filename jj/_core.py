@@ -53,7 +53,7 @@ class Middleware(BaseMiddleware):
 
 
 def match_method(method: StrOrAttrMatcher) -> MethodMatcher:
-    return MethodMatcher(resolver, method)
+    return MethodMatcher(method, resolver=resolver)
 
 
 def match_path(path: StrOrAttrMatcher) -> PathMatcher:
