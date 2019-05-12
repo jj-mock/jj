@@ -23,7 +23,7 @@ class TestRequest(asynctest.TestCase):
     async def test_request_params_without_query(self):
         class App(jj.App):
             resolver = self.resolver
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 self.assertIsInstance(request.params, MultiDictProxy)
                 self.assertEqual(request.params, {})
@@ -38,7 +38,7 @@ class TestRequest(asynctest.TestCase):
 
         class App(jj.App):
             resolver = self.resolver
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 self.assertIsInstance(request.params, MultiDictProxy)
                 self.assertEqual(request.params, params)
@@ -53,7 +53,7 @@ class TestRequest(asynctest.TestCase):
     async def test_request_without_segments(self):
         class App(jj.App):
             resolver = self.resolver
-            @PathMatcher(resolver, "/users/1")
+            @PathMatcher("/users/1", resolver=resolver)
             async def handler(request):
                 self.assertIsInstance(request.segments, dict)
                 self.assertEqual(request.segments, {})
@@ -66,7 +66,7 @@ class TestRequest(asynctest.TestCase):
     async def test_request_with_segments(self):
         class App(jj.App):
             resolver = self.resolver
-            @PathMatcher(resolver, "/users/{user_id}")
+            @PathMatcher("/users/{user_id}", resolver=resolver)
             async def handler(request):
                 self.assertIsInstance(request.segments, dict)
                 self.assertEqual(request.segments, {"user_id": "1"})
@@ -79,7 +79,7 @@ class TestRequest(asynctest.TestCase):
     async def test_request_segments_with_other_matchers(self):
         class App(jj.App):
             resolver = self.resolver
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 self.assertIsInstance(request.segments, dict)
                 self.assertEqual(request.segments, {})

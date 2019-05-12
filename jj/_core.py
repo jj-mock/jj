@@ -11,7 +11,7 @@ from .logs import Logger, logger as default_logger
 from .servers import Server
 from .runners import AppRunner
 from .middlewares import BaseMiddleware, SelfMiddleware, LoggerMiddleware
-from .matchers.resolvable_matcher import ResolvableMatcher
+from .matchers import ResolvableMatcher
 from .matchers.logical_matchers import AllMatcher, AnyMatcher
 from .matchers.request_matchers import (MethodMatcher, PathMatcher,
                                         HeaderMatcher, ParamMatcher, StrOrAttrMatcher,
@@ -53,48 +53,48 @@ class Middleware(BaseMiddleware):
 
 
 def match_method(method: StrOrAttrMatcher) -> MethodMatcher:
-    return MethodMatcher(resolver, method)
+    return MethodMatcher(method, resolver=resolver)
 
 
 def match_path(path: StrOrAttrMatcher) -> PathMatcher:
-    return PathMatcher(resolver, path)
+    return PathMatcher(path, resolver=resolver)
 
 
 def match_headers(headers: DictOrTupleListOrAttrMatcher) -> HeaderMatcher:
-    return HeaderMatcher(resolver, headers)
+    return HeaderMatcher(headers, resolver=resolver)
 
 
 def match_header(name: str, value: StrOrAttrMatcher) -> HeaderMatcher:
-    return HeaderMatcher(resolver, [(name, value)])
+    return HeaderMatcher([(name, value)], resolver=resolver)
 
 
 def match_params(params: DictOrTupleListOrAttrMatcher) -> ParamMatcher:
-    return ParamMatcher(resolver, params)
+    return ParamMatcher(params, resolver=resolver)
 
 
 def match_param(name: str, value: StrOrAttrMatcher) -> ParamMatcher:
-    return ParamMatcher(resolver, [(name, value)])
+    return ParamMatcher([(name, value)], resolver=resolver)
 
 
 def match_all(matchers: List[ResolvableMatcher]) -> AllMatcher:
-    return AllMatcher(resolver, matchers)
+    return AllMatcher(matchers, resolver=resolver)
 
 
 def match_any(matchers: List[ResolvableMatcher]) -> AnyMatcher:
-    return AnyMatcher(resolver, matchers)
+    return AnyMatcher(matchers, resolver=resolver)
 
 
 def match(method=None, path=None, params=None, headers=None) -> AllMatcher:
     submatchers: List[ResolvableMatcher] = []
     if method:
-        submatchers += [MethodMatcher(resolver, method)]
+        submatchers += [MethodMatcher(method, resolver=resolver)]
     if path:
-        submatchers += [PathMatcher(resolver, path)]
+        submatchers += [PathMatcher(path, resolver=resolver)]
     if params:
-        submatchers += [ParamMatcher(resolver, params)]
+        submatchers += [ParamMatcher(params, resolver=resolver)]
     if headers:
-        submatchers += [HeaderMatcher(resolver, headers)]
-    return AllMatcher(resolver, submatchers)
+        submatchers += [HeaderMatcher(headers, resolver=resolver)]
+    return AllMatcher(submatchers, resolver=resolver)
 
 
 def start(app: AbstractApp, *,

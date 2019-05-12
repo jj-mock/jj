@@ -44,7 +44,7 @@ class TestRootMiddleware(asynctest.TestCase):
     async def test_middleware_without_impl_but_with_handlers(self):
         class App(jj.App):
             resolver = self.resolver
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return Response(status=200)
 
@@ -79,7 +79,7 @@ class TestRootMiddleware(asynctest.TestCase):
         mock = Mock()
         class App(jj.App):
             resolver = self.resolver
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 mock(App.__name__, sentinel.BEFORE)
                 response = Response(status=200)
@@ -110,3 +110,24 @@ class TestRootMiddleware(asynctest.TestCase):
             call(Middleware2.__name__, sentinel.AFTER),
         ])
         self.assertEqual(mock.call_count, 6)
+
+    async def test_same_root_middlewares(self):
+        mock = Mock()
+
+        class App(jj.App):
+            resolver = self.resolver
+            @MethodMatcher("*", resolver=resolver)
+            async def handler(request):
+                return Response(status=200)
+
+        class Middleware(RootMiddleware):
+            async def do(self, request, handler, app):
+                mock()
+                return await super().do(request, handler, app)
+
+        middleware = Middleware(self.resolver)
+        async with run(App(), middlewares=[middleware, middleware]) as client:
+            response = await client.get("/")
+            self.assertEqual(response.status, 200)
+
+        mock.assert_called_once_with()

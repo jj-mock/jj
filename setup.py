@@ -17,12 +17,16 @@ setup(
         "aiohttp==3.5.4",
         "undecorated==0.3.0",
     ],
+    setup_requires=["pytest-runner"],
     tests_require=[
         "asynctest==0.12.2",
         "mypy==0.670",
         "flake8==3.7.7",
         "coverage==4.5.2",
         "codecov==2.0.15",
+        "pytest==4.4.1",
+        "pytest-asyncio==0.10.0",
+        "pytest-cov==2.6.1",
     ],
     classifiers=[
         "License :: OSI Approved :: Apache Software License",

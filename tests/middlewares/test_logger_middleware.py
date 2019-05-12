@@ -39,7 +39,7 @@ class TestLoggerMiddleware(asynctest.TestCase):
         @LoggerMiddleware(self.resolver, mock)
         class App(jj.App):
             resolver = self.resolver
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 record["request"] = request
                 response = Response(status=200)
@@ -68,7 +68,7 @@ class TestLoggerMiddleware(asynctest.TestCase):
         class App(jj.App):
             resolver = self.resolver
             @LoggerMiddleware(self.resolver, mock)
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 record["request"] = request
                 response = Response(status=200)
@@ -97,7 +97,7 @@ class TestLoggerMiddleware(asynctest.TestCase):
         class App(jj.App):
             resolver = self.resolver
             @LoggerMiddleware(resolver, handler_logger)
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return Response(status=200)
 
@@ -107,3 +107,16 @@ class TestLoggerMiddleware(asynctest.TestCase):
 
         self.assertEqual(app_logger.info.call_count, 0)
         self.assertEqual(handler_logger.info.call_count, 2)
+
+    async def test_handler_without_logger(self):
+        class App(jj.App):
+            resolver = self.resolver
+            @LoggerMiddleware(self.resolver, None)
+            @MethodMatcher("*", resolver=resolver)
+            async def handler(request):
+                response = Response(status=200)
+                return response
+
+        async with run(App()) as client:
+            response = await client.get("/")
+            self.assertEqual(response.status, 200)

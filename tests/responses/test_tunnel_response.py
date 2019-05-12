@@ -9,20 +9,21 @@ from jj.handlers import default_handler
 from jj.resolvers import Registry, ReversedResolver
 from jj.http.methods import GET, DELETE, POST
 
-from .._test_utils import TestServer, RequestFormatter, run
+from .._test_utils import run, TestServer
+from ._request_formatter import RequestFormatter
 
 
 class TestTunnelResponse(asynctest.TestCase):
     def make_app_with_response(self, *args, **kwargs):
         class App(jj.App):
             resolver = self.resolver
-            @MethodMatcher(self.resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return TunnelResponse(*args, **kwargs)
         return App()
 
     def make_debug_app(self):
-        @MethodMatcher(self.resolver, "*")
+        @MethodMatcher("*", resolver=self.resolver)
         async def handler(request):
             payload = await RequestFormatter(request).format()
             return Response(json=payload)

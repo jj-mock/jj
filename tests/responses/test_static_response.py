@@ -17,7 +17,7 @@ class TestStaticResponse(asynctest.TestCase):
     def make_app_with_response(self, *args, **kwargs):
         class App(jj.App):
             resolver = self.resolver
-            @MethodMatcher(self.resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return StaticResponse(*args, **kwargs)
         return App()

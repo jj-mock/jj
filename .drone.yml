@@ -12,16 +12,15 @@ steps:
   commands:
   - python3 setup.py install
   - pip3 install -r requirements-dev.txt
-  - python3 -m mypy jj --ignore-missing-imports
-  - python3 -m flake8 jj --max-line-length=99
+  - python3 -m mypy jj
+  - python3 -m flake8 jj
 
 - name: test
   image: python:3.6
   commands:
   - python3 setup.py install
   - pip3 install -r requirements-dev.txt
-  - coverage run --source=jj -m unittest tests
-  - coverage xml -o /tmp/artifacts/coverage.xml
+  - python3 -m pytest --cov=jj --cov-report=xml:/tmp/artifacts/coverage.xml
   volumes:
   - name: artifacts
     path: /tmp/artifacts
@@ -61,28 +60,7 @@ steps:
   commands:
   - python3 setup.py install
   - pip3 install -r requirements-dev.txt
-  - python3 -m unittest tests
-
-trigger:
-  event:
-  - push
-  - tag
-
----
-kind: pipeline
-name: pypy3.6
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
-- name: test
-  image: pypy:3.6-7.0-slim
-  commands:
-  - pypy3 setup.py install
-  - pip3 install asynctest
-  - pypy3 -m unittest tests
+  - python3 -m pytest
 
 trigger:
   event:
@@ -132,6 +110,5 @@ trigger:
 depends_on:
 - python3.6
 - python3.7
-- pypy3.6
 
 ...
