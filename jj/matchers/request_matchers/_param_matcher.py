@@ -12,8 +12,8 @@ DictOrTupleListOrAttrMatcher = Union[DictOrTupleList, AttributeMatcher]
 
 
 class ParamMatcher(RequestMatcher):
-    def __init__(self, resolver: Resolver, params: DictOrTupleListOrAttrMatcher) -> None:
-        super().__init__(resolver)
+    def __init__(self, params: DictOrTupleListOrAttrMatcher, *, resolver: Resolver) -> None:
+        super().__init__(resolver=resolver)
         if isinstance(params, AttributeMatcher):
             self._matcher = params
         else:
@@ -23,4 +23,4 @@ class ParamMatcher(RequestMatcher):
         return await self._matcher.match(request.query)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}({self._resolver!r}, {self._matcher!r})"
+        return f"{self.__class__.__qualname__}({self._matcher!r}, resolver={self._resolver!r})"

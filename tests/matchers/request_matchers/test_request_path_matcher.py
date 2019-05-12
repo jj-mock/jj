@@ -26,7 +26,7 @@ from ..._test_utils.steps import given, then, when
 async def test_path_matcher(expected, actual, res, *, resolver_, request_):
     with given:
         request_.path = actual
-        matcher = PathMatcher(resolver_, expected)
+        matcher = PathMatcher(expected, resolver=resolver_)
 
     with when:
         actual = await matcher.match(request_)
@@ -45,7 +45,7 @@ async def test_path_matcher_with_custom_submatcher(ret_val, path, *, resolver_, 
     with given:
         request_.path = path
         submatcher_ = Mock(AttributeMatcher, match=CoroMock(return_value=ret_val))
-        matcher = PathMatcher(resolver_, submatcher_)
+        matcher = PathMatcher(submatcher_, resolver=resolver_)
 
     with when:
         actual = await matcher.match(request_)
@@ -57,7 +57,7 @@ async def test_path_matcher_with_custom_submatcher(ret_val, path, *, resolver_, 
 
 def test_is_instance_of_request_matcher(*, resolver_):
     with given:
-        matcher = PathMatcher(resolver_, "/")
+        matcher = PathMatcher("/", resolver=resolver_)
 
     with when:
         actual = isinstance(matcher, RequestMatcher)
@@ -70,10 +70,10 @@ def test_is_instance_of_request_matcher(*, resolver_):
 def test_repr(path, *, resolver_):
     with given:
         resolver_.__repr__ = Mock(return_value="<Resolver>")
-        matcher = PathMatcher(resolver_, path)
+        matcher = PathMatcher(path, resolver=resolver_)
 
     with when:
         actual = repr(matcher)
 
     with then:
-        assert actual == f"PathMatcher(<Resolver>, RouteMatcher({path!r}))"
+        assert actual == f"PathMatcher(RouteMatcher({path!r}), resolver=<Resolver>)"

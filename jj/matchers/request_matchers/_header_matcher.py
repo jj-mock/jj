@@ -12,8 +12,8 @@ DictOrTupleListOrAttrMatcher = Union[DictOrTupleList, AttributeMatcher]
 
 
 class HeaderMatcher(RequestMatcher):
-    def __init__(self, resolver: Resolver, headers: DictOrTupleListOrAttrMatcher) -> None:
-        super().__init__(resolver)
+    def __init__(self, headers: DictOrTupleListOrAttrMatcher, *, resolver: Resolver) -> None:
+        super().__init__(resolver=resolver)
         if isinstance(headers, AttributeMatcher):
             self._matcher = headers
         else:
@@ -23,4 +23,4 @@ class HeaderMatcher(RequestMatcher):
         return await self._matcher.match(request.headers)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}({self._resolver!r}, {self._matcher!r})"
+        return f"{self.__class__.__qualname__}({self._matcher!r}, resolver={self._resolver!r})"

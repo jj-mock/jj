@@ -46,7 +46,7 @@ class TestSelfMiddleware(asynctest.TestCase):
 
         class App(jj.App):
             resolver = self.resolver
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 mock(request)
                 return Response(status=200)
@@ -65,7 +65,7 @@ class TestSelfMiddleware(asynctest.TestCase):
 
         class App(jj.App):
             resolver = self.resolver
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(self, request):
                 mock(self, request)
                 return Response(status=200)
@@ -85,9 +85,9 @@ class TestSelfMiddleware(asynctest.TestCase):
 
         class App(jj.App):
             resolver = self.resolver
-            @PathMatcher(resolver, "/path")
+            @PathMatcher("/path", resolver=resolver)
             @BaseMiddleware(resolver)
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(self, request):
                 mock(self, request)
                 return Response(status=200)

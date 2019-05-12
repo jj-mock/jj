@@ -44,7 +44,7 @@ class TestRootMiddleware(asynctest.TestCase):
     async def test_middleware_without_impl_but_with_handlers(self):
         class App(jj.App):
             resolver = self.resolver
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return Response(status=200)
 
@@ -79,7 +79,7 @@ class TestRootMiddleware(asynctest.TestCase):
         mock = Mock()
         class App(jj.App):
             resolver = self.resolver
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 mock(App.__name__, sentinel.BEFORE)
                 response = Response(status=200)

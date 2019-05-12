@@ -41,7 +41,7 @@ from ..._test_utils.steps import given, then, when
 async def test_param_matcher(expected, actual, res, *, resolver_, request_):
     with given:
         request_.query = MultiDict(actual)
-        matcher = ParamMatcher(resolver_, expected)
+        matcher = ParamMatcher(expected, resolver=resolver_)
 
     with when:
         actual = await matcher.match(request_)
@@ -61,7 +61,7 @@ async def test_param_matcher_with_custom_submatcher(ret_val, params, *, resolver
     with given:
         request_.query = MultiDict(params)
         submatcher_ = Mock(AttributeMatcher, match=CoroMock(return_value=ret_val))
-        matcher = ParamMatcher(resolver_, submatcher_)
+        matcher = ParamMatcher(submatcher_, resolver=resolver_)
 
     with when:
         actual = await matcher.match(request_)
@@ -80,7 +80,7 @@ async def test_param_matcher_with_value_submatchers_superset(request_):
         ])
         submatcher1_ = Mock(AttributeMatcher, match=CoroMock(return_value=True))
         submatcher2_ = Mock(AttributeMatcher)
-        matcher = ParamMatcher(resolver_, {
+        matcher = ParamMatcher(resolver=resolver_, params={
             "key1": submatcher1_,
             "key2": submatcher2_,
         })
@@ -105,7 +105,7 @@ async def test_param_matcher_with_value_submatchers_subset(request_):
         ])
         submatcher1_ = Mock(AttributeMatcher, match=CoroMock(side_effect=(True,)))
         submatcher2_ = Mock(AttributeMatcher, match=CoroMock(side_effect=(False, True)))
-        matcher = ParamMatcher(resolver_, {
+        matcher = ParamMatcher(resolver=resolver_, params={
             "key1": submatcher1_,
             "key2": submatcher2_,
         })
@@ -121,7 +121,7 @@ async def test_param_matcher_with_value_submatchers_subset(request_):
 
 def test_is_instance_of_request_matcher(*, resolver_):
     with given:
-        matcher = ParamMatcher(resolver_, {})
+        matcher = ParamMatcher({}, resolver=resolver_)
 
     with when:
         actual = isinstance(matcher, RequestMatcher)
@@ -138,10 +138,10 @@ def test_is_instance_of_request_matcher(*, resolver_):
 def test_repr(params, representation, *, resolver_):
     with given:
         resolver_.__repr__ = Mock(return_value="<Resolver>")
-        matcher = ParamMatcher(resolver_, params)
+        matcher = ParamMatcher(params, resolver=resolver_)
 
     with when:
         actual = repr(matcher)
 
     with then:
-        assert actual == f"ParamMatcher(<Resolver>, MultiDictMatcher({representation}))"
+        assert actual == f"ParamMatcher(MultiDictMatcher({representation}), resolver=<Resolver>)"

@@ -7,8 +7,8 @@ __all__ = ("PathMatcher",)
 
 
 class PathMatcher(RequestMatcher):
-    def __init__(self, resolver: Resolver, path: StrOrAttrMatcher) -> None:
-        super().__init__(resolver)
+    def __init__(self, path: StrOrAttrMatcher, *, resolver: Resolver) -> None:
+        super().__init__(resolver=resolver)
         if isinstance(path, AttributeMatcher):
             self._matcher = path
         else:
@@ -23,4 +23,4 @@ class PathMatcher(RequestMatcher):
         return matched
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}({self._resolver!r}, {self._matcher!r})"
+        return f"{self.__class__.__qualname__}({self._matcher!r}, resolver={self._resolver!r})"

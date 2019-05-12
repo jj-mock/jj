@@ -28,7 +28,7 @@ class TestApp(asynctest.TestCase):
         status, text = 201, "text"
         class App(jj.App):
             resolver = self.resolver
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return Response(status=status, text=text)
 
@@ -41,7 +41,7 @@ class TestApp(asynctest.TestCase):
         path, status, text = "/route", 201, "text"
         class App(jj.App):
             resolver = self.resolver
-            @PathMatcher(resolver, path)
+            @PathMatcher(path, resolver=resolver)
             async def handler(request):
                 return Response(status=status, text=text)
 
@@ -58,10 +58,10 @@ class TestApp(asynctest.TestCase):
         path2, status2, text2 = "/route/subroute", 202, "text-2"
         class App(jj.App):
             resolver = self.resolver
-            @PathMatcher(resolver, path1)
+            @PathMatcher(path1, resolver=resolver)
             async def handler1(request):
                 return Response(status=status1, text=text1)
-            @PathMatcher(resolver, path2)
+            @PathMatcher(path2, resolver=resolver)
             async def handler2(request):
                 return Response(status=status2, text=text2)
 
@@ -80,10 +80,10 @@ class TestApp(asynctest.TestCase):
         status2, text2 = 202, "text-2"
         class App(jj.App):
             resolver = self.resolver
-            @PathMatcher(resolver, path)
+            @PathMatcher(path, resolver=resolver)
             async def handler1(request):
                 return Response(status=status1, text=text1)
-            @PathMatcher(resolver, path)
+            @PathMatcher(path, resolver=resolver)
             async def handler2(request):
                 return Response(status=status2, text=text2)
 
@@ -111,7 +111,7 @@ class TestApp(asynctest.TestCase):
         class App(jj.App):
             resolver = self.resolver
             @decorator_after
-            @PathMatcher(resolver, path)
+            @PathMatcher(path, resolver=resolver)
             @decorator_before
             async def handler(request):
                 mock(sentinel.HANDLE)
@@ -144,9 +144,9 @@ class TestApp(asynctest.TestCase):
         status, text = 201, "text"
         class App(jj.App):
             resolver = self.resolver
-            @ParamMatcher(resolver, {"key2": "2"})
+            @ParamMatcher({"key2": "2"}, resolver=resolver)
             @decorator
-            @ParamMatcher(resolver, {"key1": "1"})
+            @ParamMatcher({"key1": "1"}, resolver=resolver)
             async def handler(request):
                 return Response(status=status, text=text)
 
@@ -165,7 +165,7 @@ class TestApp(asynctest.TestCase):
         path, status, text = "/route", 201, "text"
         class App(jj.App):
             resolver = self.resolver
-            @PathMatcher(resolver, path)
+            @PathMatcher(path, resolver=resolver)
             async def handler(request):
                 return Response(status=status, text=text)
 
@@ -186,12 +186,12 @@ class TestApp(asynctest.TestCase):
         status2, text2 = 202, "text-2"
         class App(jj.App):
             resolver = self.resolver
-            @PathMatcher(self.resolver, path)
+            @PathMatcher(path, resolver=self.resolver)
             async def handler(request):
                 return Response(status=status1, text=text1)
 
         class AnotherApp(App):
-            @PathMatcher(self.resolver, path)
+            @PathMatcher(path, resolver=self.resolver)
             async def handler(request):
                 return Response(status=status2, text=text2)
 
@@ -211,15 +211,15 @@ class TestApp(asynctest.TestCase):
         status3, text3 = 203, "text-3"
         class App(jj.App):
             resolver = self.resolver
-            @MethodMatcher(self.resolver, "*")
+            @MethodMatcher("*", resolver=self.resolver)
             async def other(request):
                 return Response(status=status1, text=text1)
 
         class AnotherApp(App):
-            @PathMatcher(self.resolver, "/route")
+            @PathMatcher("/route", resolver=self.resolver)
             async def handler(request):
                 return Response(status=status2, text=text2)
-            @MethodMatcher(self.resolver, "*")
+            @MethodMatcher("*", resolver=self.resolver)
             async def other(request):
                 return Response(status=status3, text=text3)
 
@@ -242,12 +242,12 @@ class TestApp(asynctest.TestCase):
         path2, status2, text2 = "/route-2", 202, "text-2"
         class App(jj.App):
             resolver = self.resolver
-            @PathMatcher(self.resolver, path1)
+            @PathMatcher(path1, resolver=self.resolver)
             async def handler(request):
                 return Response(status=status1, text=text1)
 
         class AnotherApp(jj.App):
-            @PathMatcher(self.resolver, path2)
+            @PathMatcher(path2, resolver=self.resolver)
             async def handler(request):
                 return Response(status=status2, text=text2)
 
@@ -265,7 +265,7 @@ class TestApp(asynctest.TestCase):
 
     async def test_app_setter(self):
         path, status, text = "/route", 201, "text"
-        @PathMatcher(self.resolver, path)
+        @PathMatcher(path, resolver=self.resolver)
         async def handler(request):
             return Response(status=status, text=text)
 
@@ -284,7 +284,7 @@ class TestApp(asynctest.TestCase):
 
     async def test_app_instance_setter(self):
         path, status, text = "/route", 201, "text"
-        @PathMatcher(self.resolver, path)
+        @PathMatcher(path, resolver=self.resolver)
         async def handler(request):
             return Response(status=status, text=text)
 

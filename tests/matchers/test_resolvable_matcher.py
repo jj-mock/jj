@@ -12,7 +12,7 @@ from .._test_utils.steps import given, then, when
 @pytest.mark.asyncio
 async def test_abstract_match_method_raises_error(*, resolver_, request_):
     with given:
-        matcher = ResolvableMatcher(resolver_)
+        matcher = ResolvableMatcher(resolver=resolver_)
 
     with when, raises(Exception) as exception:
         await matcher.match(request_)
@@ -37,7 +37,7 @@ async def test_concrete_match_method_not_raises_error(*, resolver_, request_):
 @pytest.mark.asyncio
 async def test_decorator_registers_matcher(*, resolver_, handler_):
     with given:
-        matcher = ResolvableMatcher(resolver_)
+        matcher = ResolvableMatcher(resolver=resolver_)
 
     with when:
         actual = matcher(handler_)
@@ -51,10 +51,10 @@ async def test_decorator_registers_matcher(*, resolver_, handler_):
 def test_repr(*, resolver_):
     with given:
         resolver_.__repr__ = Mock(return_value="<Resolver>")
-        matcher = ResolvableMatcher(resolver_)
+        matcher = ResolvableMatcher(resolver=resolver_)
 
     with when:
         actual = repr(matcher)
 
     with then:
-        assert actual == f"ResolvableMatcher(<Resolver>)"
+        assert actual == f"ResolvableMatcher(resolver=<Resolver>)"

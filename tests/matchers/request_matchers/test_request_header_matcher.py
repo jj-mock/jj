@@ -41,7 +41,7 @@ from ..._test_utils.steps import given, then, when
 async def test_header_matcher(expected, actual, res, *, resolver_, request_):
     with given:
         request_.headers = CIMultiDict(actual)
-        matcher = HeaderMatcher(resolver_, expected)
+        matcher = HeaderMatcher(expected, resolver=resolver_)
 
     with when:
         actual = await matcher.match(request_)
@@ -61,7 +61,7 @@ async def test_header_matcher_with_custom_submatcher(ret_val, headers, *, resolv
     with given:
         request_.headers = CIMultiDict(headers)
         submatcher_ = Mock(AttributeMatcher, match=CoroMock(return_value=ret_val))
-        matcher = HeaderMatcher(resolver_, submatcher_)
+        matcher = HeaderMatcher(submatcher_, resolver=resolver_)
 
     with when:
         actual = await matcher.match(request_)
@@ -80,7 +80,7 @@ async def test_header_matcher_with_value_submatchers_superset(request_):
         ])
         submatcher1_ = Mock(AttributeMatcher, match=CoroMock(return_value=True))
         submatcher2_ = Mock(AttributeMatcher)
-        matcher = HeaderMatcher(resolver_, {
+        matcher = HeaderMatcher(resolver=resolver_, headers={
             "key1": submatcher1_,
             "key2": submatcher2_,
         })
@@ -105,7 +105,7 @@ async def test_header_matcher_with_value_submatchers_subset(request_):
         ])
         submatcher1_ = Mock(AttributeMatcher, match=CoroMock(side_effect=(True,)))
         submatcher2_ = Mock(AttributeMatcher, match=CoroMock(side_effect=(False, True)))
-        matcher = HeaderMatcher(resolver_, {
+        matcher = HeaderMatcher(resolver=resolver_, headers={
             "key1": submatcher1_,
             "key2": submatcher2_,
         })
@@ -121,7 +121,7 @@ async def test_header_matcher_with_value_submatchers_subset(request_):
 
 def test_is_instance_of_request_matcher(*, resolver_):
     with given:
-        matcher = HeaderMatcher(resolver_, {})
+        matcher = HeaderMatcher({}, resolver=resolver_)
 
     with when:
         actual = isinstance(matcher, RequestMatcher)
@@ -138,10 +138,10 @@ def test_is_instance_of_request_matcher(*, resolver_):
 def test_repr(headers, representation, *, resolver_):
     with given:
         resolver_.__repr__ = Mock(return_value="<Resolver>")
-        matcher = HeaderMatcher(resolver_, headers)
+        matcher = HeaderMatcher(headers, resolver=resolver_)
 
     with when:
         actual = repr(matcher)
 
     with then:
-        assert actual == f"HeaderMatcher(<Resolver>, MultiDictMatcher({representation}))"
+        assert actual == f"HeaderMatcher(MultiDictMatcher({representation}), resolver=<Resolver>)"

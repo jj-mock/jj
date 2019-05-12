@@ -9,8 +9,8 @@ __all__ = ("AllMatcher",)
 
 
 class AllMatcher(LogicalMatcher):
-    def __init__(self, resolver: Resolver, matchers: List[ResolvableMatcher]) -> None:
-        super().__init__(resolver)
+    def __init__(self, matchers: List[ResolvableMatcher], *, resolver: Resolver) -> None:
+        super().__init__(resolver=resolver)
         assert len(matchers) > 0
         self._matchers = matchers
 
@@ -22,4 +22,4 @@ class AllMatcher(LogicalMatcher):
 
     def __repr__(self) -> str:
         return (f"{self.__class__.__qualname__}"
-                f"({self._resolver!r}, matchers={self._matchers!r})")
+                f"({self._matchers!r}, resolver={self._resolver!r})")

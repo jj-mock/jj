@@ -17,7 +17,7 @@ from ..._test_utils.steps import given, then, when
 async def test_single_submatcher(ret_val, res, *, resolver_, request_):
     with given:
         submatcher_ = Mock(ResolvableMatcher, match=CoroMock(return_value=ret_val))
-        matcher = AnyMatcher(resolver_, [submatcher_])
+        matcher = AnyMatcher([submatcher_], resolver=resolver_)
 
     with when:
         actual = await matcher.match(request_)
@@ -36,7 +36,7 @@ async def test_multiple_truthy_submatchers(ret_val1, ret_val2, res, *, resolver_
     with given:
         submatcher1_ = Mock(ResolvableMatcher, match=CoroMock(return_value=ret_val1))
         submatcher2_ = Mock(ResolvableMatcher, match=CoroMock(return_value=ret_val2))
-        matcher = AnyMatcher(resolver_, [submatcher1_, submatcher2_])
+        matcher = AnyMatcher([submatcher1_, submatcher2_], resolver=resolver_)
 
     with when:
         actual = await matcher.match(request_)
@@ -56,7 +56,7 @@ async def test_multiple_false_submatchers(ret_val1, ret_val2, res, *, resolver_,
     with given:
         submatcher1_ = Mock(ResolvableMatcher, match=CoroMock(return_value=ret_val1))
         submatcher2_ = Mock(ResolvableMatcher, match=CoroMock(return_value=ret_val2))
-        matcher = AnyMatcher(resolver_, [submatcher1_, submatcher2_])
+        matcher = AnyMatcher([submatcher1_, submatcher2_], resolver=resolver_)
 
     with when:
         actual = await matcher.match(request_)
@@ -69,7 +69,7 @@ async def test_multiple_false_submatchers(ret_val1, ret_val2, res, *, resolver_,
 
 def test_empty_submatchers_raises_exception(*, resolver_):
     with when, raises(Exception) as exception:
-        AnyMatcher(resolver_, matchers=[])
+        AnyMatcher([], resolver=resolver_)
 
     with then:
         assert exception.type is AssertionError
@@ -78,7 +78,7 @@ def test_empty_submatchers_raises_exception(*, resolver_):
 def test_is_instance_of_logical_matcher(*, resolver_):
     with given:
         submatcher_ = Mock(ResolvableMatcher)
-        matcher = AnyMatcher(resolver_, matchers=[submatcher_])
+        matcher = AnyMatcher([submatcher_], resolver=resolver_)
 
     with when:
         actual = isinstance(matcher, LogicalMatcher)
@@ -90,7 +90,7 @@ def test_is_instance_of_logical_matcher(*, resolver_):
 def test_repr(*, resolver_):
     with given:
         resolver_.__repr__ = Mock(return_value="<Resolver>")
-        matcher = AnyMatcher(resolver_, matchers=[
+        matcher = AnyMatcher(resolver=resolver_, matchers=[
             Mock(ResolvableMatcher, __repr__=Mock(return_value="<SubMatcher1>")),
             Mock(ResolvableMatcher, __repr__=Mock(return_value="<SubMatcher2>")),
         ])
@@ -99,4 +99,4 @@ def test_repr(*, resolver_):
         actual = repr(matcher)
 
     with then:
-        assert actual == f"AnyMatcher(<Resolver>, matchers=[<SubMatcher1>, <SubMatcher2>])"
+        assert actual == f"AnyMatcher([<SubMatcher1>, <SubMatcher2>], resolver=<Resolver>)"

@@ -22,7 +22,7 @@ from ..._test_utils.steps import given, then, when
 async def test_method_matcher(expected, actual, res, *, resolver_, request_):
     with given:
         request_.method = actual
-        matcher = MethodMatcher(resolver_, expected)
+        matcher = MethodMatcher(expected, resolver=resolver_)
 
     with when:
         actual = await matcher.match(request_)
@@ -43,7 +43,7 @@ async def test_method_matcher_with_custom_submatcher(ret_vals, res, called_with,
     with given:
         request_.method = "GET"
         submatcher_ = Mock(AttributeMatcher, match=CoroMock(side_effect=ret_vals))
-        matcher = MethodMatcher(resolver_, submatcher_)
+        matcher = MethodMatcher(submatcher_, resolver=resolver_)
 
     with when:
         actual = await matcher.match(request_)
@@ -55,7 +55,7 @@ async def test_method_matcher_with_custom_submatcher(ret_vals, res, called_with,
 
 def test_is_instance_of_request_matcher(*, resolver_):
     with given:
-        matcher = MethodMatcher(resolver_, "*")
+        matcher = MethodMatcher("*", resolver=resolver_)
 
     with when:
         actual = isinstance(matcher, RequestMatcher)
@@ -72,10 +72,10 @@ def test_is_instance_of_request_matcher(*, resolver_):
 def test_repr(method, representation, *, resolver_):
     with given:
         resolver_.__repr__ = Mock(return_value="<Resolver>")
-        matcher = MethodMatcher(resolver_, method)
+        matcher = MethodMatcher(method, resolver=resolver_)
 
     with when:
         actual = repr(matcher)
 
     with then:
-        assert actual == f"MethodMatcher(<Resolver>, EqualMatcher({representation!r}))"
+        assert actual == f"MethodMatcher(EqualMatcher({representation!r}), resolver=<Resolver>)"

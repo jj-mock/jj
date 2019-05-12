@@ -6,7 +6,7 @@ __all__ = ("ResolvableMatcher",)
 
 
 class ResolvableMatcher:
-    def __init__(self, resolver: Resolver) -> None:
+    def __init__(self, *, resolver: Resolver) -> None:
         self._resolver = resolver
 
     async def match(self, request: Request) -> bool:
@@ -17,4 +17,4 @@ class ResolvableMatcher:
         return handler
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}({self._resolver!r})"
+        return f"{self.__class__.__qualname__}(resolver={self._resolver!r})"

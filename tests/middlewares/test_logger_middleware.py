@@ -39,7 +39,7 @@ class TestLoggerMiddleware(asynctest.TestCase):
         @LoggerMiddleware(self.resolver, mock)
         class App(jj.App):
             resolver = self.resolver
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 record["request"] = request
                 response = Response(status=200)
@@ -68,7 +68,7 @@ class TestLoggerMiddleware(asynctest.TestCase):
         class App(jj.App):
             resolver = self.resolver
             @LoggerMiddleware(self.resolver, mock)
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 record["request"] = request
                 response = Response(status=200)
@@ -97,7 +97,7 @@ class TestLoggerMiddleware(asynctest.TestCase):
         class App(jj.App):
             resolver = self.resolver
             @LoggerMiddleware(resolver, handler_logger)
-            @MethodMatcher(resolver, "*")
+            @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return Response(status=200)
 
