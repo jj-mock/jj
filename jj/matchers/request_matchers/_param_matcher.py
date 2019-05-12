@@ -21,3 +21,6 @@ class ParamMatcher(RequestMatcher):
 
     async def match(self, request: Request) -> bool:
         return await self._matcher.match(request.query)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}({self._resolver!r}, {self._matcher!r})"

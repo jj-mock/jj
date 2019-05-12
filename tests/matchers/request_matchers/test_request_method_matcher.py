@@ -62,3 +62,20 @@ def test_is_instance_of_request_matcher(*, resolver_):
 
     with then:
         assert actual is True
+
+
+@pytest.mark.parametrize(("method", "representation"), [
+    ("*", "*"),
+    ("GET", "GET"),
+    ("post", "POST"),
+])
+def test_repr(method, representation, *, resolver_):
+    with given:
+        resolver_.__repr__ = Mock(return_value="<Resolver>")
+        matcher = MethodMatcher(resolver_, method)
+
+    with when:
+        actual = repr(matcher)
+
+    with then:
+        assert actual == f"MethodMatcher(<Resolver>, EqualMatcher({representation!r}))"

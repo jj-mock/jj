@@ -1,4 +1,5 @@
 import pytest
+from asynctest.mock import Mock
 from pytest import raises
 
 from jj.matchers import RequestMatcher, ResolvableMatcher
@@ -28,3 +29,15 @@ def test_is_instance_of_resolvable_matcher(*, resolver_):
 
     with then:
         assert actual is True
+
+
+def test_repr(*, resolver_):
+    with given:
+        resolver_.__repr__ = Mock(return_value="<Resolver>")
+        matcher = RequestMatcher(resolver_)
+
+    with when:
+        actual = repr(matcher)
+
+    with then:
+        assert actual == f"RequestMatcher(<Resolver>)"

@@ -1,5 +1,5 @@
 import pytest
-from asynctest.mock import Mock, call
+from asynctest.mock import Mock
 from pytest import raises
 
 from jj.matchers import LogicalMatcher, ResolvableMatcher

@@ -16,3 +16,6 @@ class MethodMatcher(RequestMatcher):
 
     async def match(self, request: Request) -> bool:
         return await self._matcher.match("*") or await self._matcher.match(request.method)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}({self._resolver!r}, {self._matcher!r})"

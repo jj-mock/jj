@@ -128,3 +128,20 @@ def test_is_instance_of_request_matcher(*, resolver_):
 
     with then:
         assert actual is True
+
+
+@pytest.mark.parametrize(("params", "representation"), [
+    ({}, "[]"),
+    ({"KEY": "Val"}, "[('KEY', 'Val')]"),
+    ({"key1": "1", "key2": "2"}, "[('key1', '1'), ('key2', '2')]"),
+])
+def test_repr(params, representation, *, resolver_):
+    with given:
+        resolver_.__repr__ = Mock(return_value="<Resolver>")
+        matcher = ParamMatcher(resolver_, params)
+
+    with when:
+        actual = repr(matcher)
+
+    with then:
+        assert actual == f"ParamMatcher(<Resolver>, MultiDictMatcher({representation}))"

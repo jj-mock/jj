@@ -92,12 +92,17 @@ def test_is_instance_of_attribute_matcher():
         assert actual is True
 
 
-def test_repr():
+@pytest.mark.parametrize(("expected", "representation"), [
+    ({}, "MultiDictMatcher([])"),
+    ({"key": "val"}, "MultiDictMatcher([('key', 'val')])"),
+    ({"key1": "1", "key2": "2"}, "MultiDictMatcher([('key1', '1'), ('key2', '2')])"),
+])
+def test_repr(expected, representation):
     with given:
-        matcher = MultiDictMatcher({})
+        matcher = MultiDictMatcher(expected)
 
     with when:
         actual = repr(matcher)
 
     with then:
-        assert actual == "MultiDictMatcher(<MultiDictProxy()>)"
+        assert actual == representation

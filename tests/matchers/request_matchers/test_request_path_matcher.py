@@ -64,3 +64,16 @@ def test_is_instance_of_request_matcher(*, resolver_):
 
     with then:
         assert actual is True
+
+
+@pytest.mark.parametrize("path", ["/", "/users", "/users/{id}"])
+def test_repr(path, *, resolver_):
+    with given:
+        resolver_.__repr__ = Mock(return_value="<Resolver>")
+        matcher = PathMatcher(resolver_, path)
+
+    with when:
+        actual = repr(matcher)
+
+    with then:
+        assert actual == f"PathMatcher(<Resolver>, RouteMatcher({path!r}))"

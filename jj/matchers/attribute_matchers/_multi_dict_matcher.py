@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Tuple, Union
 
-from multidict import MultiDict, MultiDictProxy, MultiMapping
+from multidict import MultiDict, MultiMapping
 
 from ._attribute_matcher import AttributeMatcher
 from ._equal_matcher import EqualMatcher
@@ -17,7 +17,7 @@ DictOrTupleList = Union[
 
 class MultiDictMatcher(AttributeMatcher):
     def __init__(self, expected: DictOrTupleList) -> None:
-        self._expected = MultiDictProxy(MultiDict(expected))
+        self._expected = MultiDict(expected)
 
     async def _match_any(self, submatcher: AttributeMatcher, values: List[Any]) -> bool:
         for value in values:
@@ -36,4 +36,5 @@ class MultiDictMatcher(AttributeMatcher):
         return True
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}({self._expected!r})"
+        expected = [(key, val) for key, val in self._expected.items()]
+        return f"{self.__class__.__qualname__}({expected!r})"

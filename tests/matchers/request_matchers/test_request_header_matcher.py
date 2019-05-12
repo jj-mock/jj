@@ -128,3 +128,20 @@ def test_is_instance_of_request_matcher(*, resolver_):
 
     with then:
         assert actual is True
+
+
+@pytest.mark.parametrize(("headers", "representation"), [
+    ({}, "[]"),
+    ({"KEY": "Val"}, "[('KEY', 'Val')]"),
+    ({"key1": "1", "key2": "2"}, "[('key1', '1'), ('key2', '2')]"),
+])
+def test_repr(headers, representation, *, resolver_):
+    with given:
+        resolver_.__repr__ = Mock(return_value="<Resolver>")
+        matcher = HeaderMatcher(resolver_, headers)
+
+    with when:
+        actual = repr(matcher)
+
+    with then:
+        assert actual == f"HeaderMatcher(<Resolver>, MultiDictMatcher({representation}))"

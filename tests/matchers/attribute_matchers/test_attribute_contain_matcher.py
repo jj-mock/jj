@@ -44,10 +44,7 @@ async def test_not_not_contain_matcher(expected, actual, res):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("ret_val", [
-    True,
-    False,
-])
+@pytest.mark.parametrize("ret_val", [True, False])
 async def test_contain_matcher_with_magic_method(ret_val):
     with given:
         rec_ = Mock(__contains__=Mock(return_value=ret_val))
@@ -62,10 +59,7 @@ async def test_contain_matcher_with_magic_method(ret_val):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("ret_val", [
-    True,
-    False,
-])
+@pytest.mark.parametrize("ret_val", [True, False])
 async def test_not_contain_matcher_with_magic_method(ret_val):
     with given:
         rec_ = Mock(__contains__=Mock(return_value=not ret_val))
@@ -79,10 +73,7 @@ async def test_not_contain_matcher_with_magic_method(ret_val):
         assert rec_.__contains__.mock_calls == [call(sentinel.expected)]
 
 
-@pytest.mark.parametrize("matcher_class", [
-    ContainMatcher,
-    NotContainMatcher,
-])
+@pytest.mark.parametrize("matcher_class", [ContainMatcher, NotContainMatcher])
 def test_is_instance_of_attribute_matcher(matcher_class):
     with given:
         matcher = matcher_class(sentinel.expected)

@@ -42,10 +42,7 @@ async def test_not_equal_matcher(expected, actual, res):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("ret_val", [
-    True,
-    False,
-])
+@pytest.mark.parametrize("ret_val", [True, False])
 async def test_equal_matcher_with_magic_method(ret_val):
     with given:
         rec_ = Mock(__eq__=Mock(return_value=ret_val))
@@ -60,10 +57,7 @@ async def test_equal_matcher_with_magic_method(ret_val):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("ret_val", [
-    True,
-    False,
-])
+@pytest.mark.parametrize("ret_val", [True, False])
 async def test_not_equal_matcher_with_magic_method(ret_val):
     with given:
         rec_ = Mock(__ne__=Mock(return_value=ret_val))
@@ -77,10 +71,7 @@ async def test_not_equal_matcher_with_magic_method(ret_val):
         assert rec_.__ne__.mock_calls == [call(sentinel.expected)]
 
 
-@pytest.mark.parametrize("matcher_class", [
-    EqualMatcher,
-    NotEqualMatcher,
-])
+@pytest.mark.parametrize("matcher_class", [EqualMatcher, NotEqualMatcher])
 def test_is_instance_of_attribute_matcher(matcher_class):
     with given:
         matcher = matcher_class(sentinel.expected)

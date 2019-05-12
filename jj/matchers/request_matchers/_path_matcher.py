@@ -21,3 +21,6 @@ class PathMatcher(RequestMatcher):
         else:
             request.segments = None  # type: ignore
         return matched
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}({self._resolver!r}, {self._matcher!r})"
