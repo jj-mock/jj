@@ -92,7 +92,7 @@ steps:
     - bdist_wheel
     password:
       from_secret: pypi-secret
-    username: nikitanovosibirsk
+    username: release-bot
   volumes:
   - name: artifacts
     path: /tmp/artifacts
