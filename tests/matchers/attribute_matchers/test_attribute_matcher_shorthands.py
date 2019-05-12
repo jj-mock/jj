@@ -3,10 +3,12 @@ import pytest
 from jj.matchers import (
     ContainMatcher,
     EqualMatcher,
+    ExistMatcher,
     NotContainMatcher,
     NotEqualMatcher,
     contains,
     equals,
+    exists,
     not_contains,
     not_equals,
 )
@@ -15,6 +17,7 @@ from ..._test_utils.steps import given, then, when
 
 
 @pytest.mark.parametrize(("instance_factory", "instance_class"), [
+    (lambda: exists, ExistMatcher),
     (lambda: equals("smth"), EqualMatcher),
     (lambda: not_equals("smth"), NotEqualMatcher),
     (lambda: contains("smth"), ContainMatcher),
@@ -32,6 +35,7 @@ def test_is_instance_of(instance_factory, instance_class):
 
 
 @pytest.mark.parametrize(("instance_factory", "representation"), [
+    (lambda: exists, "exists"),
     (lambda: equals("smth"), "equals('smth')"),
     (lambda: not_equals("smth"), "not_equals('smth')"),
     (lambda: contains("smth"), "contains('smth')"),

@@ -3,6 +3,7 @@ from .attribute_matchers import (
     AttributeMatcher,
     ContainMatcher,
     EqualMatcher,
+    ExistMatcher,
     NotContainMatcher,
     NotEqualMatcher,
 )
@@ -16,10 +17,10 @@ from .request_matchers import (
 )
 
 __all__ = (
-    "AttributeMatcher", "EqualMatcher", "NotEqualMatcher",
+    "AttributeMatcher", "EqualMatcher", "NotEqualMatcher", "ExistMatcher",
     "ContainMatcher", "NotContainMatcher", "LogicalMatcher", "AllMatcher", "AnyMatcher",
     "RequestMatcher", "MethodMatcher", "PathMatcher", "ParamMatcher", "HeaderMatcher",
-    "ResolvableMatcher", "equals", "contains",
+    "ResolvableMatcher", "exists", "equals", "not_equals", "contains", "not_contains",
 )
 
 
@@ -37,3 +38,11 @@ class contains(ContainMatcher):
 
 class not_contains(NotContainMatcher):
     pass
+
+
+class _exists(ExistMatcher):
+    def __repr__(self) -> str:
+        return "exists"
+
+
+exists = _exists()
