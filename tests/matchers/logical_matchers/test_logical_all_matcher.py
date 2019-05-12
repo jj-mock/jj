@@ -1,6 +1,7 @@
 import pytest
 from asynctest.mock import CoroutineMock as CoroMock
 from asynctest.mock import Mock, call
+from pytest import raises
 
 from jj.matchers import AllMatcher, LogicalMatcher, ResolvableMatcher
 
@@ -64,6 +65,14 @@ async def test_multiple_false_submatchers(ret_val1, ret_val2, res, *, resolver_,
         assert actual is res
         assert submatcher1_.mock_calls == [call.match(request_)]
         assert submatcher2_.mock_calls == []
+
+
+def test_empty_submatchers_raises_exception(*, resolver_):
+    with when, raises(Exception) as exception:
+        AllMatcher(resolver_, matchers=[])
+
+    with then:
+        assert exception.type is AssertionError
 
 
 def test_is_instance_of_logical_matcher(*, resolver_):
