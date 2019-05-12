@@ -6,7 +6,16 @@ from ._multi_dict_matcher import DictOrTupleList, MultiDictMatcher, StrOrAttrMat
 from ._regex_matcher import RegexMatcher
 from ._route_matcher import RouteMatcher
 
-__all__ = ("AttributeMatcher", "ExistMatcher",
-           "ContainMatcher", "NotContainMatcher", "RegexMatcher",
-           "EqualMatcher", "NotEqualMatcher", "MultiDictMatcher",
-           "RouteMatcher", "StrOrAttrMatcher", "DictOrTupleList",)
+__all__ = (
+    "AttributeMatcher",
+    "ContainMatcher",
+    "DictOrTupleList",
+    "EqualMatcher",
+    "ExistMatcher",
+    "MultiDictMatcher",
+    "NotContainMatcher",
+    "NotEqualMatcher",
+    "RegexMatcher",
+    "RouteMatcher",
+    "StrOrAttrMatcher",
+)

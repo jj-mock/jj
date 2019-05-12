@@ -4,6 +4,12 @@ from ._param_matcher import DictOrTupleListOrAttrMatcher, ParamMatcher
 from ._path_matcher import PathMatcher
 from ._request_matcher import RequestMatcher
 
-__all__ = ("HeaderMatcher", "MethodMatcher", "ParamMatcher",
-           "PathMatcher", "RequestMatcher", "StrOrAttrMatcher",
-           "DictOrTupleListOrAttrMatcher",)
+__all__ = (
+    "DictOrTupleListOrAttrMatcher",
+    "HeaderMatcher",
+    "MethodMatcher",
+    "ParamMatcher",
+    "PathMatcher",
+    "RequestMatcher",
+    "StrOrAttrMatcher",
+)
