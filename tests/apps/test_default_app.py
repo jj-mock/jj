@@ -1,7 +1,7 @@
 import asynctest
 
 import jj
-from jj.apps import create_app
+from jj.apps import create_app, DefaultApp
 from jj.matchers import PathMatcher
 from jj.resolvers import Registry, ReversedResolver
 from jj.handlers import default_handler
@@ -14,6 +14,9 @@ class TestDefaultApp(asynctest.TestCase):
     def setUp(self):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)
+
+    def test_default_app_is_singleton(self):
+        self.assertEqual(DefaultApp(), DefaultApp())
 
     async def test_default_app_with_handler(self):
         path, status, text = "/route", 201, "text"
