@@ -6,11 +6,13 @@ from jj.matchers import (
     ExistMatcher,
     NotContainMatcher,
     NotEqualMatcher,
+    RegexMatcher,
     contains,
     equals,
     exists,
     not_contains,
     not_equals,
+    regex,
 )
 
 from ..._test_utils.steps import given, then, when
@@ -22,6 +24,7 @@ from ..._test_utils.steps import given, then, when
     (lambda: not_equals("smth"), NotEqualMatcher),
     (lambda: contains("smth"), ContainMatcher),
     (lambda: not_contains("smth"), NotContainMatcher),
+    (lambda: regex(r".*"), RegexMatcher),
 ])
 def test_is_instance_of(instance_factory, instance_class):
     with given:
@@ -40,6 +43,7 @@ def test_is_instance_of(instance_factory, instance_class):
     (lambda: not_equals("smth"), "not_equals('smth')"),
     (lambda: contains("smth"), "contains('smth')"),
     (lambda: not_contains("smth"), "not_contains('smth')"),
+    (lambda: regex(r".*"), "regex('.*')"),
 ])
 def test_repr(instance_factory, representation):
     with given:

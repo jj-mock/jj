@@ -6,6 +6,7 @@ from .attribute_matchers import (
     ExistMatcher,
     NotContainMatcher,
     NotEqualMatcher,
+    RegexMatcher,
 )
 from .logical_matchers import AllMatcher, AnyMatcher, LogicalMatcher
 from .request_matchers import (
@@ -17,10 +18,10 @@ from .request_matchers import (
 )
 
 __all__ = (
-    "AttributeMatcher", "EqualMatcher", "NotEqualMatcher", "ExistMatcher",
+    "AttributeMatcher", "EqualMatcher", "NotEqualMatcher", "ExistMatcher", "RegexMatcher",
     "ContainMatcher", "NotContainMatcher", "LogicalMatcher", "AllMatcher", "AnyMatcher",
     "RequestMatcher", "MethodMatcher", "PathMatcher", "ParamMatcher", "HeaderMatcher",
-    "ResolvableMatcher", "exists", "equals", "not_equals", "contains", "not_contains",
+    "ResolvableMatcher", "exists", "equals", "not_equals", "contains", "not_contains", "regex",
 )
 
 
@@ -37,6 +38,10 @@ class contains(ContainMatcher):
 
 
 class not_contains(NotContainMatcher):
+    pass
+
+
+class regex(RegexMatcher):
     pass
 
 

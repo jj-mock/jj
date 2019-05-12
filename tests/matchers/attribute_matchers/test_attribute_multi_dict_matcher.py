@@ -6,7 +6,6 @@ from multidict import MultiDict
 from jj.matchers import AttributeMatcher
 from jj.matchers.attribute_matchers import MultiDictMatcher
 
-from ..._test_utils.fixtures import request_, resolver_  # noqa: F401
 from ..._test_utils.steps import given, then, when
 
 
