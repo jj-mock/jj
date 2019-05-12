@@ -1,5 +1,3 @@
-from typing import Any
-
 from ._resolvable_matcher import ResolvableMatcher
 from .attribute_matchers import (
     AttributeMatcher,
@@ -25,9 +23,17 @@ __all__ = (
 )
 
 
-def equals(expected: Any) -> EqualMatcher:
-    return EqualMatcher(expected)
+class equals(EqualMatcher):
+    pass
 
 
-def contains(expected: Any) -> ContainMatcher:
-    return ContainMatcher(expected)
+class not_equals(NotEqualMatcher):
+    pass
+
+
+class contains(ContainMatcher):
+    pass
+
+
+class not_contains(NotContainMatcher):
+    pass
