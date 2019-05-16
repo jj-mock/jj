@@ -1,6 +1,16 @@
 from setuptools import setup, find_packages
 
 
+def find_required():
+    with open("requirements.txt") as f:
+        return f.read().splitlines()
+
+
+def find_dev_required():
+    with open("requirements-dev.txt") as f:
+        return f.read().splitlines()
+
+
 setup(
     name="jj",
     version="2.0.0-dev.3",
@@ -13,21 +23,9 @@ setup(
     url="https://github.com/nikitanovosibirsk/jj",
     license="Apache 2",
     packages=find_packages(exclude=("tests",)),
-    install_requires=[
-        "aiohttp==3.5.4",
-        "undecorated==0.3.0",
-    ],
+    install_requires=find_required(),
     setup_requires=["pytest-runner"],
-    tests_require=[
-        "asynctest==0.12.2",
-        "mypy==0.670",
-        "flake8==3.7.7",
-        "coverage==4.5.2",
-        "codecov==2.0.15",
-        "pytest==4.4.1",
-        "pytest-asyncio==0.10.0",
-        "pytest-cov==2.6.1",
-    ],
+    tests_require=find_dev_required(),
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3.6",
