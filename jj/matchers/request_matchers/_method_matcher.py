@@ -1,3 +1,5 @@
+from typing import Any, Dict
+
 from ...requests import Request
 from ...resolvers import Resolver
 from ..attribute_matchers import AttributeMatcher, EqualMatcher, StrOrAttrMatcher
@@ -19,3 +21,13 @@ class MethodMatcher(RequestMatcher):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}({self._matcher!r}, resolver={self._resolver!r})"
+
+    def __jjpack__(self) -> Dict[str, Any]:
+        return {"method": self._matcher}
+
+    @classmethod
+    def __jjunpack__(cls, *,
+                     method: StrOrAttrMatcher,
+                     resolver: Resolver,
+                     **kwargs: Any) -> "MethodMatcher":
+        return cls(method, resolver=resolver)

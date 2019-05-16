@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Any, Dict, Union
 
 from aiohttp.web_urldispatcher import DynamicResource
 
@@ -25,3 +25,10 @@ class RouteMatcher(AttributeMatcher):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}({self._path!r})"
+
+    def __jjpack__(self) -> Dict[str, Any]:
+        return {"path": self._path}
+
+    @classmethod
+    def __jjunpack__(cls, *, path: str, **kwargs: Any) -> "RouteMatcher":
+        return cls(path)

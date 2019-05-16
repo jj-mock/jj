@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Any, Dict, Union
 
 from ...requests import Request
 from ...resolvers import Resolver
@@ -6,7 +6,6 @@ from ..attribute_matchers import AttributeMatcher, DictOrTupleList, MultiDictMat
 from ._request_matcher import RequestMatcher
 
 __all__ = ("HeaderMatcher",)
-
 
 DictOrTupleListOrAttrMatcher = Union[DictOrTupleList, AttributeMatcher]
 
@@ -24,3 +23,13 @@ class HeaderMatcher(RequestMatcher):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}({self._matcher!r}, resolver={self._resolver!r})"
+
+    def __jjpack__(self) -> Dict[str, Any]:
+        return {"headers": self._matcher}
+
+    @classmethod
+    def __jjunpack__(cls, *,
+                     headers: DictOrTupleListOrAttrMatcher,
+                     resolver: Resolver,
+                     **kwargs: Any) -> "HeaderMatcher":
+        return cls(headers, resolver=resolver)

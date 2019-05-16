@@ -38,3 +38,11 @@ class MultiDictMatcher(AttributeMatcher):
     def __repr__(self) -> str:
         expected = [(key, val) for key, val in self._expected.items()]
         return f"{self.__class__.__qualname__}({expected!r})"
+
+    def __jjpack__(self) -> Dict[str, Any]:
+        expected = [[key, val] for key, val in self._expected.items()]
+        return {"expected": expected}
+
+    @classmethod
+    def __jjunpack__(cls, *, expected: DictOrTupleList, **kwargs: Any) -> "MultiDictMatcher":
+        return cls(expected)

@@ -1,5 +1,5 @@
 import re
-from typing import Any
+from typing import Any, Dict
 
 from ._attribute_matcher import AttributeMatcher
 
@@ -19,3 +19,10 @@ class RegexMatcher(AttributeMatcher):
         if self._flags == 0:
             return f"{self.__class__.__qualname__}({self._pattern!r})"
         return f"{self.__class__.__qualname__}({self._pattern!r}, {self._flags!r})"
+
+    def __jjpack__(self) -> Dict[str, Any]:
+        return {"pattern": self._pattern, "flags": self._flags}
+
+    @classmethod
+    def __jjunpack__(cls, *, pattern: str, flags: int = 0, **kwargs: Any) -> "RegexMatcher":
+        return cls(pattern, flags)

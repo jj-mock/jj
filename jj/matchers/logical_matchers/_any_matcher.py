@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, Dict, List
 
 from ...requests import Request
 from ...resolvers import Resolver
@@ -23,3 +23,10 @@ class AnyMatcher(LogicalMatcher):
     def __repr__(self) -> str:
         return (f"{self.__class__.__qualname__}"
                 f"({self._matchers!r}, resolver={self._resolver!r})")
+
+    def __jjpack__(self) -> Dict[str, Any]:
+        return {"matchers": self._matchers}
+
+    @classmethod
+    def __jjunpack__(cls, *, matchers: Any, resolver: Resolver, **kwargs: Any) -> "AnyMatcher":
+        return cls(matchers, resolver=resolver)

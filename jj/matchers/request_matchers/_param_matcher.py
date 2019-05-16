@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Any, Dict, Union
 
 from ...requests import Request
 from ...resolvers import Resolver
@@ -24,3 +24,13 @@ class ParamMatcher(RequestMatcher):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}({self._matcher!r}, resolver={self._resolver!r})"
+
+    def __jjpack__(self) -> Dict[str, Any]:
+        return {"params": self._matcher}
+
+    @classmethod
+    def __jjunpack__(cls, *,
+                     params: DictOrTupleListOrAttrMatcher,
+                     resolver: Resolver,
+                     **kwargs: Any) -> "ParamMatcher":
+        return cls(params, resolver=resolver)
