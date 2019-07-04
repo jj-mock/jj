@@ -1,6 +1,6 @@
 import pytest
 from asynctest.mock import CoroutineMock as CoroMock
-from asynctest.mock import Mock, call
+from asynctest.mock import Mock, call, sentinel
 from pytest import raises
 
 from jj.matchers import AllMatcher, LogicalMatcher, ResolvableMatcher
@@ -100,3 +100,31 @@ def test_repr(*, resolver_):
 
     with then:
         assert actual == f"AllMatcher([<SubMatcher1>, <SubMatcher2>], resolver=<Resolver>)"
+
+
+def test_pack(*, resolver_):
+    with given:
+        submatchers = [Mock(ResolvableMatcher), Mock(ResolvableMatcher)]
+        matcher = AllMatcher(submatchers, resolver=resolver_)
+
+    with when:
+        packed = matcher.__packed__()
+
+    with then:
+        assert packed == {"matchers": submatchers}
+
+
+def test_unpack(*, resolver_):
+    with given:
+        submatchers = [Mock(ResolvableMatcher), Mock(ResolvableMatcher)]
+        kwargs = {
+            "matchers": submatchers,
+            "resolver": resolver_,
+            "future_field": sentinel,
+        }
+
+    with when:
+        matcher = AllMatcher.__unpacked__(**kwargs)
+
+    with then:
+        assert isinstance(matcher, AllMatcher)

@@ -100,3 +100,31 @@ def test_repr(*, resolver_):
 
     with then:
         assert actual == f"AnyMatcher([<SubMatcher1>, <SubMatcher2>], resolver=<Resolver>)"
+
+
+def test_pack(*, resolver_):
+    with given:
+        submatchers = [Mock(ResolvableMatcher), Mock(ResolvableMatcher)]
+        matcher = AnyMatcher(submatchers, resolver=resolver_)
+
+    with when:
+        packed = matcher.__packed__()
+
+    with then:
+        assert packed == {"matchers": submatchers}
+
+
+def test_unpack(*, resolver_):
+    with given:
+        submatchers = [Mock(ResolvableMatcher), Mock(ResolvableMatcher)]
+        kwargs = {
+            "matchers": submatchers,
+            "resolver": resolver_,
+            "future_field": sentinel,
+        }
+
+    with when:
+        matcher = AnyMatcher.__unpacked__(**kwargs)
+
+    with then:
+        assert isinstance(matcher, AnyMatcher)

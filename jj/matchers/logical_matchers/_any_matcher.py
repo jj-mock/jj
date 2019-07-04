@@ -1,5 +1,7 @@
 from typing import Any, Dict, List
 
+from packed import packable
+
 from ...requests import Request
 from ...resolvers import Resolver
 from .._resolvable_matcher import ResolvableMatcher
@@ -8,6 +10,7 @@ from ._logical_matcher import LogicalMatcher
 __all__ = ("AnyMatcher",)
 
 
+@packable("jj.matchers.AnyMatcher")
 class AnyMatcher(LogicalMatcher):
     def __init__(self, matchers: List[ResolvableMatcher], *, resolver: Resolver) -> None:
         super().__init__(resolver=resolver)
@@ -24,9 +27,12 @@ class AnyMatcher(LogicalMatcher):
         return (f"{self.__class__.__qualname__}"
                 f"({self._matchers!r}, resolver={self._resolver!r})")
 
-    def __jjpack__(self) -> Dict[str, Any]:
+    def __packed__(self) -> Dict[str, Any]:
         return {"matchers": self._matchers}
 
     @classmethod
-    def __jjunpack__(cls, *, matchers: Any, resolver: Resolver, **kwargs: Any) -> "AnyMatcher":
+    def __unpacked__(cls, *,
+                     matchers: List[ResolvableMatcher],
+                     resolver: Resolver,
+                     **kwargs: Any) -> "AnyMatcher":
         return cls(matchers, resolver=resolver)
