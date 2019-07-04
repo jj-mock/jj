@@ -1,9 +1,10 @@
 import pytest
 from asynctest.mock import CoroutineMock as CoroMock
-from asynctest.mock import Mock, call
+from asynctest.mock import Mock, call, sentinel
 from multidict import MultiDict
 
 from jj.matchers import AttributeMatcher, ParamMatcher, RequestMatcher
+from jj.matchers.attribute_matchers import MultiDictMatcher
 
 from ..._test_utils.fixtures import request_, resolver_  # noqa: F401
 from ..._test_utils.steps import given, then, when
@@ -145,3 +146,31 @@ def test_repr(params, representation, *, resolver_):
 
     with then:
         assert actual == f"ParamMatcher(MultiDictMatcher({representation}), resolver=<Resolver>)"
+
+
+def test_pack(*, resolver_):
+    with given:
+        submatcher = MultiDictMatcher([("key", "1"), ("key", "2")])
+        matcher = ParamMatcher(submatcher, resolver=resolver_)
+
+    with when:
+        actual = matcher.__packed__()
+
+    with then:
+        assert actual == {"params": submatcher}
+
+
+def test_unpack(*, resolver_):
+    with given:
+        submatcher = MultiDictMatcher([("key", "1"), ("key", "2")])
+        kwargs = {
+            "params": submatcher,
+            "resolver": resolver_,
+            "future_field": sentinel,
+        }
+
+    with when:
+        actual = ParamMatcher.__unpacked__(**kwargs)
+
+    with then:
+        assert isinstance(actual, ParamMatcher)

@@ -1,6 +1,6 @@
 import pytest
 from asynctest.mock import CoroutineMock as CoroMock
-from asynctest.mock import Mock, call
+from asynctest.mock import Mock, call, sentinel
 from pytest import raises
 
 from jj.matchers import AnyMatcher, LogicalMatcher, ResolvableMatcher
@@ -108,10 +108,10 @@ def test_pack(*, resolver_):
         matcher = AnyMatcher(submatchers, resolver=resolver_)
 
     with when:
-        packed = matcher.__packed__()
+        actual = matcher.__packed__()
 
     with then:
-        assert packed == {"matchers": submatchers}
+        assert actual == {"matchers": submatchers}
 
 
 def test_unpack(*, resolver_):
@@ -124,7 +124,7 @@ def test_unpack(*, resolver_):
         }
 
     with when:
-        matcher = AnyMatcher.__unpacked__(**kwargs)
+        actual = AnyMatcher.__unpacked__(**kwargs)
 
     with then:
-        assert isinstance(matcher, AnyMatcher)
+        assert isinstance(actual, AnyMatcher)

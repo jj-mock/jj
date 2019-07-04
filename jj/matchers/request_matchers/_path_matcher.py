@@ -1,5 +1,7 @@
 from typing import Any, Dict
 
+from packed import packable
+
 from ...requests import Request
 from ...resolvers import Resolver
 from ..attribute_matchers import AttributeMatcher, RouteMatcher, StrOrAttrMatcher
@@ -8,6 +10,7 @@ from ._request_matcher import RequestMatcher
 __all__ = ("PathMatcher",)
 
 
+@packable("jj.matchers.PathMatcher")
 class PathMatcher(RequestMatcher):
     def __init__(self, path: StrOrAttrMatcher, *, resolver: Resolver) -> None:
         super().__init__(resolver=resolver)
@@ -27,11 +30,11 @@ class PathMatcher(RequestMatcher):
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}({self._matcher!r}, resolver={self._resolver!r})"
 
-    def __jjpack__(self) -> Dict[str, Any]:
+    def __packed__(self) -> Dict[str, Any]:
         return {"path": self._matcher}
 
     @classmethod
-    def __jjunpack__(cls, *,
+    def __unpacked__(cls, *,
                      path: StrOrAttrMatcher,
                      resolver: Resolver,
                      **kwargs: Any) -> "PathMatcher":

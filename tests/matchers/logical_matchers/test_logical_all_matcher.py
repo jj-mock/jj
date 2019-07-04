@@ -108,10 +108,10 @@ def test_pack(*, resolver_):
         matcher = AllMatcher(submatchers, resolver=resolver_)
 
     with when:
-        packed = matcher.__packed__()
+        actual = matcher.__packed__()
 
     with then:
-        assert packed == {"matchers": submatchers}
+        assert actual == {"matchers": submatchers}
 
 
 def test_unpack(*, resolver_):
@@ -124,7 +124,7 @@ def test_unpack(*, resolver_):
         }
 
     with when:
-        matcher = AllMatcher.__unpacked__(**kwargs)
+        actual = AllMatcher.__unpacked__(**kwargs)
 
     with then:
-        assert isinstance(matcher, AllMatcher)
+        assert isinstance(actual, AllMatcher)
