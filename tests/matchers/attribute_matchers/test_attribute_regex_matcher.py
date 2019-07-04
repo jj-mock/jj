@@ -1,6 +1,7 @@
 import re
 
 import pytest
+from asynctest.mock import sentinel
 
 from jj.matchers import AttributeMatcher, RegexMatcher
 
@@ -66,3 +67,29 @@ def test_repr(instance_factory, representation):
 
     with then:
         assert actual == representation
+
+
+def test_pack():
+    with given:
+        pattern = ".*"
+        matcher = RegexMatcher(pattern)
+
+    with when:
+        actual = matcher.__packed__()
+
+    with then:
+        assert actual == {"pattern": pattern, "flags": 0}
+
+
+def test_unpack():
+    with given:
+        kwargs = {
+            "pattern": ".*",
+            "future_field": sentinel,
+        }
+
+    with when:
+        actual = RegexMatcher.__unpacked__(**kwargs)
+
+    with then:
+        assert isinstance(actual, RegexMatcher)

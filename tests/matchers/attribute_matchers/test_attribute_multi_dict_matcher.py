@@ -1,6 +1,6 @@
 import pytest
 from asynctest.mock import CoroutineMock as CoroMock
-from asynctest.mock import Mock, call
+from asynctest.mock import Mock, call, sentinel
 from multidict import MultiDict
 
 from jj.matchers import AttributeMatcher
@@ -105,3 +105,29 @@ def test_repr(expected, representation):
 
     with then:
         assert actual == representation
+
+
+def test_pack():
+    with given:
+        expected = [["key", "1"], ["key", "2"]]
+        matcher = MultiDictMatcher(expected)
+
+    with when:
+        actual = matcher.__packed__()
+
+    with then:
+        assert actual == {"expected": expected}
+
+
+def test_unpack():
+    with given:
+        kwargs = {
+            "expected": [("key", "1"), ("key", "2")],
+            "future_field": sentinel,
+        }
+
+    with when:
+        actual = MultiDictMatcher.__unpacked__(**kwargs)
+
+    with then:
+        assert isinstance(actual, MultiDictMatcher)

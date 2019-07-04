@@ -1,6 +1,7 @@
 from typing import Any, Dict, Union
 
 from aiohttp.web_urldispatcher import DynamicResource
+from packed import packable
 
 from ._attribute_matcher import AttributeMatcher
 
@@ -12,6 +13,7 @@ class _Resource(DynamicResource):
         return self._match(path)
 
 
+@packable("jj.matchers.RouteMatcher")
 class RouteMatcher(AttributeMatcher):
     def __init__(self, path: str) -> None:
         self._path = path
@@ -26,9 +28,9 @@ class RouteMatcher(AttributeMatcher):
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}({self._path!r})"
 
-    def __jjpack__(self) -> Dict[str, Any]:
+    def __packed__(self) -> Dict[str, Any]:
         return {"path": self._path}
 
     @classmethod
-    def __jjunpack__(cls, *, path: str, **kwargs: Any) -> "RouteMatcher":
+    def __unpacked__(cls, *, path: str, **kwargs: Any) -> "RouteMatcher":
         return cls(path)
