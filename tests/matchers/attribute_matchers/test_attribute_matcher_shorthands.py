@@ -1,4 +1,5 @@
 import pytest
+from packed import pack
 
 from jj.matchers import (
     ContainMatcher,
@@ -54,3 +55,22 @@ def test_repr(instance_factory, representation):
 
     with then:
         assert actual == representation
+
+
+@pytest.mark.parametrize("instance_factory", [
+    lambda: exists,
+    lambda: equals("smth"),
+    lambda: not_equals("smth"),
+    lambda: contains("smth"),
+    lambda: not_contains("smth"),
+    lambda: regex(r".*"),
+])
+def test_packable(instance_factory):
+    with given:
+        matcher = instance_factory()
+
+    with when:
+        actual = pack(matcher)
+
+    with then:
+        assert isinstance(actual, bytes)
