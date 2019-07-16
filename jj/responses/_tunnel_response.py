@@ -38,7 +38,7 @@ class TunnelResponse(StreamResponse):
     async def prepare(self, request: BaseRequest) -> Optional[AbstractStreamWriter]:
         url = urljoin(self.target, request.path)
 
-        headers: MultiDict = MultiDict()
+        headers: MultiDict[str] = MultiDict()
         for key, value in request.headers.items():
             if key.lower() not in _FILTERED_HEADERS:
                 headers[key] = value
