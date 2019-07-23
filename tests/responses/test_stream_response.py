@@ -3,10 +3,10 @@ import asynctest
 import jj
 from jj import server_version
 from jj.apps import create_app
-from jj.matchers import MethodMatcher
-from jj.responses import StreamResponse
 from jj.handlers import default_handler
+from jj.matchers import MethodMatcher
 from jj.resolvers import Registry, ReversedResolver
+from jj.responses import StreamResponse
 
 from .._test_utils import run
 
@@ -26,6 +26,7 @@ class TestStreamResponse(asynctest.TestCase):
 
     async def test_response_with_manual_preparing(self):
         body = b"200 OK"
+
         class App(jj.App):
             resolver = self.resolver
             @MethodMatcher("*", resolver=resolver)

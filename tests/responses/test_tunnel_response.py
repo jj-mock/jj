@@ -3,13 +3,13 @@ from aiohttp import FormData
 
 import jj
 from jj.apps import create_app
-from jj.matchers import MethodMatcher
-from jj.responses import TunnelResponse, Response
 from jj.handlers import default_handler
+from jj.http.methods import DELETE, GET, POST
+from jj.matchers import MethodMatcher
 from jj.resolvers import Registry, ReversedResolver
-from jj.http.methods import GET, DELETE, POST
+from jj.responses import Response, TunnelResponse
 
-from .._test_utils import run, TestServer
+from .._test_utils import TestServer, run
 from ._request_formatter import RequestFormatter
 
 
@@ -230,7 +230,8 @@ class TestTunnelResponse(asynctest.TestCase):
             async with run(app) as client:
                 response = await client.request(GET, "/")
                 body = await response.json()
-                self.assertEqual(body["headers"].get("Host"), ["{}:{}".format(server.host, server.port)])
+                self.assertEqual(body["headers"].get("Host"),
+                                 ["{}:{}".format(server.host, server.port)])
                 self.assertEqual(body["headers"].get("Accept"), ["*/*"])
                 self.assertEqual(body["headers"].get("Accept-Encoding"), ["gzip, deflate"])
                 self.assertEqual(body["headers"].get("Content-Type"), ["application/octet-stream"])

@@ -1,9 +1,8 @@
-from typing import Optional, MutableMapping
+from typing import MutableMapping, Optional
 
 from aiohttp import web
 
 from .._version import server_version
-
 
 __all__ = ("StreamResponse",)
 

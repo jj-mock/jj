@@ -2,12 +2,11 @@ from typing import Optional
 from urllib.parse import urljoin
 
 from aiohttp import ClientSession
-from aiohttp.web_request import BaseRequest
 from aiohttp.abc import AbstractStreamWriter
-from multidict import MultiDict, CIMultiDict
+from aiohttp.web_request import BaseRequest
+from multidict import CIMultiDict, MultiDict
 
 from ._stream_response import StreamResponse
-
 
 __all__ = ("TunnelResponse",)
 

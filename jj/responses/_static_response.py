@@ -1,10 +1,9 @@
 from pathlib import Path
-from typing import Union, Optional, MutableMapping
+from typing import MutableMapping, Optional, Union
 
 from aiohttp import web
 
 from ._stream_response import StreamResponse
-
 
 __all__ = ("StaticResponse",)
 
