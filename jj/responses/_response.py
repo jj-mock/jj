@@ -38,6 +38,10 @@ class Response(web.Response, StreamResponse):
 
         super().__init__(body=body, text=text, status=status, reason=reason, headers=headers)
 
+    @property
+    def content_coding(self) -> Optional[ContentCoding]:
+        return self._compression_force
+
     def _cookie_to_dict(self, cookie: "Morsel[str]") -> Dict[str, Union[str, None]]:
         dictionary: Dict[str, Union[str, None]] = {
             "name": cookie.key,
