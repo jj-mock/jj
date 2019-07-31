@@ -1,6 +1,5 @@
-from typing import Any, Callable, Coroutine, Union
+from typing import Any, Callable, Coroutine
 
-from ..requests import Request
 from ..responses import Response
 
 __all__ = ("HandlerFunction",)
