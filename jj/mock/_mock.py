@@ -76,4 +76,4 @@ class Mock(jj.App):
     @jj.match(ANY)
     async def resolve(self, request: Request) -> Response:
         handler = await self._resolver.resolve(request, self._app)
-        return await handler(request)  # type: ignore
+        return await handler(request)

@@ -6,7 +6,4 @@ from ..responses import Response
 __all__ = ("HandlerFunction",)
 
 
-HandlerFunction = Union[
-    Callable[[Request], Coroutine[Any, Any, Response]],
-    Callable[[Any, Request], Coroutine[Any, Any, Response]],
-]
+HandlerFunction = Callable[..., Coroutine[Any, Any, Response]]
