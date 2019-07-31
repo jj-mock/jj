@@ -1,6 +1,7 @@
 from io import BufferedReader, BytesIO, StringIO, TextIOWrapper
 
 import pytest
+from pytest import raises
 from aiohttp.web import ContentCoding
 
 from jj._version import server_version
@@ -111,6 +112,24 @@ def test_pack_body(body, expected, headers):
         assert actual == default_packed(body=expected, headers=headers)
 
 
+def test_pack_unsupported_body():
+    with given:
+        class AsyncIterable:
+            def __aiter__(self):
+                return self
+
+            async def __anext__(self):
+                raise StopAsyncIteration
+
+        response = Response(body=AsyncIterable())
+
+    with when, raises(Exception) as exception:
+        response.__packed__()
+
+    with then:
+        assert exception.type is ValueError
+
+
 def test_pack_chunked():
     with given:
         body = b"200 OK"
@@ -145,7 +164,18 @@ def test_pack_cookies():
     with given:
         body = b"200 OK"
         response = Response(body=body)
-        response.set_cookie("name1", "value1")
+        cookie = {
+            "name": "name1",
+            "value": "value1",
+            "expires": "Thu, 01 Jan 1970 00:00:01 GMT",
+            "domain": ".localhost",
+            "max_age": "0",
+            "path": "/path",
+            "secure": "secure",
+            "httponly": "httponly",
+            "version": "1",
+        }
+        response.set_cookie(**cookie)
         response.set_cookie("name2", "value2")
 
     with when:
@@ -153,17 +183,7 @@ def test_pack_cookies():
 
     with then:
         assert actual == default_packed(body=body, headers=[["Server", server_version]], cookies=[
-            {
-                "name": "name1",
-                "value": "value1",
-                "expires": None,
-                "domain": None,
-                "max_age": None,
-                "path": "/",
-                "secure": None,
-                "httponly": None,
-                "version": None,
-            },
+            cookie,
             {
                 "name": "name2",
                 "value": "value2",
@@ -175,30 +195,4 @@ def test_pack_cookies():
                 "httponly": None,
                 "version": None,
             }
-        ])
-
-
-def test_pack_cookies_full():
-    with given:
-        body = b"200 OK"
-        response = Response(body=body)
-        cookie = {
-            "name": "name",
-            "value": "value",
-            "expires": "Thu, 01 Jan 1970 00:00:01 GMT",
-            "domain": ".localhost",
-            "max_age": "0",
-            "path": "/path",
-            "secure": "secure",
-            "httponly": "httponly",
-            "version": "1",
-        }
-        response.set_cookie(**cookie)
-
-    with when:
-        actual = response.__packed__()
-
-    with then:
-        assert actual == default_packed(body=body, cookies=[cookie], headers=[
-            ["Server", server_version]
         ])

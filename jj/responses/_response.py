@@ -76,9 +76,7 @@ class Response(web.Response, StreamResponse):
         if isinstance(compression, ContentCoding):
             compression = compression.value
 
-        if self.body is None:
-            body = self.body
-        elif isinstance(self.body, (bytes, bytearray, memoryview)):
+        if isinstance(self.body, (bytes, bytearray, memoryview)):
             body = bytes(self.body)
         elif isinstance(self.body, BytesPayload):
             body = bytes(self.body._value)
@@ -87,7 +85,7 @@ class Response(web.Response, StreamResponse):
         elif isinstance(self.body, IOBasePayload):
             body = bytes(self.body._value.read())
         else:
-            raise ValueError()
+            raise ValueError("Unsupported body type {}".format(type(self.body)))
 
         return {
             "status": self.status,
