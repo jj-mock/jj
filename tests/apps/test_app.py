@@ -282,6 +282,27 @@ class TestApp(asynctest.TestCase):
             response = await client.get(path)
             self.assertEqual(response.status, 404)
 
+    async def test_app_deleter(self):
+        path, status, text = "/route", 201, "text"
+        class App(jj.App):
+            resolver = self.resolver
+            @PathMatcher(path, resolver=resolver)
+            async def handler(request):
+                return Response(status=status, text=text)
+
+        delattr(App, "handler")
+
+        async with run(App(), self.resolver) as client:
+            response = await client.get(path)
+            self.assertEqual(response.status, 404)
+
+    async def test_app_deleter_nonexisting_attr(self):
+        class App(jj.App):
+            resolver = self.resolver
+
+        with self.assertRaises(AttributeError):
+            delattr(App, "handler")
+
     async def test_app_instance_setter(self):
         path, status, text = "/route", 201, "text"
         @PathMatcher(path, resolver=self.resolver)
@@ -294,10 +315,5 @@ class TestApp(asynctest.TestCase):
         app.handler = handler
 
         async with run(app, self.resolver) as client:
-            response = await client.get(path)
-            self.assertEqual(response.status, status)
-            self.assertEqual(await response.text(), text)
-
-        async with run(self.default_app, self.resolver) as client:
             response = await client.get(path)
             self.assertEqual(response.status, 404)

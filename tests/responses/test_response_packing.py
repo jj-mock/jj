@@ -1,8 +1,8 @@
 from io import BufferedReader, BytesIO, StringIO, TextIOWrapper
 
 import pytest
-from pytest import raises
 from aiohttp.web import ContentCoding
+from pytest import raises
 
 from jj._version import server_version
 from jj.responses import Response

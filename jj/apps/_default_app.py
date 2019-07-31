@@ -2,7 +2,6 @@ from typing import Dict
 
 from ._abstract_app import AbstractApp
 
-
 __all__ = ("DefaultApp",)
 
 
