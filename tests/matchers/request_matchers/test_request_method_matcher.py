@@ -1,8 +1,9 @@
 import pytest
 from asynctest.mock import CoroutineMock as CoroMock
-from asynctest.mock import Mock, call
+from asynctest.mock import Mock, call, sentinel
 
 from jj.matchers import AttributeMatcher, MethodMatcher, RequestMatcher
+from jj.matchers.attribute_matchers import EqualMatcher
 
 from ..._test_utils.fixtures import request_, resolver_  # noqa: F401
 from ..._test_utils.steps import given, then, when
@@ -79,3 +80,31 @@ def test_repr(method, representation, *, resolver_):
 
     with then:
         assert actual == f"MethodMatcher(EqualMatcher({representation!r}), resolver=<Resolver>)"
+
+
+def test_pack():
+    with given:
+        submatcher = EqualMatcher("GET")
+        matcher = MethodMatcher(submatcher, resolver=resolver_)
+
+    with when:
+        actual = matcher.__packed__()
+
+    with then:
+        assert actual == {"method": submatcher}
+
+
+def test_unpack():
+    with given:
+        submatcher = EqualMatcher("GET")
+        kwargs = {
+            "method": submatcher,
+            "resolver": resolver_,
+            "future_field": sentinel,
+        }
+
+    with when:
+        actual = MethodMatcher.__unpacked__(**kwargs)
+
+    with then:
+        assert isinstance(actual, MethodMatcher)

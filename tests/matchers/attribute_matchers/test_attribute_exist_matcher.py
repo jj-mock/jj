@@ -39,3 +39,25 @@ def test_repr():
 
     with then:
         assert actual == "ExistMatcher()"
+
+
+def test_pack():
+    with given:
+        matcher = ExistMatcher()
+
+    with when:
+        actual = matcher.__packed__()
+
+    with then:
+        assert actual == {}
+
+
+def test_unpack():
+    with given:
+        kwargs = {"future_field": sentinel}
+
+    with when:
+        actual = ExistMatcher.__unpacked__(**kwargs)
+
+    with then:
+        assert isinstance(actual, ExistMatcher)

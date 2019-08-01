@@ -97,3 +97,31 @@ def test_repr(expected, matcher_class):
 
     with then:
         assert actual == expected
+
+
+@pytest.mark.parametrize("matcher_class", [ContainMatcher, NotContainMatcher])
+def test_pack(matcher_class):
+    with given:
+        expected = "smth"
+        matcher = matcher_class(expected)
+
+    with when:
+        actual = matcher.__packed__()
+
+    with then:
+        assert actual == {"expected": expected}
+
+
+@pytest.mark.parametrize("matcher_class", [ContainMatcher, NotContainMatcher])
+def test_unpack(matcher_class):
+    with given:
+        kwargs = {
+            "expected": "smth",
+            "future_field": sentinel,
+        }
+
+    with when:
+        actual = matcher_class.__unpacked__(**kwargs)
+
+    with then:
+        assert isinstance(actual, matcher_class)

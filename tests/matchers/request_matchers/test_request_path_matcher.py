@@ -1,8 +1,9 @@
 import pytest
 from asynctest.mock import CoroutineMock as CoroMock
-from asynctest.mock import Mock, call
+from asynctest.mock import Mock, call, sentinel
 
 from jj.matchers import AttributeMatcher, PathMatcher, RequestMatcher
+from jj.matchers.attribute_matchers import RouteMatcher
 
 from ..._test_utils.fixtures import request_, resolver_  # noqa: F401
 from ..._test_utils.steps import given, then, when
@@ -77,3 +78,31 @@ def test_repr(path, *, resolver_):
 
     with then:
         assert actual == f"PathMatcher(RouteMatcher({path!r}), resolver=<Resolver>)"
+
+
+def test_pack():
+    with given:
+        submatcher = RouteMatcher("/")
+        matcher = PathMatcher(submatcher, resolver=resolver_)
+
+    with when:
+        actual = matcher.__packed__()
+
+    with then:
+        assert actual == {"path": submatcher}
+
+
+def test_unpack():
+    with given:
+        submatcher = RouteMatcher("/")
+        kwargs = {
+            "path": submatcher,
+            "resolver": resolver_,
+            "future_field": sentinel,
+        }
+
+    with when:
+        actual = PathMatcher.__unpacked__(**kwargs)
+
+    with then:
+        assert isinstance(actual, PathMatcher)

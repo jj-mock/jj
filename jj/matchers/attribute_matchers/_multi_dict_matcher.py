@@ -1,6 +1,7 @@
 from typing import Any, Dict, List, Tuple, Union
 
 from multidict import MultiDict, MultiMapping
+from packed import packable
 
 from ._attribute_matcher import AttributeMatcher
 from ._equal_matcher import EqualMatcher
@@ -15,6 +16,7 @@ DictOrTupleList = Union[
 ]
 
 
+@packable("jj.matchers.MultiDictMatcher")
 class MultiDictMatcher(AttributeMatcher):
     def __init__(self, expected: DictOrTupleList) -> None:
         self._expected = MultiDict(expected)
@@ -38,3 +40,11 @@ class MultiDictMatcher(AttributeMatcher):
     def __repr__(self) -> str:
         expected = [(key, val) for key, val in self._expected.items()]
         return f"{self.__class__.__qualname__}({expected!r})"
+
+    def __packed__(self) -> Dict[str, Any]:
+        expected = [[key, val] for key, val in self._expected.items()]
+        return {"expected": expected}
+
+    @classmethod
+    def __unpacked__(cls, *, expected: DictOrTupleList, **kwargs: Any) -> "MultiDictMatcher":
+        return cls(expected)

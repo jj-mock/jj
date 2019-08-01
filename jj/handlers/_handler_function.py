@@ -1,10 +1,8 @@
-from typing import Callable, Any, Coroutine
+from typing import Any, Callable, Coroutine
 
-from ..requests import Request
 from ..responses import Response
-
 
 __all__ = ("HandlerFunction",)
 
 
-HandlerFunction = Callable[[Request], Coroutine[Any, Any, Response]]
+HandlerFunction = Callable[..., Coroutine[Any, Any, Response]]

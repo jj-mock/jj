@@ -1,4 +1,6 @@
-from typing import Union
+from typing import Any, Dict, Union
+
+from packed import packable
 
 from ...requests import Request
 from ...resolvers import Resolver
@@ -7,10 +9,10 @@ from ._request_matcher import RequestMatcher
 
 __all__ = ("HeaderMatcher",)
 
-
 DictOrTupleListOrAttrMatcher = Union[DictOrTupleList, AttributeMatcher]
 
 
+@packable("jj.matchers.HeaderMatcher")
 class HeaderMatcher(RequestMatcher):
     def __init__(self, headers: DictOrTupleListOrAttrMatcher, *, resolver: Resolver) -> None:
         super().__init__(resolver=resolver)
@@ -24,3 +26,13 @@ class HeaderMatcher(RequestMatcher):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}({self._matcher!r}, resolver={self._resolver!r})"
+
+    def __packed__(self) -> Dict[str, Any]:
+        return {"headers": self._matcher}
+
+    @classmethod
+    def __unpacked__(cls, *,
+                     headers: DictOrTupleListOrAttrMatcher,
+                     resolver: Resolver,
+                     **kwargs: Any) -> "HeaderMatcher":
+        return cls(headers, resolver=resolver)

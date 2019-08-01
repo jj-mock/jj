@@ -5,10 +5,10 @@ import asynctest
 import jj
 from jj import server_version
 from jj.apps import create_app
-from jj.matchers import MethodMatcher
-from jj.responses import StaticResponse
 from jj.handlers import default_handler
+from jj.matchers import MethodMatcher
 from jj.resolvers import Registry, ReversedResolver
+from jj.responses import StaticResponse
 
 from .._test_utils import run
 

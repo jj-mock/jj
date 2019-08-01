@@ -1,4 +1,6 @@
-from typing import Union
+from typing import Any, Dict, Union
+
+from packed import packable
 
 from ...requests import Request
 from ...resolvers import Resolver
@@ -11,6 +13,7 @@ __all__ = ("ParamMatcher",)
 DictOrTupleListOrAttrMatcher = Union[DictOrTupleList, AttributeMatcher]
 
 
+@packable("jj.matchers.ParamMatcher")
 class ParamMatcher(RequestMatcher):
     def __init__(self, params: DictOrTupleListOrAttrMatcher, *, resolver: Resolver) -> None:
         super().__init__(resolver=resolver)
@@ -24,3 +27,13 @@ class ParamMatcher(RequestMatcher):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}({self._matcher!r}, resolver={self._resolver!r})"
+
+    def __packed__(self) -> Dict[str, Any]:
+        return {"params": self._matcher}
+
+    @classmethod
+    def __unpacked__(cls, *,
+                     params: DictOrTupleListOrAttrMatcher,
+                     resolver: Resolver,
+                     **kwargs: Any) -> "ParamMatcher":
+        return cls(params, resolver=resolver)

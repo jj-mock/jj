@@ -1,21 +1,28 @@
-from typing import Type, Dict, Optional, Union, Tuple
 from inspect import getmembers
+from typing import Any, Dict, Optional, Tuple, Type, Union
 
-from ._abstract_app import AbstractApp
-from ..resolvers import Resolver
 from ..handlers import HandlerFunction
-
+from ..resolvers import Resolver
+from ._abstract_app import AbstractApp
 
 __all__ = ("BaseApp", "define_app", "create_app")
 
 
-def _register(cls, name: str, value: HandlerFunction) -> None:
+def _register(cls, name: str, value: Any) -> None:
     if callable(value) and not name.startswith("_"):
         cls.resolver.register_handler(value, cls)
 
 
+def _deregister(cls, name: str) -> None:
+    if hasattr(cls, name):
+        cls.resolver.deregister_handler(getattr(cls, name), cls)
+
+
 class _Registrar(type):
-    def __init__(cls, name: str, bases: Tuple[Type[AbstractApp]], namespace: Dict) -> None:
+    def __init__(cls,
+                 name: str,
+                 bases: Tuple[Type[AbstractApp]],
+                 namespace: Dict[str, Any]) -> None:
         for name, value in namespace.items():
             _register(cls, name, value)
         for base in bases:
@@ -23,19 +30,19 @@ class _Registrar(type):
                 _register(cls, name, member)
         super().__init__(name, bases, namespace)
 
-    def __setattr__(cls, name: str, value: HandlerFunction) -> None:
+    def __setattr__(cls, name: str, value: Any) -> None:
         _register(cls, name, value)
         super().__setattr__(name, value)
+
+    def __delattr__(cls, name: str) -> None:
+        _deregister(cls, name)
+        super().__delattr__(name)
 
 
 class BaseApp(AbstractApp, metaclass=_Registrar):
     @property
     def resolver(self) -> Resolver:
         raise NotImplementedError()
-
-    def __setattr__(self, name: str, value: HandlerFunction) -> None:
-        _register(type(self), name, value)
-        super().__setattr__(name, value)
 
 
 def define_app(name: Optional[str] = None, *,
