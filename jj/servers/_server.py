@@ -1,5 +1,5 @@
 from asyncio import AbstractEventLoop, ensure_future
-from typing import Any, List, Type
+from typing import Any, List, Optional, Type
 
 from aiohttp.web_runner import BaseRunner, TCPSite
 
@@ -15,16 +15,16 @@ class Server:
         self._site_factory = site_factory
         self._runners: List[BaseRunner] = []
 
-    async def _start(self, app, host, port):
-        runner = self._runner_factory(app, loop=self._loop)
+    async def _start(self, app: Any, host: Optional[str], port: Optional[int]) -> None:
+        runner = self._runner_factory(app, loop=self._loop)  # type: ignore
         await runner.setup()
 
-        site = self._site_factory(runner, host=host, port=port)
+        site = self._site_factory(runner, host=host, port=port)  # type: ignore
         await site.start()
 
         self._runners += [runner]
 
-    def start(self, app: Any, host: str = None, port: int = None) -> None:
+    def start(self, app: Any, host: Optional[str] = None, port: Optional[int] = None) -> None:
         ensure_future(self._start(app, host, port))
 
     def serve(self) -> None:

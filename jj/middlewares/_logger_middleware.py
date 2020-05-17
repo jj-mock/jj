@@ -1,4 +1,4 @@
-from typing import Callable, Type
+from typing import Type
 
 from ..apps import AbstractApp
 from ..handlers import HandlerFunction
@@ -7,6 +7,7 @@ from ..requests import Request
 from ..resolvers import Resolver
 from ..responses import Response
 from ._base_middleware import AppOrHandler, BaseMiddleware
+from ._middleware_type import MiddlewareType
 
 __all__ = ("LoggerMiddleware",)
 
@@ -24,7 +25,8 @@ class LoggerMiddleware(BaseMiddleware):
         super().on_handler(handler)
         self._resolver.register_attribute("logger", self._logger, handler)
 
-    def _register_middleware(self, app_or_handler: AppOrHandler, middleware: Callable):
+    def _register_middleware(self,
+                             app_or_handler: AppOrHandler, middleware: MiddlewareType) -> None:
         old_middlewares = self._resolver.get_attribute("middlewares", app_or_handler, [])
         new_middlewares = [middleware] + old_middlewares
         self._resolver.register_attribute("middlewares", new_middlewares, app_or_handler)

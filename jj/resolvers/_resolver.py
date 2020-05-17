@@ -26,7 +26,7 @@ class Resolver:
             unwrapped = undecorated(fn)
         except ValueError:
             return fn
-        return fn if unwrapped is None else unwrapped
+        return fn if unwrapped is None else unwrapped  # type: ignore
 
     # Apps
 

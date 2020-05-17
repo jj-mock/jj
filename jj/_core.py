@@ -1,6 +1,6 @@
 import asyncio
 from functools import partial
-from typing import List, Optional
+from typing import List, Optional, Sequence, Type
 
 from aiohttp import web
 
@@ -89,7 +89,10 @@ def match_any(matchers: List[ResolvableMatcher]) -> AnyMatcher:
     return AnyMatcher(matchers, resolver=resolver)
 
 
-def match(method=None, path=None, params=None, headers=None) -> AllMatcher:
+def match(method: Optional[StrOrAttrMatcher] = None,
+          path: Optional[StrOrAttrMatcher] = None,
+          params: Optional[DictOrTupleListOrAttrMatcher] = None,
+          headers: Optional[DictOrTupleListOrAttrMatcher] = None) -> AllMatcher:
     submatchers: List[ResolvableMatcher] = []
     if method:
         submatchers += [MethodMatcher(method, resolver=resolver)]
@@ -109,7 +112,7 @@ def start(app: AbstractApp, *,
     server.start(app, host=host, port=port)
 
 
-def wait_for(exceptions) -> None:
+def wait_for(exceptions: Sequence[Type[BaseException]]) -> None:
     try:
         server.serve()
     except tuple(exceptions):

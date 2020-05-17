@@ -14,7 +14,7 @@ class SelfMiddleware(RootMiddleware):
         unwrapped = self._resolver.unwrap(handler)
         sig = signature(unwrapped)
         if len(sig.parameters) == 2:
-            response = await handler(app, request)  # type: ignore
+            response = await handler(app, request)
         else:
             response = await handler(request)
         return response

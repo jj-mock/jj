@@ -1,8 +1,9 @@
-from typing import Callable, Type, Union
+from typing import Type, Union
 
 from ..apps import AbstractApp
 from ..handlers import HandlerFunction
 from ._abstract_middleware import AbstractMiddleware
+from ._middleware_type import MiddlewareType
 
 __all__ = ("BaseMiddleware",)
 
@@ -22,7 +23,8 @@ class BaseMiddleware(AbstractMiddleware):
             return self.on_app(app_or_handler)
         return self.on_handler(app_or_handler)  # type: ignore
 
-    def _register_middleware(self, app_or_handler: AppOrHandler, middleware: Callable) -> None:
+    def _register_middleware(self,
+                             app_or_handler: AppOrHandler, middleware: MiddlewareType) -> None:
         old_middlewares = self._resolver.get_attribute("middlewares", app_or_handler, [])
         new_middlewares = old_middlewares + [middleware]
         self._resolver.register_attribute("middlewares", new_middlewares, app_or_handler)

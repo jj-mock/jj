@@ -32,7 +32,7 @@ class AppRunner(BaseRunner):
     def _merge_middlewares(self, root_middlewares: List[Any],
                            app_middlewares: List[Any],
                            handler_middlewares: List[Any]) -> Iterator[Any]:
-        middlewares: OrderedDict = OrderedDict()
+        middlewares: OrderedDict[Any, Any] = OrderedDict()
 
         for middleware in app_middlewares:
             middlewares[type(middleware.__self__)] = middleware
@@ -73,9 +73,9 @@ class AppRunner(BaseRunner):
             handler = partial(middleware, handler=handler, app=self._app)
 
         response = await handler(request)
-        return response
+        return response  # type: ignore
 
-    def _make_request(self, *args, **kwargs) -> Request:
+    def _make_request(self, *args: Any, **kwargs: Any) -> Request:
         return Request(*args, **kwargs, loop=self._loop)
 
     async def _make_server(self) -> WebServer:
