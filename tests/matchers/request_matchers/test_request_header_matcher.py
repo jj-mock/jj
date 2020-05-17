@@ -6,8 +6,10 @@ from multidict import CIMultiDict
 from jj.matchers import AttributeMatcher, HeaderMatcher, RequestMatcher
 from jj.matchers.attribute_matchers import MultiDictMatcher
 
-from ..._test_utils.fixtures import request_, resolver_  # noqa: F401
+from ..._test_utils.fixtures import request_, resolver_
 from ..._test_utils.steps import given, then, when
+
+__all__ = ("request_", "resolver_",)
 
 
 @pytest.mark.asyncio

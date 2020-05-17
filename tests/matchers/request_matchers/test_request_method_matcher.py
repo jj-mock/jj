@@ -5,8 +5,10 @@ from asynctest.mock import Mock, call, sentinel
 from jj.matchers import AttributeMatcher, MethodMatcher, RequestMatcher
 from jj.matchers.attribute_matchers import EqualMatcher
 
-from ..._test_utils.fixtures import request_, resolver_  # noqa: F401
+from ..._test_utils.fixtures import request_, resolver_
 from ..._test_utils.steps import given, then, when
+
+__all__ = ("request_", "resolver_",)
 
 
 @pytest.mark.asyncio

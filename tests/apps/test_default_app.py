@@ -31,6 +31,7 @@ class TestDefaultApp(asynctest.TestCase):
 
     async def test_default_app_without_handlers(self):
         path, status, text = "/route", 201, "text"
+
         class App(jj.App):
             resolver = self.resolver
             @PathMatcher(path, resolver=resolver)

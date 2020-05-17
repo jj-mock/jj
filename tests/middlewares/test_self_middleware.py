@@ -1,5 +1,5 @@
 import asynctest
-from asynctest import Mock, call
+from asynctest import Mock
 
 import jj
 from jj.apps import create_app

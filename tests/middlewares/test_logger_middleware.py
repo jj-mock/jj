@@ -1,5 +1,3 @@
-import logging
-
 import asynctest
 from asynctest import Mock, call
 
@@ -8,7 +6,6 @@ from jj.apps import create_app
 from jj.handlers import default_handler
 from jj.matchers import MethodMatcher
 from jj.middlewares import BaseMiddleware, LoggerMiddleware
-from jj.requests import Request
 from jj.resolvers import Registry, ReversedResolver
 from jj.responses import Response
 

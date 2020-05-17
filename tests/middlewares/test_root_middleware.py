@@ -77,8 +77,10 @@ class TestRootMiddleware(asynctest.TestCase):
 
     async def test_multiple_root_middlewares(self):
         mock = Mock()
+
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 mock(App.__name__, sentinel.BEFORE)

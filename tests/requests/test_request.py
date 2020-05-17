@@ -1,5 +1,4 @@
 import asynctest
-from asynctest import sentinel
 from multidict import MultiDictProxy
 
 import jj
