@@ -1,9 +1,8 @@
-from typing import Type, Union, Callable
+from typing import Callable, Type, Union
 
 from ..apps import AbstractApp
 from ..handlers import HandlerFunction
 from ._abstract_middleware import AbstractMiddleware
-
 
 __all__ = ("BaseMiddleware",)
 

@@ -1,6 +1,5 @@
-from typing import Any, Type
 from collections import MutableMapping, OrderedDict
-
+from typing import Any, Type
 
 __all__ = ("Registry",)
 

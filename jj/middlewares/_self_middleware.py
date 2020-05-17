@@ -6,7 +6,6 @@ from ..requests import Request
 from ..responses import Response
 from ._root_middleware import RootMiddleware
 
-
 __all__ = ("SelfMiddleware",)
 
 

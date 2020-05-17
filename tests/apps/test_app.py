@@ -1,11 +1,11 @@
 import asynctest
-from asynctest import Mock, sentinel, call
+from asynctest import Mock, call, sentinel
 
 import jj
 from jj.apps import create_app
-from jj.matchers import MethodMatcher, PathMatcher, ParamMatcher
-from jj.resolvers import Registry, ReversedResolver
 from jj.handlers import default_handler
+from jj.matchers import MethodMatcher, ParamMatcher, PathMatcher
+from jj.resolvers import Registry, ReversedResolver
 from jj.responses import Response
 
 from .._test_utils import run

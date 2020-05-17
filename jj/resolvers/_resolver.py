@@ -1,15 +1,14 @@
-from typing import Any, List, Type
 from inspect import isclass
+from typing import Any, List, Type
 from unittest.mock import sentinel as nil
 
 from undecorated import undecorated
 
 from ..apps import AbstractApp
-from ..requests import Request
 from ..handlers import HandlerFunction
+from ..requests import Request
 from ._matcher_function import MatcherFunction
 from ._registry import Registry
-
 
 __all__ = ("Resolver",)
 

@@ -1,8 +1,7 @@
 from asyncio import AbstractEventLoop, ensure_future
-from typing import Type, Any, List
+from typing import Any, List, Type
 
 from aiohttp.web_runner import BaseRunner, TCPSite
-
 
 __all__ = ("Server",)
 

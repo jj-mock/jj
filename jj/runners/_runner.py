@@ -1,18 +1,18 @@
 from asyncio import AbstractEventLoop
-from typing import Any, List, Iterator
-from functools import partial
 from collections import OrderedDict
+from functools import partial
+from typing import Any, Iterator, List
 
-from aiohttp.web import Server as WebServer, BaseRunner
-from aiohttp.web_exceptions import HTTPExpectationFailed
 from aiohttp.http_writer import HttpVersion11
+from aiohttp.web import BaseRunner
+from aiohttp.web import Server as WebServer
+from aiohttp.web_exceptions import HTTPExpectationFailed
 
 from ..apps import AbstractApp
 from ..middlewares import RootMiddleware
 from ..requests import Request
 from ..resolvers import Resolver
 from ..responses import Response
-
 
 __all__ = ("AppRunner",)
 

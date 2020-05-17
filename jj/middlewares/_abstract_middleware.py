@@ -6,7 +6,6 @@ from ..requests import Request
 from ..resolvers import Resolver
 from ..responses import Response
 
-
 __all__ = ("AbstractMiddleware",)
 
 

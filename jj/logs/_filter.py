@@ -1,7 +1,6 @@
 import logging
 from logging import LogRecord
 
-
 __all__ = ("Filter",)
 
 

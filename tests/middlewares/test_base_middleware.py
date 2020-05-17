@@ -1,14 +1,14 @@
 import asynctest
-from asynctest import Mock, sentinel, call
+from asynctest import Mock, call, sentinel
 
 import jj
 from jj.apps import create_app
-from jj.resolvers import Registry, ReversedResolver
-from jj.matchers import MethodMatcher, PathMatcher
 from jj.handlers import default_handler
-from jj.requests import Request
-from jj.responses import Response
+from jj.matchers import MethodMatcher, PathMatcher
 from jj.middlewares import AbstractMiddleware, BaseMiddleware, RootMiddleware
+from jj.requests import Request
+from jj.resolvers import Registry, ReversedResolver
+from jj.responses import Response
 
 from .._test_utils import run
 

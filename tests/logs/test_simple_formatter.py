@@ -1,5 +1,5 @@
-import unittest
 import logging
+import unittest
 from unittest.mock import Mock, sentinel
 
 from jj.logs import SimpleFormatter

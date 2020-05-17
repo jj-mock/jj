@@ -1,4 +1,4 @@
-from typing import Type, Callable
+from typing import Callable, Type
 
 from ..apps import AbstractApp
 from ..handlers import HandlerFunction
@@ -6,9 +6,7 @@ from ..logs import Logger
 from ..requests import Request
 from ..resolvers import Resolver
 from ..responses import Response
-
-from ._base_middleware import BaseMiddleware, AppOrHandler
-
+from ._base_middleware import AppOrHandler, BaseMiddleware
 
 __all__ = ("LoggerMiddleware",)
 

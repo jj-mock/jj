@@ -1,5 +1,5 @@
 import asynctest
-from asynctest import CoroutineMock, Mock, sentinel, call
+from asynctest import CoroutineMock, Mock, call, sentinel
 
 from jj.apps import create_app
 from jj.resolvers import Registry, ReversedResolver

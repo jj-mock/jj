@@ -1,10 +1,9 @@
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 from aiohttp import web
 from multidict import MultiDictProxy
 
 from ..responses import StreamResponse
-
 
 __all__ = ("Request",)
 

@@ -1,9 +1,8 @@
 import logging
 
-from ._logger import Logger
 from ._filter import Filter
+from ._logger import Logger
 from .formatters import Formatter, SimpleFormatter
-
 
 __all__ = ("Logger", "Filter", "Formatter", "SimpleFormatter")
 

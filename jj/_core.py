@@ -1,22 +1,27 @@
 import asyncio
 from functools import partial
-from typing import Optional, List
+from typing import List, Optional
 
 from aiohttp import web
 
-from .apps import AbstractApp, DefaultApp, BaseApp
-from .resolvers import Registry, ReversedResolver
+from .apps import AbstractApp, BaseApp, DefaultApp
 from .handlers import default_handler
-from .logs import Logger, logger as default_logger
-from .servers import Server
-from .runners import AppRunner
-from .middlewares import BaseMiddleware, SelfMiddleware, LoggerMiddleware
+from .logs import Logger
+from .logs import logger as default_logger
 from .matchers import ResolvableMatcher
 from .matchers.logical_matchers import AllMatcher, AnyMatcher
-from .matchers.request_matchers import (MethodMatcher, PathMatcher,
-                                        HeaderMatcher, ParamMatcher, StrOrAttrMatcher,
-                                        DictOrTupleListOrAttrMatcher)
-
+from .matchers.request_matchers import (
+    DictOrTupleListOrAttrMatcher,
+    HeaderMatcher,
+    MethodMatcher,
+    ParamMatcher,
+    PathMatcher,
+    StrOrAttrMatcher,
+)
+from .middlewares import BaseMiddleware, LoggerMiddleware, SelfMiddleware
+from .resolvers import Registry, ReversedResolver
+from .runners import AppRunner
+from .servers import Server
 
 __all__ = (
     "App",
