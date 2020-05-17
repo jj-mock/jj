@@ -42,7 +42,8 @@ class TestFormatter(unittest.TestCase):
         expected = self.formatter.format_response.return_value
         self.assertEqual(self.formatter.format(record), expected)
 
-        self.formatter.format_response.assert_called_once_with(sentinel.response, sentinel.request, record)
+        self.formatter.format_response.assert_called_once_with(sentinel.response,
+                                                               sentinel.request, record)
         self.formatter.format_request.assert_not_called()
 
     def test_request_format(self):

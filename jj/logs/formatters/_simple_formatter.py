@@ -2,7 +2,6 @@ from logging import LogRecord
 
 from ._formatter import Formatter, Request, Response
 
-
 __all__ = ("SimpleFormatter",)
 
 

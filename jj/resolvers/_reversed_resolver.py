@@ -4,7 +4,6 @@ from ..apps import AbstractApp
 from ..handlers import HandlerFunction
 from ._resolver import Resolver
 
-
 __all__ = ("ReversedResolver",)
 
 

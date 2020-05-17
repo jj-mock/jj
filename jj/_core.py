@@ -1,22 +1,27 @@
 import asyncio
 from functools import partial
-from typing import Optional, List
+from typing import List, Optional, Sequence, Type
 
 from aiohttp import web
 
-from .apps import AbstractApp, DefaultApp, BaseApp
-from .resolvers import Registry, ReversedResolver
+from .apps import AbstractApp, BaseApp, DefaultApp
 from .handlers import default_handler
-from .logs import Logger, logger as default_logger
-from .servers import Server
-from .runners import AppRunner
-from .middlewares import BaseMiddleware, SelfMiddleware, LoggerMiddleware
+from .logs import Logger
+from .logs import logger as default_logger
 from .matchers import ResolvableMatcher
 from .matchers.logical_matchers import AllMatcher, AnyMatcher
-from .matchers.request_matchers import (MethodMatcher, PathMatcher,
-                                        HeaderMatcher, ParamMatcher, StrOrAttrMatcher,
-                                        DictOrTupleListOrAttrMatcher)
-
+from .matchers.request_matchers import (
+    DictOrTupleListOrAttrMatcher,
+    HeaderMatcher,
+    MethodMatcher,
+    ParamMatcher,
+    PathMatcher,
+    StrOrAttrMatcher,
+)
+from .middlewares import BaseMiddleware, LoggerMiddleware, SelfMiddleware
+from .resolvers import Registry, ReversedResolver
+from .runners import AppRunner
+from .servers import Server
 
 __all__ = (
     "App",
@@ -84,7 +89,10 @@ def match_any(matchers: List[ResolvableMatcher]) -> AnyMatcher:
     return AnyMatcher(matchers, resolver=resolver)
 
 
-def match(method=None, path=None, params=None, headers=None) -> AllMatcher:
+def match(method: Optional[StrOrAttrMatcher] = None,
+          path: Optional[StrOrAttrMatcher] = None,
+          params: Optional[DictOrTupleListOrAttrMatcher] = None,
+          headers: Optional[DictOrTupleListOrAttrMatcher] = None) -> AllMatcher:
     submatchers: List[ResolvableMatcher] = []
     if method:
         submatchers += [MethodMatcher(method, resolver=resolver)]
@@ -104,7 +112,7 @@ def start(app: AbstractApp, *,
     server.start(app, host=host, port=port)
 
 
-def wait_for(exceptions) -> None:
+def wait_for(exceptions: Sequence[Type[BaseException]]) -> None:
     try:
         server.serve()
     except tuple(exceptions):

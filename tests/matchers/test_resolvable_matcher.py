@@ -5,8 +5,10 @@ from pytest import raises
 
 from jj.matchers import ResolvableMatcher
 
-from .._test_utils.fixtures import handler_, request_, resolver_  # noqa: F401
+from .._test_utils.fixtures import handler_, request_, resolver_
 from .._test_utils.steps import given, then, when
+
+__all__ = ("request_", "resolver_", "handler_",)
 
 
 @pytest.mark.asyncio

@@ -1,10 +1,10 @@
 import asynctest
 
 import jj
-from jj.apps import create_app, DefaultApp
+from jj.apps import DefaultApp, create_app
+from jj.handlers import default_handler
 from jj.matchers import PathMatcher
 from jj.resolvers import Registry, ReversedResolver
-from jj.handlers import default_handler
 from jj.responses import Response
 
 from .._test_utils import run
@@ -31,6 +31,7 @@ class TestDefaultApp(asynctest.TestCase):
 
     async def test_default_app_without_handlers(self):
         path, status, text = "/route", 201, "text"
+
         class App(jj.App):
             resolver = self.resolver
             @PathMatcher(path, resolver=resolver)

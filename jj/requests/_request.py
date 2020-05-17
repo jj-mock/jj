@@ -1,10 +1,9 @@
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 from aiohttp import web
 from multidict import MultiDictProxy
 
 from ..responses import StreamResponse
-
 
 __all__ = ("Request",)
 
@@ -16,7 +15,7 @@ class Request(web.Request):
 
     @property
     def params(self) -> "MultiDictProxy[str]":
-        return self.query
+        return self.query  # type: ignore
 
     @property
     def segments(self) -> Dict[str, str]:

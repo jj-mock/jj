@@ -1,7 +1,6 @@
-from typing import Callable, Any, Coroutine
+from typing import Any, Callable, Coroutine
 
 from ..requests import Request
-
 
 __all__ = ("MatcherFunction",)
 

@@ -8,12 +8,12 @@ from ._abstract_app import AbstractApp
 __all__ = ("BaseApp", "define_app", "create_app")
 
 
-def _register(cls, name: str, value: Any) -> None:
+def _register(cls: Any, name: str, value: Any) -> None:
     if callable(value) and not name.startswith("_"):
         cls.resolver.register_handler(value, cls)
 
 
-def _deregister(cls, name: str) -> None:
+def _deregister(cls: Any, name: str) -> None:
     if hasattr(cls, name):
         cls.resolver.deregister_handler(getattr(cls, name), cls)
 

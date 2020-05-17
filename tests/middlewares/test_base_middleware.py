@@ -1,14 +1,14 @@
 import asynctest
-from asynctest import Mock, sentinel, call
+from asynctest import Mock, call, sentinel
 
 import jj
 from jj.apps import create_app
-from jj.resolvers import Registry, ReversedResolver
-from jj.matchers import MethodMatcher, PathMatcher
 from jj.handlers import default_handler
-from jj.requests import Request
-from jj.responses import Response
+from jj.matchers import MethodMatcher, PathMatcher
 from jj.middlewares import AbstractMiddleware, BaseMiddleware, RootMiddleware
+from jj.requests import Request
+from jj.resolvers import Registry, ReversedResolver
+from jj.responses import Response
 
 from .._test_utils import run
 
@@ -57,7 +57,7 @@ class TestBaseMiddleware(asynctest.TestCase):
 
     async def test_app_middleware_without_handlers(self):
         mock = Mock()
-    
+
         class Middleware(BaseMiddleware):
             async def do(self, request, handler, app):
                 mock(request, handler, app)
@@ -80,7 +80,7 @@ class TestBaseMiddleware(asynctest.TestCase):
 
     async def test_app_middleware_with_handlers(self):
         mock = Mock()
-    
+
         class Middleware(BaseMiddleware):
             async def do(self, r, h, a):
                 mock(r, h, a)
@@ -148,6 +148,7 @@ class TestBaseMiddleware(asynctest.TestCase):
         class Middleware(BaseMiddleware):
             def on_app(self, app):
                 mock(app)
+
             def on_handler(self, handler):
                 mock(handler)
 
@@ -165,7 +166,7 @@ class TestBaseMiddleware(asynctest.TestCase):
 
     async def test_handler_middleware(self):
         mock = Mock()
-    
+
         class Middleware(BaseMiddleware):
             async def do(self, r, h, a):
                 mock(r, h, a)
@@ -173,6 +174,7 @@ class TestBaseMiddleware(asynctest.TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @PathMatcher("/path", resolver=resolver)
             @Middleware(resolver)
             @MethodMatcher("*", resolver=resolver)
@@ -196,11 +198,13 @@ class TestBaseMiddleware(asynctest.TestCase):
         class Middleware(BaseMiddleware):
             def on_app(self, app):
                 mock(app)
+
             def on_handler(self, handler):
                 mock(handler)
 
         class App(jj.App):
             resolver = self.resolver
+
             @Middleware(resolver)
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
@@ -227,6 +231,7 @@ class TestBaseMiddleware(asynctest.TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @Middleware1(resolver)
             @MethodMatcher("*", resolver=resolver)
             @Middleware2(resolver)
@@ -268,6 +273,7 @@ class TestBaseMiddleware(asynctest.TestCase):
         @Middleware1(self.resolver)
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             @Middleware2(resolver)
             async def handler(request):

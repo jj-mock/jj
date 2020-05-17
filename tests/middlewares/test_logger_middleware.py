@@ -1,15 +1,13 @@
-import logging
 import asynctest
 from asynctest import Mock, call
 
 import jj
 from jj.apps import create_app
-from jj.resolvers import Registry, ReversedResolver
-from jj.matchers import MethodMatcher
 from jj.handlers import default_handler
-from jj.requests import Request
-from jj.responses import Response
+from jj.matchers import MethodMatcher
 from jj.middlewares import BaseMiddleware, LoggerMiddleware
+from jj.resolvers import Registry, ReversedResolver
+from jj.responses import Response
 
 from .._test_utils import run
 

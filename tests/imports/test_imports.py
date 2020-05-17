@@ -1,3 +1,4 @@
+# flake8: noqa
 from pytest import raises
 
 # apps

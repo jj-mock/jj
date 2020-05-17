@@ -1,14 +1,14 @@
 import asynctest
-from asynctest import Mock, sentinel, call
+from asynctest import Mock, call, sentinel
 
 import jj
 from jj.apps import create_app
-from jj.resolvers import Registry, ReversedResolver
-from jj.matchers import MethodMatcher
 from jj.handlers import default_handler
-from jj.requests import Request
-from jj.responses import Response
+from jj.matchers import MethodMatcher
 from jj.middlewares import AbstractMiddleware, RootMiddleware
+from jj.requests import Request
+from jj.resolvers import Registry, ReversedResolver
+from jj.responses import Response
 
 from .._test_utils import run
 
@@ -77,8 +77,10 @@ class TestRootMiddleware(asynctest.TestCase):
 
     async def test_multiple_root_middlewares(self):
         mock = Mock()
+
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 mock(App.__name__, sentinel.BEFORE)

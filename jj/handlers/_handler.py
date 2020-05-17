@@ -1,7 +1,6 @@
 from ..requests import Request
 from ..responses import Response
 
-
 __all__ = ("default_handler",)
 
 

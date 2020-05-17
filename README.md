@@ -366,7 +366,7 @@ class ReusableMiddleware(jj.Middleware):
             return jj.Response(status=FORBIDDEN, body="Forbidden")
         return await handler(request)
 
-private = @ReusableMiddleware("<SECRET_KEY>")
+private = ReusableMiddleware("<SECRET_KEY>")
 
 @private
 class App(jj.App):

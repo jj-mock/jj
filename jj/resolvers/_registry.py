@@ -1,12 +1,12 @@
-from typing import Any, Type
-from collections import MutableMapping, OrderedDict
-
+from collections import OrderedDict
+from typing import Any, MutableMapping, Type
 
 __all__ = ("Registry",)
 
 
 class Registry:
-    def __init__(self, mutable_mapping_factory: Type[MutableMapping] = OrderedDict) -> None:
+    def __init__(self,
+                 mutable_mapping_factory: Type[MutableMapping[Any, Any]] = OrderedDict) -> None:
         self._factory = mutable_mapping_factory
         self._registry = self._factory()
 
@@ -17,7 +17,7 @@ class Registry:
             self._registry[container][name] = self._factory()
         self._registry[container][name][key] = value
 
-    def get(self, container: Any, name: str) -> MutableMapping:
+    def get(self, container: Any, name: str) -> Any:
         if (container not in self._registry) or (name not in self._registry[container]):
             return self._factory()
         return self._registry[container][name]
