@@ -1,4 +1,4 @@
-from asynctest.mock import sentinel
+from unittest.mock import sentinel
 
 from jj.matchers import AttributeMatcher
 from jj.matchers.attribute_matchers import RouteMatcher

@@ -1,4 +1,5 @@
-import asynctest
+import unittest
+
 import pytest
 
 import jj
@@ -11,7 +12,7 @@ from jj.responses import Response
 from .._test_utils import run
 
 
-class TestDefaultApp(asynctest.TestCase):
+class TestDefaultApp(unittest.TestCase):
     def setUp(self):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)

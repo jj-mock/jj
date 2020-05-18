@@ -1,5 +1,6 @@
+from unittest.mock import sentinel
+
 import pytest
-from asynctest.mock import sentinel
 from pytest import raises
 
 from jj.matchers import AttributeMatcher

@@ -1,4 +1,5 @@
-import asynctest
+import unittest
+
 import pytest
 from aiohttp import FormData
 
@@ -14,7 +15,7 @@ from .._test_utils import TestServer, run
 from ._request_formatter import RequestFormatter
 
 
-class TestTunnelResponse(asynctest.TestCase):
+class TestTunnelResponse(unittest.TestCase):
     def make_app_with_response(self, *args, **kwargs):
         class App(jj.App):
             resolver = self.resolver

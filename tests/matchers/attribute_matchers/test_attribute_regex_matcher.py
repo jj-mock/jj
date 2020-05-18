@@ -1,7 +1,7 @@
 import re
+from unittest.mock import sentinel
 
 import pytest
-from asynctest.mock import sentinel
 
 from jj.matchers import AttributeMatcher, RegexMatcher
 

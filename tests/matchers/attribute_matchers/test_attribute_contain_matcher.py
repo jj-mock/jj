@@ -1,5 +1,6 @@
+from unittest.mock import Mock, call, sentinel
+
 import pytest
-from asynctest.mock import Mock, call, sentinel
 
 from jj.matchers import AttributeMatcher, ContainMatcher, NotContainMatcher
 

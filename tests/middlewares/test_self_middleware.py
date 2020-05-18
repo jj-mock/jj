@@ -1,6 +1,7 @@
-import asynctest
+import unittest
+from unittest.mock import Mock
+
 import pytest
-from asynctest import Mock
 
 import jj
 from jj.apps import create_app
@@ -14,7 +15,7 @@ from jj.responses import Response
 from .._test_utils import run
 
 
-class TestSelfMiddleware(asynctest.TestCase):
+class TestSelfMiddleware(unittest.TestCase):
     def setUp(self):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)

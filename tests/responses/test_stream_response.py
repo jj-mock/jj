@@ -1,4 +1,5 @@
-import asynctest
+import unittest
+
 import pytest
 
 import jj
@@ -12,7 +13,7 @@ from jj.responses import StreamResponse
 from .._test_utils import run
 
 
-class TestStreamResponse(asynctest.TestCase):
+class TestStreamResponse(unittest.TestCase):
     def make_app_with_response(self, *args, **kwargs):
         class App(jj.App):
             resolver = self.resolver

@@ -1,4 +1,5 @@
-import asynctest
+import unittest
+
 import pytest
 from multidict import MultiDictProxy
 
@@ -12,7 +13,7 @@ from jj.responses import Response
 from .._test_utils import run
 
 
-class TestRequest(asynctest.TestCase):
+class TestRequest(unittest.TestCase):
     def setUp(self):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)

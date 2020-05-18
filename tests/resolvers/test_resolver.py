@@ -1,12 +1,14 @@
-import asynctest
+import unittest
+from unittest.mock import Mock, call, sentinel
+
 import pytest
-from asynctest import CoroutineMock, Mock, call, sentinel
+from asynctest.mock import CoroutineMock
 
 from jj.apps import create_app
 from jj.resolvers import Registry, Resolver
 
 
-class TestResolver(asynctest.TestCase):
+class TestResolver(unittest.TestCase):
     def setUp(self):
         self.default_handler = CoroutineMock(return_value=sentinel.default_response)
         self.default_app = create_app()

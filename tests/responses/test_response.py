@@ -1,6 +1,6 @@
 import os
+import unittest
 
-import asynctest
 import pytest
 
 import jj
@@ -14,7 +14,7 @@ from jj.responses import Response
 from .._test_utils import run
 
 
-class TestResponse(asynctest.TestCase):
+class TestResponse(unittest.TestCase):
     def make_app_with_response(self, *args, **kwargs):
         class App(jj.App):
             resolver = self.resolver

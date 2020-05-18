@@ -1,6 +1,7 @@
-import asynctest
+import unittest
+from unittest.mock import Mock, call
+
 import pytest
-from asynctest import Mock, call
 
 import jj
 from jj.apps import create_app
@@ -13,7 +14,7 @@ from jj.responses import Response
 from .._test_utils import run
 
 
-class TestLoggerMiddleware(asynctest.TestCase):
+class TestLoggerMiddleware(unittest.TestCase):
     def setUp(self):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)
