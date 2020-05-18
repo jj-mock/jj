@@ -53,10 +53,10 @@ def test_is_instance_of_attribute_matcher():
     (lambda: RegexMatcher(".*"), "RegexMatcher('.*')"),
 
     (lambda: RegexMatcher(".*", re.I),
-     "RegexMatcher('.*', <RegexFlag.IGNORECASE: 2>)"),
+     f"RegexMatcher('.*', {re.I!r})"),
 
     (lambda: RegexMatcher(".*", re.I | re.M),
-     "RegexMatcher('.*', <RegexFlag.MULTILINE|IGNORECASE: 10>)"),
+     f"RegexMatcher('.*', {re.I | re.M!r})"),
 ])
 def test_repr(instance_factory, representation):
     with given:
