@@ -56,8 +56,8 @@ class Response(web.Response, StreamResponse):
     def copy(self) -> "Response":
         assert not self.prepared
 
-        response = self.__class__(status=self.status, reason=self.reason,  # type: ignore
-                                  headers=self.headers, body=self.body)
+        response = self.__class__(status=self.status, reason=self.reason,
+                                  headers=self.headers, body=self.body)  # type: ignore
         for cookie in self.cookies.values():
             response.set_cookie(**self._cookie_to_dict(cookie))  # type: ignore
         if self.chunked:

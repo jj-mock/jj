@@ -21,7 +21,7 @@ class BaseMiddleware(AbstractMiddleware):
     def _call_hooks(self, app_or_handler: AppOrHandler) -> None:
         if isinstance(app_or_handler, type) and issubclass(app_or_handler, AbstractApp):
             return self.on_app(app_or_handler)
-        return self.on_handler(app_or_handler)  # type: ignore
+        return self.on_handler(app_or_handler)
 
     def _register_middleware(self,
                              app_or_handler: AppOrHandler, middleware: MiddlewareType) -> None:

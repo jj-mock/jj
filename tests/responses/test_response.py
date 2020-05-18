@@ -1,6 +1,7 @@
 import os
 
 import asynctest
+import pytest
 
 import jj
 from jj import server_version
@@ -29,6 +30,7 @@ class TestResponse(asynctest.TestCase):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)
 
+    @pytest.mark.asyncio
     async def test_response_with_default_args(self):
         app = self.make_app_with_response()
 
@@ -47,6 +49,7 @@ class TestResponse(asynctest.TestCase):
             raw = await response.read()
             self.assertEqual(raw, b"")
 
+    @pytest.mark.asyncio
     async def test_response_with_conflicted_args(self):
         payload = "200 OK"
 
@@ -61,6 +64,7 @@ class TestResponse(asynctest.TestCase):
 
     # Status
 
+    @pytest.mark.asyncio
     async def test_response_status(self):
         status = 204
         app = self.make_app_with_response(status=status)
@@ -71,6 +75,7 @@ class TestResponse(asynctest.TestCase):
             # aiohttp автоматически подставляет нужный reason
             self.assertEqual(response.reason, "No Content")
 
+    @pytest.mark.asyncio
     async def test_response_reason(self):
         status, reason = 204, "Custom Reason"
         app = self.make_app_with_response(status=status, reason=reason)
@@ -82,6 +87,7 @@ class TestResponse(asynctest.TestCase):
 
     # Body
 
+    @pytest.mark.asyncio
     async def test_response_body(self):
         body = "200 OK"
         binary_body = b"200 OK"
@@ -95,6 +101,7 @@ class TestResponse(asynctest.TestCase):
             self.assertEqual(response.headers.get("Content-Length"), str(len(body)))
             self.assertEqual(response.headers.get("Content-Type"), "text/plain; charset=utf-8")
 
+    @pytest.mark.asyncio
     async def test_response_text_body(self):
         text = "200 OK"
         binary_text = b"200 OK"
@@ -108,6 +115,7 @@ class TestResponse(asynctest.TestCase):
             self.assertEqual(response.headers.get("Content-Length"), str(len(text)))
             self.assertEqual(response.headers.get("Content-Type"), "text/plain; charset=utf-8")
 
+    @pytest.mark.asyncio
     async def test_response_json_body(self):
         json = {"key": None}
         dumped_json = '{"key": null}'
@@ -123,6 +131,7 @@ class TestResponse(asynctest.TestCase):
             self.assertEqual(response.headers.get("Content-Length"), str(len(dumped_json)))
             self.assertEqual(response.headers.get("Content-Type"), "application/json")
 
+    @pytest.mark.asyncio
     async def test_response_null_json_body(self):
         json = None
         dumped_json = 'null'
@@ -138,6 +147,7 @@ class TestResponse(asynctest.TestCase):
             self.assertEqual(response.headers.get("Content-Length"), str(len(dumped_json)))
             self.assertEqual(response.headers.get("Content-Type"), "application/json")
 
+    @pytest.mark.asyncio
     async def test_response_binary_body(self):
         body = b"200 OK"
         app = self.make_app_with_response(body=body)
@@ -150,6 +160,7 @@ class TestResponse(asynctest.TestCase):
             self.assertEqual(response.headers.get("Content-Length"), str(len(body)))
             self.assertEqual(response.headers.get("Content-Type"), "application/octet-stream")
 
+    @pytest.mark.asyncio
     async def test_response_predefined_text_body(self):
         path = self.make_path("fixtures/users.json")
         with open(path, "rt") as f:
@@ -163,6 +174,7 @@ class TestResponse(asynctest.TestCase):
             self.assertEqual(response.headers.get("Content-Type"), "text/plain; charset=utf-8")
             self.assertEqual(response.headers.get("Content-Disposition"), "inline")
 
+    @pytest.mark.asyncio
     async def test_response_predefined_binary_body(self):
         path = self.make_path("fixtures/users.json")
         with open(path, "rb") as f:
@@ -179,6 +191,7 @@ class TestResponse(asynctest.TestCase):
 
     # Headers
 
+    @pytest.mark.asyncio
     async def test_response_headers(self):
         custom_header_key, custom_header_val = "Cutom-Header", "Value"
         app = self.make_app_with_response(headers={custom_header_key: custom_header_val})
@@ -188,6 +201,7 @@ class TestResponse(asynctest.TestCase):
             self.assertEqual(response.headers.get(custom_header_key), custom_header_val)
             self.assertEqual(response.headers.get("Server"), server_version)
 
+    @pytest.mark.asyncio
     async def test_response_with_custom_server_header(self):
         server_header = "server version x"
         app = self.make_app_with_response(headers={"Server": server_header})
@@ -196,6 +210,7 @@ class TestResponse(asynctest.TestCase):
             response = await client.get("/")
             self.assertEqual(response.headers.get("Server"), server_header)
 
+    @pytest.mark.asyncio
     async def test_response_with_expect_header(self):
         app = self.make_app_with_response()
 
@@ -203,6 +218,7 @@ class TestResponse(asynctest.TestCase):
             response = await client.post("/", json={}, expect100=True)
             self.assertEqual(response.status, 200)
 
+    @pytest.mark.asyncio
     async def test_response_with_incorrect_expect_header(self):
         app = self.make_app_with_response()
 
