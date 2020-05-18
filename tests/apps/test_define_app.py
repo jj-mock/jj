@@ -1,9 +1,9 @@
-import asynctest
+import unittest
 
 from jj.apps import BaseApp, define_app
 
 
-class TestDefineApp(asynctest.TestCase):
+class TestDefineApp(unittest.TestCase):
     def test_define_app(self):
         self.assertTrue(issubclass(define_app(), BaseApp))
 

@@ -1,4 +1,6 @@
-import asynctest
+import unittest
+
+import pytest
 
 import jj
 from jj import server_version
@@ -11,7 +13,7 @@ from jj.responses import StreamResponse
 from .._test_utils import run
 
 
-class TestStreamResponse(asynctest.TestCase):
+class TestStreamResponse(unittest.TestCase):
     def make_app_with_response(self, *args, **kwargs):
         class App(jj.App):
             resolver = self.resolver
@@ -24,6 +26,7 @@ class TestStreamResponse(asynctest.TestCase):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)
 
+    @pytest.mark.asyncio
     async def test_response_with_manual_preparing(self):
         body = b"200 OK"
 
@@ -52,6 +55,7 @@ class TestStreamResponse(asynctest.TestCase):
             raw = await response.read()
             self.assertEqual(raw, body)
 
+    @pytest.mark.asyncio
     async def test_response_with_default_args(self):
         app = self.make_app_with_response()
 
@@ -72,6 +76,7 @@ class TestStreamResponse(asynctest.TestCase):
 
     # Status
 
+    @pytest.mark.asyncio
     async def test_response_status(self):
         status = 204
         app = self.make_app_with_response(status=status)
@@ -82,6 +87,7 @@ class TestStreamResponse(asynctest.TestCase):
             # aiohttp автоматически подставляет нужный reason
             self.assertEqual(response.reason, "No Content")
 
+    @pytest.mark.asyncio
     async def test_response_reason(self):
         status, reason = 204, "Custom Reason"
         app = self.make_app_with_response(status=status, reason=reason)
@@ -93,6 +99,7 @@ class TestStreamResponse(asynctest.TestCase):
 
     # Headers
 
+    @pytest.mark.asyncio
     async def test_response_headers(self):
         custom_header_key, custom_header_val = "Cutom-Header", "Value"
         app = self.make_app_with_response(headers={custom_header_key: custom_header_val})
@@ -102,6 +109,7 @@ class TestStreamResponse(asynctest.TestCase):
             self.assertEqual(response.headers.get(custom_header_key), custom_header_val)
             self.assertEqual(response.headers.get("Server"), server_version)
 
+    @pytest.mark.asyncio
     async def test_response_with_custom_server_header(self):
         server_header = "server version x"
         app = self.make_app_with_response(headers={"Server": server_header})
@@ -110,6 +118,7 @@ class TestStreamResponse(asynctest.TestCase):
             response = await client.get("/")
             self.assertEqual(response.headers.get("Server"), server_header)
 
+    @pytest.mark.asyncio
     async def test_response_with_expect_header(self):
         app = self.make_app_with_response()
 
@@ -117,6 +126,7 @@ class TestStreamResponse(asynctest.TestCase):
             response = await client.post("/", json={}, expect100=True)
             self.assertEqual(response.status, 200)
 
+    @pytest.mark.asyncio
     async def test_response_with_incorrect_expect_header(self):
         app = self.make_app_with_response()
 

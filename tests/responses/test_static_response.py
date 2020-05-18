@@ -1,6 +1,7 @@
 import os
+import unittest
 
-import asynctest
+import pytest
 
 import jj
 from jj import server_version
@@ -13,7 +14,7 @@ from jj.responses import StaticResponse
 from .._test_utils import run
 
 
-class TestStaticResponse(asynctest.TestCase):
+class TestStaticResponse(unittest.TestCase):
     def make_app_with_response(self, *args, **kwargs):
         class App(jj.App):
             resolver = self.resolver
@@ -31,6 +32,7 @@ class TestStaticResponse(asynctest.TestCase):
 
     # MimeType
 
+    @pytest.mark.asyncio
     async def test_response_without_mimetype(self):
         path = self.make_path("fixtures/unknown_mime_type")
         with open(path, "rb") as f:
@@ -54,6 +56,7 @@ class TestStaticResponse(asynctest.TestCase):
             raw = await response.read()
             self.assertEqual(raw, body)
 
+    @pytest.mark.asyncio
     async def test_response_with_mimetype(self):
         path = self.make_path("fixtures/users.json")
         with open(path, "rb") as f:
@@ -79,6 +82,7 @@ class TestStaticResponse(asynctest.TestCase):
 
     # Attachment
 
+    @pytest.mark.asyncio
     async def test_response_with_attachment(self):
         path = self.make_path("fixtures/users.json")
         app = self.make_app_with_response(path, attachment=True)
@@ -88,6 +92,7 @@ class TestStaticResponse(asynctest.TestCase):
             self.assertEqual(response.headers.get("Content-Type"), "application/json")
             self.assertEqual(response.headers.get("Content-Disposition"), "attachment")
 
+    @pytest.mark.asyncio
     async def test_response_with_attachment_and_custom_header(self):
         path = self.make_path("fixtures/users.json")
         custom_header_key, custom_header_val = "Cutom-Header", "Value"
@@ -101,6 +106,7 @@ class TestStaticResponse(asynctest.TestCase):
             self.assertEqual(response.headers.get("Content-Disposition"), "attachment")
             self.assertEqual(response.headers.get(custom_header_key), custom_header_val)
 
+    @pytest.mark.asyncio
     async def test_response_with_attachment_and_filename(self):
         path = self.make_path("fixtures/users.json")
         app = self.make_app_with_response(path, attachment="users.json")
@@ -113,6 +119,7 @@ class TestStaticResponse(asynctest.TestCase):
 
     # Headers
 
+    @pytest.mark.asyncio
     async def test_response_headers(self):
         path = self.make_path("fixtures/users.json")
         custom_header_key, custom_header_val = "Cutom-Header", "Value"
@@ -123,6 +130,7 @@ class TestStaticResponse(asynctest.TestCase):
             self.assertEqual(response.headers.get(custom_header_key), custom_header_val)
             self.assertEqual(response.headers.get("Server"), server_version)
 
+    @pytest.mark.asyncio
     async def test_response_with_custom_server_header(self):
         path = self.make_path("fixtures/users.json")
         server_header = "server version x"
@@ -132,6 +140,7 @@ class TestStaticResponse(asynctest.TestCase):
             response = await client.get("/")
             self.assertEqual(response.headers.get("Server"), server_header)
 
+    @pytest.mark.asyncio
     async def test_response_with_expect_header(self):
         app = self.make_app_with_response(self.make_path("fixtures/users.json"))
 
@@ -139,6 +148,7 @@ class TestStaticResponse(asynctest.TestCase):
             response = await client.post("/", json={}, expect100=True)
             self.assertEqual(response.status, 200)
 
+    @pytest.mark.asyncio
     async def test_response_with_incorrect_expect_header(self):
         app = self.make_app_with_response(self.make_path("fixtures/users.json"))
 

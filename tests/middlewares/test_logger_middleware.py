@@ -1,5 +1,7 @@
-import asynctest
-from asynctest import Mock, call
+import unittest
+from unittest.mock import Mock, call
+
+import pytest
 
 import jj
 from jj.apps import create_app
@@ -12,7 +14,7 @@ from jj.responses import Response
 from .._test_utils import run
 
 
-class TestLoggerMiddleware(asynctest.TestCase):
+class TestLoggerMiddleware(unittest.TestCase):
     def setUp(self):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)
@@ -30,6 +32,7 @@ class TestLoggerMiddleware(asynctest.TestCase):
         middleware = LoggerMiddleware(self.resolver, logger)
         self.assertIsInstance(middleware, BaseMiddleware)
 
+    @pytest.mark.asyncio
     async def test_app_logger(self):
         mock = Mock()
         record = {"request": None, "response": None}
@@ -59,6 +62,7 @@ class TestLoggerMiddleware(asynctest.TestCase):
         ])
         self.assertEqual(mock.info.call_count, 2)
 
+    @pytest.mark.asyncio
     async def test_handler_logger(self):
         mock = Mock()
         record = {"request": None, "response": None}
@@ -88,6 +92,7 @@ class TestLoggerMiddleware(asynctest.TestCase):
         ])
         self.assertEqual(mock.info.call_count, 2)
 
+    @pytest.mark.asyncio
     async def test_app_and_handler_logger(self):
         app_logger, handler_logger = Mock(), Mock()
 
@@ -106,6 +111,7 @@ class TestLoggerMiddleware(asynctest.TestCase):
         self.assertEqual(app_logger.info.call_count, 0)
         self.assertEqual(handler_logger.info.call_count, 2)
 
+    @pytest.mark.asyncio
     async def test_handler_without_logger(self):
         class App(jj.App):
             resolver = self.resolver

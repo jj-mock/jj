@@ -1,6 +1,7 @@
+from unittest.mock import Mock, call, sentinel
+
 import pytest
 from asynctest.mock import CoroutineMock as CoroMock
-from asynctest.mock import Mock, call, sentinel
 from multidict import MultiDict
 
 from jj.matchers import AttributeMatcher, ParamMatcher, RequestMatcher

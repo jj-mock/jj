@@ -7,7 +7,7 @@ from ...resolvers import Resolver
 from ..attribute_matchers import AttributeMatcher, DictOrTupleList, MultiDictMatcher
 from ._request_matcher import RequestMatcher
 
-__all__ = ("HeaderMatcher",)
+__all__ = ("HeaderMatcher", "DictOrTupleListOrAttrMatcher",)
 
 DictOrTupleListOrAttrMatcher = Union[DictOrTupleList, AttributeMatcher]
 

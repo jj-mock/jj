@@ -1,11 +1,14 @@
-import asynctest
-from asynctest import CoroutineMock, Mock, call, sentinel
+import unittest
+from unittest.mock import Mock, call, sentinel
+
+import pytest
+from asynctest.mock import CoroutineMock
 
 from jj.apps import create_app
 from jj.resolvers import Registry, Resolver
 
 
-class TestResolver(asynctest.TestCase):
+class TestResolver(unittest.TestCase):
     def setUp(self):
         self.default_handler = CoroutineMock(return_value=sentinel.default_response)
         self.default_app = create_app()
@@ -262,6 +265,7 @@ class TestResolver(asynctest.TestCase):
 
     # Resolver
 
+    @pytest.mark.asyncio
     async def test_resolve_request_with_all_truthy_matchers(self):
         handler = CoroutineMock(return_value=sentinel.response)
         matcher1 = CoroutineMock(return_value=True)
@@ -277,6 +281,7 @@ class TestResolver(asynctest.TestCase):
         matcher2.assert_called_once_with(request)
         handler.assert_not_called()
 
+    @pytest.mark.asyncio
     async def test_resolve_request_with_all_falsy_matchers(self):
         handler = CoroutineMock(return_value=sentinel.response)
         matcher1 = CoroutineMock(return_value=False)
@@ -292,6 +297,7 @@ class TestResolver(asynctest.TestCase):
         matcher2.assert_not_called()
         handler.assert_not_called()
 
+    @pytest.mark.asyncio
     async def test_resolve_request_with_first_falsy_matcher(self):
         handler = CoroutineMock(return_value=sentinel.response)
         matcher1 = CoroutineMock(return_value=False)
@@ -307,6 +313,7 @@ class TestResolver(asynctest.TestCase):
         matcher2.assert_not_called()
         handler.assert_not_called()
 
+    @pytest.mark.asyncio
     async def test_resolve_request_with_last_falsy_matcher(self):
         handler = CoroutineMock(return_value=sentinel.response)
         matcher1 = CoroutineMock(return_value=True)
@@ -322,17 +329,20 @@ class TestResolver(asynctest.TestCase):
         matcher2.assert_called_once_with(request)
         handler.assert_not_called()
 
+    @pytest.mark.asyncio
     async def test_resolve_request_without_handlers(self):
         request = Mock()
         response = await self.resolver.resolve(request, self.default_app)
         self.assertEqual(response, self.default_handler)
 
+    @pytest.mark.asyncio
     async def test_resolve_request_with_nonexisting_app(self):
         app = create_app()
         request = Mock()
         response = await self.resolver.resolve(request, app)
         self.assertEqual(response, self.default_handler)
 
+    @pytest.mark.asyncio
     async def test_resolve_request_without_matchers(self):
         handler = CoroutineMock(return_value=sentinel.response)
         self.resolver.register_handler(handler, type(self.default_app))
@@ -341,6 +351,7 @@ class TestResolver(asynctest.TestCase):
         response = await self.resolver.resolve(request, self.default_app)
         self.assertEqual(response, self.default_handler)
 
+    @pytest.mark.asyncio
     async def test_resolve_request_with_single_matcher(self):
         handler = CoroutineMock(return_value=sentinel.response)
         matcher = CoroutineMock(return_value=True)
@@ -353,6 +364,7 @@ class TestResolver(asynctest.TestCase):
         matcher.assert_called_once_with(request)
         handler.assert_not_called()
 
+    @pytest.mark.asyncio
     async def test_resolve_request_with_multiple_handlers(self):
         matcher = CoroutineMock(side_effect=(False, True))
         handler1 = CoroutineMock(return_value=sentinel.response1)
@@ -369,6 +381,7 @@ class TestResolver(asynctest.TestCase):
         matcher.assert_has_calls([call(request)] * 2)
         self.assertEqual(matcher.call_count, 2)
 
+    @pytest.mark.asyncio
     async def test_resolve_request_priority(self):
         matcher = CoroutineMock(side_effect=(True, True))
         handler1 = CoroutineMock(return_value=sentinel.response1)

@@ -1,4 +1,6 @@
-import asynctest
+import unittest
+
+import pytest
 
 import jj
 from jj.apps import DefaultApp, create_app
@@ -10,7 +12,7 @@ from jj.responses import Response
 from .._test_utils import run
 
 
-class TestDefaultApp(asynctest.TestCase):
+class TestDefaultApp(unittest.TestCase):
     def setUp(self):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)
@@ -18,6 +20,7 @@ class TestDefaultApp(asynctest.TestCase):
     def test_default_app_is_singleton(self):
         self.assertEqual(DefaultApp(), DefaultApp())
 
+    @pytest.mark.asyncio
     async def test_default_app_with_handler(self):
         path, status, text = "/route", 201, "text"
         @PathMatcher(path, resolver=self.resolver)
@@ -29,6 +32,7 @@ class TestDefaultApp(asynctest.TestCase):
             self.assertEqual(response.status, status)
             self.assertEqual(await response.text(), text)
 
+    @pytest.mark.asyncio
     async def test_default_app_without_handlers(self):
         path, status, text = "/route", 201, "text"
 
@@ -42,6 +46,7 @@ class TestDefaultApp(asynctest.TestCase):
             response = await client.get(path)
             self.assertEqual(response.status, 404)
 
+    @pytest.mark.asyncio
     async def test_default_app(self):
         path = "/route"
         status1, text1 = 201, "text-1"

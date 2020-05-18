@@ -1,4 +1,6 @@
-import asynctest
+import unittest
+
+import pytest
 from aiohttp import FormData
 
 import jj
@@ -13,10 +15,11 @@ from .._test_utils import TestServer, run
 from ._request_formatter import RequestFormatter
 
 
-class TestTunnelResponse(asynctest.TestCase):
+class TestTunnelResponse(unittest.TestCase):
     def make_app_with_response(self, *args, **kwargs):
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return TunnelResponse(*args, **kwargs)
@@ -35,6 +38,7 @@ class TestTunnelResponse(asynctest.TestCase):
 
     # Method
 
+    @pytest.mark.asyncio
     async def test_get_request(self):
         debug_app = self.make_debug_app()
         async with TestServer(debug_app) as server:
@@ -46,6 +50,7 @@ class TestTunnelResponse(asynctest.TestCase):
                 body = await response.json()
                 self.assertEqual(body["method"], GET)
 
+    @pytest.mark.asyncio
     async def test_delete_request(self):
         debug_app = self.make_debug_app()
         async with TestServer(debug_app) as server:
@@ -59,6 +64,7 @@ class TestTunnelResponse(asynctest.TestCase):
 
     # Body
 
+    @pytest.mark.asyncio
     async def test_post_request_with_no_data(self):
         debug_app = self.make_debug_app()
         async with TestServer(debug_app) as server:
@@ -71,6 +77,7 @@ class TestTunnelResponse(asynctest.TestCase):
                 self.assertEqual(body["method"], POST)
                 self.assertEqual(body["data"], None)
 
+    @pytest.mark.asyncio
     async def test_request_with_post_data(self):
         debug_app = self.make_debug_app()
         async with TestServer(debug_app) as server:
@@ -91,6 +98,7 @@ class TestTunnelResponse(asynctest.TestCase):
                     "field2": ["null"],
                 })
 
+    @pytest.mark.asyncio
     async def test_request_with_form_data(self):
         debug_app = self.make_debug_app()
         async with TestServer(debug_app) as server:
@@ -112,6 +120,7 @@ class TestTunnelResponse(asynctest.TestCase):
                     "field2": ["null"],
                 })
 
+    @pytest.mark.asyncio
     async def test_request_with_file(self):
         debug_app = self.make_debug_app()
         async with TestServer(debug_app) as server:
@@ -134,6 +143,7 @@ class TestTunnelResponse(asynctest.TestCase):
                     }],
                 })
 
+    @pytest.mark.asyncio
     async def test_request_with_json_data(self):
         debug_app = self.make_debug_app()
         async with TestServer(debug_app) as server:
@@ -149,6 +159,7 @@ class TestTunnelResponse(asynctest.TestCase):
                 self.assertEqual(body["headers"].get("Content-Type"), ["application/json"])
                 self.assertEqual(body["raw"], payload_serialized)
 
+    @pytest.mark.asyncio
     async def test_request_with_binary_data(self):
         debug_app = self.make_debug_app()
         async with TestServer(debug_app) as server:
@@ -164,6 +175,7 @@ class TestTunnelResponse(asynctest.TestCase):
 
     # Path
 
+    @pytest.mark.asyncio
     async def test_request_with_custom_path(self):
         debug_app = self.make_debug_app()
         async with TestServer(debug_app) as server:
@@ -179,6 +191,7 @@ class TestTunnelResponse(asynctest.TestCase):
 
     # Params
 
+    @pytest.mark.asyncio
     async def test_request_with_custom_query_params(self):
         debug_app = self.make_debug_app()
         async with TestServer(debug_app) as server:
@@ -201,6 +214,7 @@ class TestTunnelResponse(asynctest.TestCase):
 
     # Headers
 
+    @pytest.mark.asyncio
     async def test_request_with_custom_headers(self):
         debug_app = self.make_debug_app()
         async with TestServer(debug_app) as server:
@@ -221,6 +235,7 @@ class TestTunnelResponse(asynctest.TestCase):
                 self.assertEqual(body["headers"].get("x-header-1"), ["value2"])
                 self.assertEqual(body["headers"].get("x-header-2"), ["null"])
 
+    @pytest.mark.asyncio
     async def test_request_default_headers(self):
         debug_app = self.make_debug_app()
         async with TestServer(debug_app) as server:

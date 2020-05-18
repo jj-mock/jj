@@ -1,5 +1,7 @@
-import asynctest
-from asynctest import Mock, call, sentinel
+import unittest
+from unittest.mock import Mock, call, sentinel
+
+import pytest
 
 import jj
 from jj.apps import create_app
@@ -11,11 +13,12 @@ from jj.responses import Response
 from .._test_utils import run
 
 
-class TestApp(asynctest.TestCase):
+class TestApp(unittest.TestCase):
     def setUp(self):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)
 
+    @pytest.mark.asyncio
     async def test_app_without_handlers(self):
         class App(jj.App):
             resolver = self.resolver
@@ -24,6 +27,7 @@ class TestApp(asynctest.TestCase):
             response = await client.get("/")
             self.assertEqual(response.status, 404)
 
+    @pytest.mark.asyncio
     async def test_app_with_default_handler(self):
         status, text = 201, "text"
 
@@ -38,6 +42,7 @@ class TestApp(asynctest.TestCase):
             self.assertEqual(response.status, status)
             self.assertEqual(await response.text(), text)
 
+    @pytest.mark.asyncio
     async def test_app_with_single_handler(self):
         path, status, text = "/route", 201, "text"
 
@@ -55,6 +60,7 @@ class TestApp(asynctest.TestCase):
             response2 = await client.get("/")
             self.assertEqual(response2.status, 404)
 
+    @pytest.mark.asyncio
     async def test_app_with_multiple_handlers(self):
         path1, status1, text1 = "/route", 201, "text-1"
         path2, status2, text2 = "/route/subroute", 202, "text-2"
@@ -79,6 +85,7 @@ class TestApp(asynctest.TestCase):
             self.assertEqual(response2.status, status2)
             self.assertEqual(await response2.text(), text2)
 
+    @pytest.mark.asyncio
     async def test_app_handlers_priority(self):
         path = "/route"
         status1, text1 = 201, "text-1"
@@ -100,6 +107,7 @@ class TestApp(asynctest.TestCase):
             self.assertEqual(response.status, status1)
             self.assertEqual(await response.text(), text1)
 
+    @pytest.mark.asyncio
     async def test_handler_with_matcher_and_decorators(self):
         mock = Mock()
 
@@ -141,6 +149,7 @@ class TestApp(asynctest.TestCase):
         ])
         self.assertEqual(mock.call_count, 3)
 
+    @pytest.mark.asyncio
     async def test_handler_with_matchers_and_decorator(self):
         mock = Mock()
 
@@ -171,6 +180,7 @@ class TestApp(asynctest.TestCase):
             self.assertEqual(response2.status, status)
             self.assertEqual(await response2.text(), text)
 
+    @pytest.mark.asyncio
     async def test_app_inheritance(self):
         path, status, text = "/route", 201, "text"
 
@@ -191,6 +201,7 @@ class TestApp(asynctest.TestCase):
             response2 = await client.get("/")
             self.assertEqual(response2.status, 404)
 
+    @pytest.mark.asyncio
     async def test_app_inheritance_with_handler_overriding(self):
         path = "/route"
         status1, text1 = 201, "text-1"
@@ -217,6 +228,7 @@ class TestApp(asynctest.TestCase):
             self.assertEqual(response.status, status1)
             self.assertEqual(await response.text(), text1)
 
+    @pytest.mark.asyncio
     async def test_app_inheritance_with_default_handler_overriding(self):
         status1, text1 = 201, "text-1"
         status2, text2 = 202, "text-2"
@@ -251,6 +263,7 @@ class TestApp(asynctest.TestCase):
             self.assertEqual(response.status, status1)
             self.assertEqual(await response.text(), text1)
 
+    @pytest.mark.asyncio
     async def test_app_multiple_inheritance(self):
         path1, status1, text1 = "/route-1", 201, "text-1"
         path2, status2, text2 = "/route-2", 202, "text-2"
@@ -279,6 +292,7 @@ class TestApp(asynctest.TestCase):
             self.assertEqual(response2.status, status2)
             self.assertEqual(await response2.text(), text2)
 
+    @pytest.mark.asyncio
     async def test_app_setter(self):
         path, status, text = "/route", 201, "text"
 
@@ -299,6 +313,7 @@ class TestApp(asynctest.TestCase):
             response = await client.get(path)
             self.assertEqual(response.status, 404)
 
+    @pytest.mark.asyncio
     async def test_app_deleter(self):
         path, status, text = "/route", 201, "text"
 
@@ -314,6 +329,7 @@ class TestApp(asynctest.TestCase):
             response = await client.get(path)
             self.assertEqual(response.status, 404)
 
+    @pytest.mark.asyncio
     async def test_app_deleter_nonexisting_attr(self):
         class App(jj.App):
             resolver = self.resolver
@@ -321,6 +337,7 @@ class TestApp(asynctest.TestCase):
         with self.assertRaises(AttributeError):
             delattr(App, "handler")
 
+    @pytest.mark.asyncio
     async def test_app_instance_setter(self):
         path, status, text = "/route", 201, "text"
 

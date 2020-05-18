@@ -1,11 +1,14 @@
-import asynctest
-from asynctest import CoroutineMock, Mock, call, sentinel
+import unittest
+from unittest.mock import Mock, call, sentinel
+
+import pytest
+from asynctest.mock import CoroutineMock
 
 from jj.apps import create_app
 from jj.resolvers import Registry, ReversedResolver
 
 
-class TestReversedResolver(asynctest.TestCase):
+class TestReversedResolver(unittest.TestCase):
     def setUp(self):
         self.default_handler = CoroutineMock(return_value=sentinel.default_response)
         self.default_app = create_app()
@@ -31,6 +34,7 @@ class TestReversedResolver(asynctest.TestCase):
         handlers = self.resolver.get_handlers(type(self.default_app))
         self.assertEqual(handlers, [handler2, handler1])
 
+    @pytest.mark.asyncio
     async def test_resolve_request_with_multiple_handlers(self):
         matcher = CoroutineMock(side_effect=(False, True))
         handler1 = CoroutineMock(return_value=sentinel.response1)
@@ -47,6 +51,7 @@ class TestReversedResolver(asynctest.TestCase):
         matcher.assert_has_calls([call(request)] * 2)
         self.assertEqual(matcher.call_count, 2)
 
+    @pytest.mark.asyncio
     async def test_resolve_request_priority(self):
         matcher = CoroutineMock(side_effect=(True, True))
         handler1 = CoroutineMock(return_value=sentinel.response1)

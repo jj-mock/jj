@@ -1,4 +1,6 @@
-import asynctest
+import unittest
+
+import pytest
 from multidict import MultiDictProxy
 
 import jj
@@ -11,13 +13,14 @@ from jj.responses import Response
 from .._test_utils import run
 
 
-class TestRequest(asynctest.TestCase):
+class TestRequest(unittest.TestCase):
     def setUp(self):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)
 
     # params
 
+    @pytest.mark.asyncio
     async def test_request_params_without_query(self):
         class App(jj.App):
             resolver = self.resolver
@@ -31,6 +34,7 @@ class TestRequest(asynctest.TestCase):
             response = await client.get("/")
             self.assertEqual(response.status, 200)
 
+    @pytest.mark.asyncio
     async def test_request_params_with_query(self):
         params = {"key1": "1", "key2": "2"}
 
@@ -48,6 +52,7 @@ class TestRequest(asynctest.TestCase):
 
     # segments
 
+    @pytest.mark.asyncio
     async def test_request_without_segments(self):
         class App(jj.App):
             resolver = self.resolver
@@ -61,6 +66,7 @@ class TestRequest(asynctest.TestCase):
             response = await client.get("/users/1")
             self.assertEqual(response.status, 200)
 
+    @pytest.mark.asyncio
     async def test_request_with_segments(self):
         class App(jj.App):
             resolver = self.resolver
@@ -74,6 +80,7 @@ class TestRequest(asynctest.TestCase):
             response = await client.get("/users/1")
             self.assertEqual(response.status, 200)
 
+    @pytest.mark.asyncio
     async def test_request_segments_with_other_matchers(self):
         class App(jj.App):
             resolver = self.resolver

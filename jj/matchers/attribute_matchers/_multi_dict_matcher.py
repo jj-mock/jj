@@ -6,7 +6,7 @@ from packed import packable
 from ._attribute_matcher import AttributeMatcher
 from ._equal_matcher import EqualMatcher
 
-__all__ = ("MultiDictMatcher",)
+__all__ = ("MultiDictMatcher", "StrOrAttrMatcher", "DictOrTupleList",)
 
 
 StrOrAttrMatcher = Union[str, AttributeMatcher]
@@ -32,7 +32,7 @@ class MultiDictMatcher(AttributeMatcher):
 
         for key, val in self._expected.items():
             submatcher = val if isinstance(val, AttributeMatcher) else EqualMatcher(val)
-            values = actual.getall(key, [])
+            values: List[Any] = actual.getall(key, [])
             if not await self._match_any(submatcher, values):
                 return False
         return True

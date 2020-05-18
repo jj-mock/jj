@@ -1,5 +1,7 @@
-import asynctest
-from asynctest import Mock
+import unittest
+from unittest.mock import Mock
+
+import pytest
 
 import jj
 from jj.apps import create_app
@@ -13,7 +15,7 @@ from jj.responses import Response
 from .._test_utils import run
 
 
-class TestSelfMiddleware(asynctest.TestCase):
+class TestSelfMiddleware(unittest.TestCase):
     def setUp(self):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)
@@ -32,6 +34,7 @@ class TestSelfMiddleware(asynctest.TestCase):
         middleware = Middleware()
         self.assertIsInstance(middleware, RootMiddleware)
 
+    @pytest.mark.asyncio
     async def test_middleware_without_handlers(self):
         class App(jj.App):
             resolver = self.resolver
@@ -41,6 +44,7 @@ class TestSelfMiddleware(asynctest.TestCase):
             response = await client.get("/")
             self.assertEqual(response.status, 404)
 
+    @pytest.mark.asyncio
     async def test_middleware_with_handler(self):
         mock = Mock()
 
@@ -60,6 +64,7 @@ class TestSelfMiddleware(asynctest.TestCase):
         request_arg, = mock.call_args[0]
         self.assertIsInstance(request_arg, Request)
 
+    @pytest.mark.asyncio
     async def test_middleware_with_handler_and_self_reference(self):
         mock = Mock()
 
@@ -80,6 +85,7 @@ class TestSelfMiddleware(asynctest.TestCase):
         self.assertIsInstance(app_arg, App)
         self.assertIsInstance(request_arg, Request)
 
+    @pytest.mark.asyncio
     async def test_middleware_with_handler_middleware(self):
         mock = Mock()
 

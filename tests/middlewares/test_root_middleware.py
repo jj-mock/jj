@@ -1,5 +1,7 @@
-import asynctest
-from asynctest import Mock, call, sentinel
+import unittest
+from unittest.mock import Mock, call, sentinel
+
+import pytest
 
 import jj
 from jj.apps import create_app
@@ -13,7 +15,7 @@ from jj.responses import Response
 from .._test_utils import run
 
 
-class TestRootMiddleware(asynctest.TestCase):
+class TestRootMiddleware(unittest.TestCase):
     def setUp(self):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)
@@ -32,6 +34,7 @@ class TestRootMiddleware(asynctest.TestCase):
         middleware = Middleware()
         self.assertIsInstance(middleware, AbstractMiddleware)
 
+    @pytest.mark.asyncio
     async def test_middleware_without_impl(self):
         class App(jj.App):
             resolver = self.resolver
@@ -41,6 +44,7 @@ class TestRootMiddleware(asynctest.TestCase):
             response = await client.get("/")
             self.assertEqual(response.status, 404)
 
+    @pytest.mark.asyncio
     async def test_middleware_without_impl_but_with_handlers(self):
         class App(jj.App):
             resolver = self.resolver
@@ -53,6 +57,7 @@ class TestRootMiddleware(asynctest.TestCase):
             response = await client.get("/")
             self.assertEqual(response.status, 200)
 
+    @pytest.mark.asyncio
     async def test_middleware_with_impl(self):
         mock = Mock()
 
@@ -75,6 +80,7 @@ class TestRootMiddleware(asynctest.TestCase):
         self.assertEqual(handler_arg, default_handler)
         self.assertEqual(app_arg, app)
 
+    @pytest.mark.asyncio
     async def test_multiple_root_middlewares(self):
         mock = Mock()
 
@@ -113,6 +119,7 @@ class TestRootMiddleware(asynctest.TestCase):
         ])
         self.assertEqual(mock.call_count, 6)
 
+    @pytest.mark.asyncio
     async def test_same_root_middlewares(self):
         mock = Mock()
 
