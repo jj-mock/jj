@@ -1,16 +1,18 @@
 from typing import Any, Callable, Tuple, Union
 
-from packed import unpack
+from packed import pack, unpack
 
 import jj
 from jj import default_app, default_handler
 from jj.apps import BaseApp, create_app
 from jj.http.codes import BAD_REQUEST, OK
-from jj.http.methods import ANY, DELETE, POST
+from jj.http.methods import ANY, DELETE, GET, POST
 from jj.matchers import LogicalMatcher, RequestMatcher, ResolvableMatcher, exists
 from jj.requests import Request
 from jj.resolvers import Registry, Resolver, ReversedResolver
 from jj.responses import Response
+
+from ._history import HistoryRepository
 
 __all__ = ("Mock",)
 
@@ -24,6 +26,7 @@ class Mock(jj.App):
                  resolver_factory: Callable[..., Resolver] = ReversedResolver) -> None:
         self._resolver = resolver_factory(Registry(), default_app, default_handler)
         self._app = app_factory(resolver=self._resolver)
+        self._repo = HistoryRepository()
 
     def _decode(self, payload: bytes) -> Tuple[str, MatcherType, Response]:
         def resolver(cls: Any, **kwargs: Any) -> Any:
@@ -41,8 +44,7 @@ class Mock(jj.App):
 
         return handler_id, matcher, response
 
-    @jj.match_method(POST)
-    @jj.match_header("x-jj-remote-mock", exists)
+    @jj.match(POST, headers={"x-jj-remote-mock": exists})
     async def register(self, request: Request) -> Response:
         payload = await request.read()
         try:
@@ -53,12 +55,12 @@ class Mock(jj.App):
         async def handler(request: Request) -> Response:
             return response.copy()
 
+        self._resolver.register_attribute("handler_id", handler_id, handler)
         setattr(self._app.__class__, handler_id, matcher(handler))
 
         return Response(status=OK, json={"status": OK})
 
-    @jj.match_method(DELETE)
-    @jj.match_header("x-jj-remote-mock", exists)
+    @jj.match(DELETE, headers={"x-jj-remote-mock": exists})
     async def deregister(self, request: Request) -> Response:
         payload = await request.read()
         try:
@@ -71,9 +73,29 @@ class Mock(jj.App):
         except AttributeError:
             pass
 
+        await self._repo.delete_by_tag(handler_id)
+
         return Response(status=OK, json={"status": OK})
+
+    @jj.match(GET, headers={"x-jj-remote-mock": exists})
+    async def history(self, request: Request) -> Response:
+        payload = await request.read()
+        try:
+            handler_id, *_ = self._decode(payload)
+        except Exception:
+            return Response(status=BAD_REQUEST, json={"status": BAD_REQUEST})
+
+        history = await self._repo.get_by_tag(handler_id)
+        packed = pack(history)
+        return Response(status=OK, body=packed)
 
     @jj.match(ANY)
     async def resolve(self, request: Request) -> Response:
         handler = await self._resolver.resolve(request, self._app)
-        return await handler(request)
+        response = await handler(request)
+
+        handler_id = self._resolver.get_attribute("handler_id", handler, default=None)
+        if handler_id:
+            await self._repo.add(request, response, tags=[handler_id])
+
+        return response

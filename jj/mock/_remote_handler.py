@@ -1,5 +1,5 @@
 from typing import Any, Union
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from jj.matchers import LogicalMatcher, RequestMatcher
 from jj.responses import Response
@@ -17,8 +17,23 @@ class RemoteHandler:
         self._matcher = matcher
         self._response = response
 
+    @property
+    def id(self) -> UUID:
+        return self._id
+
+    @property
+    def matcher(self) -> Union[RequestMatcher, LogicalMatcher]:
+        return self._matcher
+
+    @property
+    def response(self) -> Response:
+        return self._response
+
     async def register(self) -> None:
         await self._mock.register(self)
 
     async def deregister(self) -> None:
         await self._mock.deregister(self)
+
+    async def history(self) -> Any:
+        return await self._mock.history(self)
