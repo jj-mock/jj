@@ -153,3 +153,29 @@ def test_unpack_compressed():
 
     with then:
         assert response.__packed__() == {**packed, "compression": ContentCoding.gzip.value}
+
+
+def test_unpack_text_body_with_headers():
+    with given:
+        body = b"200 OK"
+        packed = {
+            "status": 200,
+            "reason": "Accepted",
+            "headers": [
+                ["X-Custom-Header1", "Value1"],
+                ["X-Custom-Header2", "Value2"],
+                ["Server", server_version],
+                ["Content-Length", str(len(body))],
+                ["Content-Type", "text/plain; charset=utf-8"],
+            ],
+            "cookies": [],
+            "body": body,
+            "chunked": False,
+            "compression": None,
+        }
+
+    with when:
+        response = Response.__unpacked__(**packed)
+
+    with then:
+        assert response.__packed__() == packed
