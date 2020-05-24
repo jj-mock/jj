@@ -1,14 +1,17 @@
 import io
 from http.cookies import Morsel
 from json import dumps
-from typing import Any, Dict, List, MutableMapping, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 from unittest.mock import sentinel as nil
 
 from aiohttp import web
 from aiohttp.payload import BytesPayload, IOBasePayload, TextIOPayload
+from aiohttp.typedefs import LooseHeaders
 from aiohttp.web import ContentCoding
+from multidict import CIMultiDict
 from packed import packable
 
+from ..http.headers import CONTENT_DISPOSITION, CONTENT_TYPE
 from ._stream_response import StreamResponse
 
 __all__ = ("Response",)
@@ -22,19 +25,21 @@ class Response(web.Response, StreamResponse):
                  text: Optional[str] = None,
                  status: int = 200,
                  reason: Optional[str] = None,
-                 headers: Optional[MutableMapping[str, str]] = None) -> None:
-        headers = headers or {}
+                 headers: Optional[LooseHeaders] = None) -> None:
+        headers = CIMultiDict(headers or {})
 
         if json is not nil:
             assert (body is None) and (text is None)
             body = dumps(json)
-            headers.update({"Content-Type": "application/json"})
+            if CONTENT_TYPE not in headers:
+                headers[CONTENT_TYPE] = "application/json"
 
         if (body is None) and (text is None):
             body = ""
 
         if isinstance(body, io.IOBase):
-            headers.update({"Content-Disposition": "inline"})
+            if CONTENT_DISPOSITION not in headers:
+                headers[CONTENT_DISPOSITION] = "inline"
 
         super().__init__(body=body, text=text, status=status, reason=reason, headers=headers)
 
@@ -66,26 +71,28 @@ class Response(web.Response, StreamResponse):
             response.enable_compression(self._compression_force)
         return response
 
+    def get_body(self) -> bytes:
+        if isinstance(self.body, (bytes, bytearray, memoryview)):
+            return bytes(self.body)
+        elif isinstance(self.body, BytesPayload):
+            return bytes(self.body._value)
+        elif isinstance(self.body, TextIOPayload):
+            return bytes(self.body._value.read(), self.body.encoding)  # type: ignore
+        elif isinstance(self.body, IOBasePayload):
+            return bytes(self.body._value.read())
+        else:
+            raise ValueError("Unsupported body type {}".format(type(self.body)))
+
     def __packed__(self) -> Dict[str, Any]:
         assert not self.prepared
 
         headers = [[key, val] for key, val in self.headers.items()]
         cookies = [self._cookie_to_dict(cookie) for cookie in self.cookies.values()]
 
+        body = self.get_body()
         compression = self._compression_force
         if isinstance(compression, ContentCoding):
             compression = compression.value
-
-        if isinstance(self.body, (bytes, bytearray, memoryview)):
-            body = bytes(self.body)
-        elif isinstance(self.body, BytesPayload):
-            body = bytes(self.body._value)
-        elif isinstance(self.body, TextIOPayload):
-            body = bytes(self.body._value.read(), self.body.encoding)  # type: ignore
-        elif isinstance(self.body, IOBasePayload):
-            body = bytes(self.body._value.read())
-        else:
-            raise ValueError("Unsupported body type {}".format(type(self.body)))
 
         return {
             "status": self.status,

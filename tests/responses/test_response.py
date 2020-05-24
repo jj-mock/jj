@@ -18,6 +18,7 @@ class TestResponse(unittest.TestCase):
     def make_app_with_response(self, *args, **kwargs):
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return Response(*args, **kwargs)
@@ -132,6 +133,22 @@ class TestResponse(unittest.TestCase):
             self.assertEqual(response.headers.get("Content-Type"), "application/json")
 
     @pytest.mark.asyncio
+    async def test_response_json_body_with_custom_content_type(self):
+        json = {"key": None}
+        dumped_json = '{"key": null}'
+        binary_json = b'{"key": null}'
+        content_type = "text/plain"
+        app = self.make_app_with_response(json=json, headers={"Content-Type": content_type})
+
+        async with run(app) as client:
+            response = await client.get("/")
+            self.assertEqual(await response.text(), dumped_json)
+            self.assertEqual(await response.read(), binary_json)
+
+            self.assertEqual(response.headers.get("Content-Length"), str(len(dumped_json)))
+            self.assertEqual(response.headers.get("Content-Type"), content_type)
+
+    @pytest.mark.asyncio
     async def test_response_null_json_body(self):
         json = None
         dumped_json = 'null'
@@ -192,13 +209,28 @@ class TestResponse(unittest.TestCase):
     # Headers
 
     @pytest.mark.asyncio
-    async def test_response_headers(self):
+    async def test_response_header(self):
         custom_header_key, custom_header_val = "Cutom-Header", "Value"
         app = self.make_app_with_response(headers={custom_header_key: custom_header_val})
 
         async with run(app) as client:
             response = await client.get("/")
             self.assertEqual(response.headers.get(custom_header_key), custom_header_val)
+            self.assertEqual(response.headers.get("Server"), server_version)
+
+    @pytest.mark.asyncio
+    async def test_response_headers(self):
+        custom_header1_key, custom_header1_val = "Cutom-Header", "Value1"
+        custom_header2_key, custom_header2_val = "Cutom-Header", "Value2"
+        app = self.make_app_with_response(headers=[
+            (custom_header1_key, custom_header1_val),
+            (custom_header2_key, custom_header2_val),
+        ])
+
+        async with run(app) as client:
+            response = await client.get("/")
+            self.assertEqual(response.headers.getall(custom_header1_key),
+                             [custom_header1_val, custom_header2_val])
             self.assertEqual(response.headers.get("Server"), server_version)
 
     @pytest.mark.asyncio
