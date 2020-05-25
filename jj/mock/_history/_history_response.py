@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Tuple
 
+from multidict import CIMultiDict, CIMultiDictProxy
 from packed import packable
 
 from ...responses import Response
@@ -12,7 +13,7 @@ class HistoryResponse:
     def __init__(self, *,
                  status: int,
                  reason: str,
-                 headers: List[Tuple[str, str]],
+                 headers: CIMultiDictProxy[str],
                  body: bytes) -> None:
         self._status = status
         self._reason = reason
@@ -28,7 +29,7 @@ class HistoryResponse:
         return self._reason
 
     @property
-    def headers(self) -> List[Tuple[str, str]]:
+    def headers(self) -> CIMultiDictProxy[str]:
         return self._headers
 
     @property
@@ -36,22 +37,21 @@ class HistoryResponse:
         return self._body
 
     @staticmethod
-    def from_response(response: Response) -> "HistoryResponse":
-        headers = [[key, val] for key, val in response.headers.items()]
+    async def from_response(response: Response) -> "HistoryResponse":
         body = response.get_body()
-
         return HistoryResponse(
             status=response.status,
             reason=response.reason,
-            headers=headers,  # type: ignore
+            headers=CIMultiDictProxy(response.headers),
             body=body,
         )
 
     def __packed__(self) -> Dict[str, Any]:
+        headers = [[key, val] for key, val in self._headers.items()]
         return {
             "status": self._status,
             "reason": self._reason,
-            "headers": self._headers,
+            "headers": headers,
             "body": self._body,
         }
 
@@ -62,10 +62,11 @@ class HistoryResponse:
                      headers: List[Tuple[str, str]],
                      body: bytes,
                      **kwargs: Any) -> "HistoryResponse":
+        real_headers = CIMultiDictProxy(CIMultiDict(headers))
         return HistoryResponse(
             status=status,
             reason=reason,
-            headers=headers,
+            headers=real_headers,
             body=body,
         )
 

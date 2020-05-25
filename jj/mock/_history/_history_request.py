@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Tuple
 
+from multidict import CIMultiDict, CIMultiDictProxy, MultiDict, MultiDictProxy
 from packed import packable
 
 from ...requests import Request
@@ -13,8 +14,8 @@ class HistoryRequest:
                  method: str,
                  path: str,
                  segments: Dict[str, str],
-                 params: List[Tuple[str, Any]],
-                 headers: List[Tuple[str, Any]],
+                 params: MultiDictProxy[str],
+                 headers: CIMultiDictProxy[str],
                  body: bytes) -> None:
         self._method = method
         self._path = path
@@ -36,11 +37,11 @@ class HistoryRequest:
         return self._segments
 
     @property
-    def params(self) -> List[Tuple[str, Any]]:
+    def params(self) -> MultiDictProxy[str]:
         return self._params
 
     @property
-    def headers(self) -> List[Tuple[str, Any]]:
+    def headers(self) -> CIMultiDictProxy[str]:
         return self._headers
 
     @property
@@ -49,27 +50,25 @@ class HistoryRequest:
 
     @staticmethod
     async def from_request(request: Request) -> "HistoryRequest":
-        params = [[key, val] for key, val in request.params.items()]
-        headers = [[key, val] for key, val in request.headers.items()]
-
         body = await request.read()
-
         return HistoryRequest(
             method=request.method,
             path=request.path,
             segments=request.segments,
-            params=params,  # type: ignore
-            headers=headers,  # type: ignore
+            params=request.params,
+            headers=request.headers,
             body=body,
         )
 
     def __packed__(self) -> Dict[str, Any]:
+        params = [[key, val] for key, val in self._params.items()]
+        headers = [[key, val] for key, val in self._headers.items()]
         return {
             "method": self._method,
             "path": self._path,
             "segments": self._segments,
-            "params": self._params,
-            "headers": self._headers,
+            "params": params,
+            "headers": headers,
             "body": self.body,
         }
 
@@ -82,12 +81,14 @@ class HistoryRequest:
                      headers: List[Tuple[str, str]],
                      body: bytes,
                      **kwargs: Any) -> "HistoryRequest":
+        real_params = MultiDictProxy(MultiDict(params))
+        real_headers = CIMultiDictProxy(CIMultiDict(headers))
         return HistoryRequest(
             method=method,
             path=path,
             segments=segments,
-            params=params,
-            headers=headers,
+            params=real_params,
+            headers=real_headers,
             body=body,
         )
 

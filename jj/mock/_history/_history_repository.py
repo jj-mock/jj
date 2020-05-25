@@ -16,9 +16,11 @@ class HistoryRepository:
                   request: Request,
                   response: Response,
                   tags: Optional[List[str]] = None) -> None:
+        req = await HistoryRequest.from_request(request)
+        res = await HistoryResponse.from_response(response)
         self._storage.insert(0, {
-            "request": await HistoryRequest.from_request(request),
-            "response": HistoryResponse.from_response(response),
+            "request": req,
+            "response": res,
             "tags": tags or [],
         })
 
