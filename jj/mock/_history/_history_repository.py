@@ -16,7 +16,7 @@ class HistoryRepository:
                   request: Request,
                   response: Response,
                   tags: Optional[List[str]] = None) -> None:
-        self._storage.append({
+        self._storage.insert(0, {
             "request": HistoryRequest.from_request(request),
             "response": HistoryResponse.from_response(response),
             "tags": tags or [],
