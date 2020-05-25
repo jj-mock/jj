@@ -9,18 +9,19 @@ __all__ = ("HistoryRequest",)
 
 @packable("jj.mock.HistoryRequest")
 class HistoryRequest:
-    def __init__(self,
+    def __init__(self, *,
                  method: str,
                  path: str,
                  segments: Dict[str, str],
                  params: List[Tuple[str, Any]],
-                 headers: List[Tuple[str, Any]]) -> None:
+                 headers: List[Tuple[str, Any]],
+                 body: bytes) -> None:
         self._method = method
         self._path = path
         self._segments = segments
         self._params = params
         self._headers = headers
-        self._body = None
+        self._body = body
 
     @property
     def method(self) -> str:
@@ -43,27 +44,23 @@ class HistoryRequest:
         return self._headers
 
     @property
-    def body(self) -> None:
+    def body(self) -> bytes:
         return self._body
 
     @staticmethod
-    def from_request(request: Request) -> "HistoryRequest":
-        params = []
-        for key in request.params:
-            val = request.params.getall(key)
-            params.append([key, val])
+    async def from_request(request: Request) -> "HistoryRequest":
+        params = [[key, val] for key, val in request.params.items()]
+        headers = [[key, val] for key, val in request.headers.items()]
 
-        headers = []
-        for key in request.headers:
-            val = request.headers.getall(key)
-            headers.append([key, val])
+        body = await request.read()
 
         return HistoryRequest(
-            request.method,
-            request.path,
-            request.segments,
-            params,  # type: ignore
-            headers,  # type: ignore
+            method=request.method,
+            path=request.path,
+            segments=request.segments,
+            params=params,  # type: ignore
+            headers=headers,  # type: ignore
+            body=body,
         )
 
     def __packed__(self) -> Dict[str, Any]:
@@ -73,6 +70,7 @@ class HistoryRequest:
             "segments": self._segments,
             "params": self._params,
             "headers": self._headers,
+            "body": self.body,
         }
 
     @classmethod
@@ -82,6 +80,7 @@ class HistoryRequest:
                      segments: Dict[str, str],
                      params: List[Tuple[str, str]],
                      headers: List[Tuple[str, str]],
+                     body: bytes,
                      **kwargs: Any) -> "HistoryRequest":
         return HistoryRequest(
             method=method,
@@ -89,6 +88,7 @@ class HistoryRequest:
             segments=segments,
             params=params,
             headers=headers,
+            body=body,
         )
 
     def __repr__(self) -> str:
@@ -96,5 +96,6 @@ class HistoryRequest:
                 f"method={self._method!r}, "
                 f"path={self._path!r}, "
                 f"params={self._params!r}, "
-                f"headers={self._headers!r}"
+                f"headers={self._headers!r}, "
+                f"body={self._body!r}"
                 f")")
