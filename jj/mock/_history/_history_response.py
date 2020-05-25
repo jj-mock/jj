@@ -13,7 +13,7 @@ class HistoryResponse:
     def __init__(self, *,
                  status: int,
                  reason: str,
-                 headers: CIMultiDictProxy[str],
+                 headers: "CIMultiDictProxy[str]",
                  body: bytes) -> None:
         self._status = status
         self._reason = reason
@@ -29,7 +29,7 @@ class HistoryResponse:
         return self._reason
 
     @property
-    def headers(self) -> CIMultiDictProxy[str]:
+    def headers(self) -> "CIMultiDictProxy[str]":
         return self._headers
 
     @property

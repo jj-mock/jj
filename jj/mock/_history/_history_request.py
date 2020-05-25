@@ -14,8 +14,8 @@ class HistoryRequest:
                  method: str,
                  path: str,
                  segments: Dict[str, str],
-                 params: MultiDictProxy[str],
-                 headers: CIMultiDictProxy[str],
+                 params: "MultiDictProxy[str]",
+                 headers: "CIMultiDictProxy[str]",
                  body: bytes) -> None:
         self._method = method
         self._path = path
@@ -37,11 +37,11 @@ class HistoryRequest:
         return self._segments
 
     @property
-    def params(self) -> MultiDictProxy[str]:
+    def params(self) -> "MultiDictProxy[str]":
         return self._params
 
     @property
-    def headers(self) -> CIMultiDictProxy[str]:
+    def headers(self) -> "CIMultiDictProxy[str]":
         return self._headers
 
     @property
