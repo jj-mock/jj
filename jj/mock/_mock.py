@@ -9,7 +9,7 @@ from jj.http.codes import BAD_REQUEST, OK
 from jj.http.methods import ANY, DELETE, GET, POST
 from jj.matchers import LogicalMatcher, RequestMatcher, ResolvableMatcher, exists
 from jj.requests import Request
-from jj.resolvers import Registry, Resolver, ReversedResolver
+from jj.resolvers import Registry, Resolver
 from jj.responses import Response
 
 from ._history import HistoryRepository
@@ -23,7 +23,7 @@ MatcherType = Union[RequestMatcher, LogicalMatcher]
 class Mock(jj.App):
     def __init__(self,
                  app_factory: Callable[..., BaseApp] = create_app,
-                 resolver_factory: Callable[..., Resolver] = ReversedResolver) -> None:
+                 resolver_factory: Callable[..., Resolver] = Resolver) -> None:
         self._resolver = resolver_factory(Registry(), default_app, default_handler)
         self._app = app_factory(resolver=self._resolver)
         self._repo = HistoryRepository()
