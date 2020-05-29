@@ -1,7 +1,7 @@
-from typing import Union
+from typing import Any, Union
 
 from aiohttp import ClientSession
-from packed import pack
+from packed import pack, unpack
 
 from jj.http.codes import OK
 from jj.matchers import LogicalMatcher, RequestMatcher
@@ -24,27 +24,43 @@ class RemoteMock:
     async def register(self, handler: RemoteHandler) -> "RemoteMock":
         headers = {"x-jj-remote-mock": ""}
         payload = {
-            "id": str(handler._id),
-            "request": handler._matcher,
-            "response": handler._response,
+            "id": str(handler.id),
+            "request": handler.matcher,
+            "response": handler.response,
         }
         binary = pack(payload)
 
         async with ClientSession() as session:
             response = await session.post(self._url, data=binary, headers=headers)
-            assert response.status == OK
+            assert response.status == OK, response
         return self
 
     async def deregister(self, handler: RemoteHandler) -> "RemoteMock":
         headers = {"x-jj-remote-mock": ""}
         payload = {
-            "id": str(handler._id),
-            "request": handler._matcher,
-            "response": handler._response,
+            "id": str(handler.id),
+            "request": handler.matcher,
+            "response": handler.response,
         }
         binary = pack(payload)
 
         async with ClientSession() as session:
             response = await session.delete(self._url, data=binary, headers=headers)
-            assert response.status == OK
+            assert response.status == OK, response
         return self
+
+    async def history(self, handler: RemoteHandler) -> Any:
+        headers = {"x-jj-remote-mock": ""}
+        payload = {
+            "id": str(handler.id),
+            "request": handler.matcher,
+            "response": handler.response,
+        }
+        binary = pack(payload)
+
+        async with ClientSession() as session:
+            response = await session.get(self._url, data=binary, headers=headers)
+            assert response.status == OK, response
+            body = await response.read()
+            unpacked = unpack(body)
+            return unpacked

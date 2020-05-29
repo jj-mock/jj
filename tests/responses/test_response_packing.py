@@ -196,3 +196,24 @@ def test_pack_cookies():
                 "version": None,
             }
         ])
+
+
+def test_pack_text_body_with_headers():
+    with given:
+        text = "200 OK"
+        binary_text = b"200 OK"
+        response = Response(text=text, headers=[
+            ("X-Custom-Header1", "Value1"),
+            ("X-Custom-Header2", "Value2"),
+        ])
+
+    with when:
+        actual = response.__packed__()
+
+    with then:
+        assert actual == default_packed(body=binary_text, headers=[
+            ["X-Custom-Header1", "Value1"],
+            ["X-Custom-Header2", "Value2"],
+            ["Content-Type", "text/plain; charset=utf-8"],
+            ["Server", server_version],
+        ])

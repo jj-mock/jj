@@ -24,9 +24,9 @@ async def test_mock_register():
     self_middleware = SelfMiddleware(mock.resolver)
     matcher, response = jj.match("*"), jj.Response(status=200, body=b"text")
 
-    async with run(Mock(), middlewares=[self_middleware]) as client:
-        mock = RemoteMock(client.make_url("/"))
-        handler = mock.create_handler(matcher, response)
+    async with run(mock, middlewares=[self_middleware]) as client:
+        remote_mock = RemoteMock(client.make_url("/"))
+        handler = remote_mock.create_handler(matcher, response)
         await handler.register()
 
         response = await client.get("/")
@@ -41,9 +41,9 @@ async def test_mock_register_bad_request():
     mock = Mock()
     self_middleware = SelfMiddleware(mock.resolver)
 
-    async with run(Mock(), middlewares=[self_middleware]) as client:
-        mock = RemoteMock(client.make_url("/"))
-        handler = mock.create_handler(None, None)
+    async with run(mock, middlewares=[self_middleware]) as client:
+        remote_mock = RemoteMock(client.make_url("/"))
+        handler = remote_mock.create_handler(None, None)
 
         with raises(Exception) as exception:
             await handler.register()
@@ -56,9 +56,9 @@ async def test_mock_deregister():
     self_middleware = SelfMiddleware(mock.resolver)
     matcher, response = jj.match("*"), jj.Response(status=200, body=b"text")
 
-    async with run(Mock(), middlewares=[self_middleware]) as client:
-        mock = RemoteMock(client.make_url("/"))
-        handler = mock.create_handler(matcher, response)
+    async with run(mock, middlewares=[self_middleware]) as client:
+        remote_mock = RemoteMock(client.make_url("/"))
+        handler = remote_mock.create_handler(matcher, response)
         await handler.register()
         await handler.deregister()
 
@@ -72,9 +72,9 @@ async def test_mock_deregister_not_registered():
     self_middleware = SelfMiddleware(mock.resolver)
     matcher, response = jj.match("*"), jj.Response(status=200, body=b"text")
 
-    async with run(Mock(), middlewares=[self_middleware]) as client:
-        mock = RemoteMock(client.make_url("/"))
-        handler = mock.create_handler(matcher, response)
+    async with run(mock, middlewares=[self_middleware]) as client:
+        remote_mock = RemoteMock(client.make_url("/"))
+        handler = remote_mock.create_handler(matcher, response)
         await handler.deregister()
 
 
@@ -83,10 +83,29 @@ async def test_mock_deregister_bad_request():
     mock = Mock()
     self_middleware = SelfMiddleware(mock.resolver)
 
-    async with run(Mock(), middlewares=[self_middleware]) as client:
-        mock = RemoteMock(client.make_url("/"))
-        handler = mock.create_handler(None, None)
+    async with run(mock, middlewares=[self_middleware]) as client:
+        remote_mock = RemoteMock(client.make_url("/"))
+        handler = remote_mock.create_handler(None, None)
 
         with raises(Exception) as exception:
             await handler.deregister()
         assert exception.type is AssertionError
+
+
+@pytest.mark.asyncio
+async def test_mock_handler_order():
+    mock = Mock()
+    self_middleware = SelfMiddleware(Mock().resolver)
+    matcher1, response1 = jj.match("*"), jj.Response(body=b"text1")
+    matcher2, response2 = jj.match("*"), jj.Response(body=b"text2")
+
+    async with run(mock, middlewares=[self_middleware]) as client:
+        remote_mock = RemoteMock(client.make_url("/"))
+        handler1 = remote_mock.create_handler(matcher1, response1)
+        handler2 = remote_mock.create_handler(matcher2, response2)
+        async with handler1:
+            async with handler2:
+                resp = await client.get("/")
+                assert resp.status == 200
+                body = await resp.read()
+                assert body == b"text2"
