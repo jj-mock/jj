@@ -31,6 +31,10 @@ check-types:
 check-imports:
 	python3 -m isort ${PROJECT_NAME} tests --recursive --check-only
 
+.PHONY: sort-imports
+sort-imports:
+	python3 -m isort ${PROJECT_NAME} tests --recursive
+
 .PHONY: check-style
 check-style:
 	python3 -m flake8 ${PROJECT_NAME} tests
