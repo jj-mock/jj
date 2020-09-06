@@ -27,30 +27,39 @@ jj.serve()
 ## Documentation
 
 * [Matchers](#matchers)
-    * [Method](#method)
-    * [Path](#path)
-    * [Segments](#segments)
-    * [Params](#params)
-    * [Headers](#headers)
-    * [Combining Matchers](#combining-matchers)
+  * [Method](#method)
+    * [match_method(`method`)](#match_methodmethod)
+  * [Path](#path)
+    * [match_path(`path`)](#match_pathpath)
+  * [Segments](#segments)
+  * [Params](#params)
+    * [match_param(`name`, `val`)](#match_paramname-val)
+    * [match_params(`params`)](#match_paramsparams)
+  * [Headers](#headers)
+    * [match_header(`name`, `val`)](#match_headername-val)
+    * [match_headers(`headers`)](#match_headersheaders)
+  * [Combining Matchers](#combining-matchers)
+    * [match_any(`matchers`)](#match_anymatchers)
+    * [match_all(`matchers`)](#match_allmatchers)
+    * [match(`method`, `path`, `params`, `headers`)](#matchmethod-path-params-headers)
 * [Responses](#responses)
-    * [Response](#response)
-        * [JSON Response](#json-response)
-        * [HTML Response](#html-response)
-        * [Binary Response](#binary-response)
-        * [Not Found Response](#not-found-response)
-        * [Predefined Body](#predefined-body)
-    * [StaticResponse](#staticresponse)
-        * [Inline Content](#inline-content)
-        * [Downloadable File](#downloadable-file)
-    * [TunnelResponse](#tunnelresponse-β)
+  * [Response](#response)
+    * [JSON Response](#json-response)
+    * [HTML Response](#html-response)
+    * [Binary Response](#binary-response)
+    * [Not Found Response](#not-found-response)
+    * [Predefined Body](#predefined-body)
+  * [StaticResponse](#staticresponse)
+    * [Inline Content](#inline-content)
+    * [Downloadable File](#downloadable-file)
+  * [RelayResponse `β`](#relayresponse-β)
 * [Apps](#apps)
-    * [Single App](#single-app)
-    * [Multiple Apps](#multiple-apps)
-    * [App Inheritance](#app-inheritance)
+  * [Single App](#single-app)
+  * [Multiple Apps](#multiple-apps)
+  * [App Inheritance](#app-inheritance)
 * [Middlewares](#middlewares)
-    * [Handler Middleware](#handler-middleware)
-    * [App Middleware](#app-middleware)
+  * [Handler Middleware](#handler-middleware)
+  * [App Middleware](#app-middleware)
 
 ---
 
@@ -254,12 +263,12 @@ async def handler(request):
 
 For more information visit https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
 
-#### TunnelResponse `β`
+#### RelayResponse `β`
 
 ```python
 @jj.match("*")
 async def handler(request):
-    return jj.TunnelResponse(target="https://httpbin.org/")
+    return jj.RelayResponse(target="https://httpbin.org/")
 ```
 
 ---

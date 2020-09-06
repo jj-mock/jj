@@ -9,20 +9,20 @@ from jj.handlers import default_handler
 from jj.http.methods import DELETE, GET, POST
 from jj.matchers import MethodMatcher
 from jj.resolvers import Registry, ReversedResolver
-from jj.responses import Response, TunnelResponse
+from jj.responses import RelayResponse, Response
 
 from .._test_utils import TestServer, run
 from ._request_formatter import RequestFormatter
 
 
-class TestTunnelResponse(unittest.TestCase):
+class TestRelayResponse(unittest.TestCase):
     def make_app_with_response(self, *args, **kwargs):
         class App(jj.App):
             resolver = self.resolver
 
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
-                return TunnelResponse(*args, **kwargs)
+                return RelayResponse(*args, **kwargs)
         return App()
 
     def make_debug_app(self):

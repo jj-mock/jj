@@ -386,9 +386,9 @@ def test_import_stream_response():
     from jj import StreamResponse
 
 
-def test_import_tunnel_response():
-    from jj.responses import TunnelResponse
-    from jj import TunnelResponse
+def test_import_relay_response():
+    from jj.responses import RelayResponse
+    from jj import RelayResponse
 
 
 # runners

@@ -8,7 +8,7 @@ from multidict import CIMultiDict, MultiDict
 
 from ._stream_response import StreamResponse
 
-__all__ = ("TunnelResponse",)
+__all__ = ("RelayResponse",)
 
 
 # http://tools.ietf.org/html/rfc2616#section-13.5.1
@@ -25,7 +25,7 @@ _HOP_BY_HOP_HEADERS = (
 _FILTERED_HEADERS = _HOP_BY_HOP_HEADERS + ("host", "content-length")
 
 
-class TunnelResponse(StreamResponse):
+class RelayResponse(StreamResponse):
     def __init__(self, *, target: str) -> None:
         super().__init__()
         self._target = target

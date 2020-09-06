@@ -19,7 +19,7 @@ from ._core import (
 )
 from ._version import server_version, version
 from .requests import Request
-from .responses import Response, StaticResponse, StreamResponse, TunnelResponse
+from .responses import RelayResponse, Response, StaticResponse, StreamResponse
 
 __all__ = (
     "App",
@@ -34,7 +34,7 @@ __all__ = (
     "default_app", "default_handler", "default_logger",
     "version", "server_version",
     "Request",
-    "Response", "StaticResponse", "StreamResponse", "TunnelResponse",
+    "Response", "StaticResponse", "StreamResponse", "RelayResponse",
 )
 
 __version__ = version
