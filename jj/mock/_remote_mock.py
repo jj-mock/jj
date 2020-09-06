@@ -31,8 +31,8 @@ class RemoteMock:
         binary = pack(payload)
 
         async with ClientSession() as session:
-            response = await session.post(self._url, data=binary, headers=headers)
-            assert response.status == OK, response
+            async with session.post(self._url, data=binary, headers=headers) as response:
+                assert response.status == OK, response
         return self
 
     async def deregister(self, handler: RemoteHandler) -> "RemoteMock":
@@ -45,8 +45,8 @@ class RemoteMock:
         binary = pack(payload)
 
         async with ClientSession() as session:
-            response = await session.delete(self._url, data=binary, headers=headers)
-            assert response.status == OK, response
+            async with session.delete(self._url, data=binary, headers=headers) as response:
+                assert response.status == OK, response
         return self
 
     async def history(self, handler: RemoteHandler) -> Any:
@@ -59,8 +59,8 @@ class RemoteMock:
         binary = pack(payload)
 
         async with ClientSession() as session:
-            response = await session.get(self._url, data=binary, headers=headers)
-            assert response.status == OK, response
-            body = await response.read()
-            unpacked = unpack(body)
-            return unpacked
+            async with session.get(self._url, data=binary, headers=headers) as response:
+                assert response.status == OK, response
+                body = await response.read()
+                unpacked = unpack(body)
+                return unpacked
