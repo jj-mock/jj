@@ -2,14 +2,14 @@
 
 
 [![Codecov](https://img.shields.io/codecov/c/github/nikitanovosibirsk/jj/master.svg?style=flat-square)](https://codecov.io/gh/nikitanovosibirsk/jj)
-[![PyPI](https://img.shields.io/pypi/v/jj/2.0.0-dev.4.svg?style=flat-square)](https://pypi.python.org/pypi/jj/2.0.0-dev.4)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/jj?style=flat-square)](https://pypi.python.org/pypi/jj/2.0.0-dev.4)
-[![Python Version](https://img.shields.io/pypi/pyversions/jj/2.0.0-dev.4.svg?style=flat-square)](https://pypi.python.org/pypi/jj/2.0.0-dev.4)
+[![PyPI](https://img.shields.io/pypi/v/jj/2.0.0-dev.5.svg?style=flat-square)](https://pypi.python.org/pypi/jj/2.0.0-dev.5)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/jj?style=flat-square)](https://pypi.python.org/pypi/jj/2.0.0-dev.5)
+[![Python Version](https://img.shields.io/pypi/pyversions/jj/2.0.0-dev.5.svg?style=flat-square)](https://pypi.python.org/pypi/jj/2.0.0-dev.5)
 
 ## Installation
 
 ```bash
-pip3 install jj==2.0.0-dev.4
+pip3 install jj==2.0.0-dev.5
 ```
 
 ## Usage
