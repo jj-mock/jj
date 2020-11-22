@@ -19,7 +19,7 @@ class Server:
         runner = self._runner_factory(app, loop=self._loop)  # type: ignore
         await runner.setup()
 
-        site = self._site_factory(runner, host=host, port=port)  # type: ignore
+        site = self._site_factory(runner, host=host, port=port)
         await site.start()
 
         self._runners += [runner]

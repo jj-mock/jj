@@ -15,7 +15,7 @@ class Request(web.Request):
 
     @property
     def params(self) -> "MultiDictProxy[str]":
-        return self.query  # type: ignore
+        return self.query
 
     @property
     def segments(self) -> Dict[str, str]:
