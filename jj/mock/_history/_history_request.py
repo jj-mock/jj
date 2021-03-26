@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Tuple
 
+from aiohttp.web_exceptions import HTTPRequestEntityTooLarge
 from multidict import CIMultiDict, CIMultiDictProxy, MultiDict, MultiDictProxy
 from packed import packable
 
@@ -50,7 +51,12 @@ class HistoryRequest:
 
     @staticmethod
     async def from_request(request: Request) -> "HistoryRequest":
-        body = await request.read()
+        try:
+            body = await request.read()
+        except HTTPRequestEntityTooLarge:
+            body = b"<binary>"
+            await request.release()
+
         return HistoryRequest(
             method=request.method,
             path=request.path,
