@@ -43,4 +43,4 @@ def test_repr(*, resolver_):
         actual = repr(matcher)
 
     with then:
-        assert actual == f"RequestMatcher(resolver=<Resolver>)"
+        assert actual == "RequestMatcher(resolver=<Resolver>)"

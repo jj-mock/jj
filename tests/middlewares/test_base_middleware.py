@@ -55,6 +55,7 @@ class TestBaseMiddleware(TestCase):
         @BaseMiddleware(self.resolver)
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return Response(status=200)
@@ -101,6 +102,7 @@ class TestBaseMiddleware(TestCase):
         @Middleware(self.resolver)
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return Response(status=200)
@@ -134,6 +136,7 @@ class TestBaseMiddleware(TestCase):
         @Middleware2(self.resolver)
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 mock(App.__name__, sentinel.BEFORE)
@@ -339,6 +342,7 @@ class TestBaseMiddleware(TestCase):
         @AppMiddleware()
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             @HandlerMiddleware()
             async def handler(request):

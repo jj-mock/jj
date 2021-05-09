@@ -39,6 +39,7 @@ class TestApp(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return Response(status=status, text=text)
@@ -54,6 +55,7 @@ class TestApp(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @PathMatcher(path, resolver=resolver)
             async def handler(request):
                 return Response(status=status, text=text)
@@ -133,6 +135,7 @@ class TestApp(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @decorator_after
             @PathMatcher(path, resolver=resolver)
             @decorator_before
@@ -169,6 +172,7 @@ class TestApp(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @ParamMatcher({"key2": "2"}, resolver=resolver)
             @decorator
             @ParamMatcher({"key1": "1"}, resolver=resolver)
@@ -192,6 +196,7 @@ class TestApp(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @PathMatcher(path, resolver=resolver)
             async def handler(request):
                 return Response(status=status, text=text)
@@ -215,6 +220,7 @@ class TestApp(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @PathMatcher(path, resolver=self.resolver)
             async def handler(request):
                 return Response(status=status1, text=text1)
@@ -242,6 +248,7 @@ class TestApp(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=self.resolver)
             async def other(request):
                 return Response(status=status1, text=text1)
@@ -325,6 +332,7 @@ class TestApp(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @PathMatcher(path, resolver=resolver)
             async def handler(request):
                 return Response(status=status, text=text)

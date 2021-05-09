@@ -60,4 +60,4 @@ def test_repr(*, resolver_):
         actual = repr(matcher)
 
     with then:
-        assert actual == f"ResolvableMatcher(resolver=<Resolver>)"
+        assert actual == "ResolvableMatcher(resolver=<Resolver>)"

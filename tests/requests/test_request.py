@@ -29,6 +29,7 @@ class TestRequest(TestCase):
     async def test_request_params_without_query(self):
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 self.assertIsInstance(request.params, MultiDictProxy)
@@ -45,6 +46,7 @@ class TestRequest(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 self.assertIsInstance(request.params, MultiDictProxy)
@@ -61,6 +63,7 @@ class TestRequest(TestCase):
     async def test_request_without_segments(self):
         class App(jj.App):
             resolver = self.resolver
+
             @PathMatcher("/users/1", resolver=resolver)
             async def handler(request):
                 self.assertIsInstance(request.segments, dict)
@@ -75,6 +78,7 @@ class TestRequest(TestCase):
     async def test_request_with_segments(self):
         class App(jj.App):
             resolver = self.resolver
+
             @PathMatcher("/users/{user_id}", resolver=resolver)
             async def handler(request):
                 self.assertIsInstance(request.segments, dict)
@@ -89,6 +93,7 @@ class TestRequest(TestCase):
     async def test_request_segments_with_other_matchers(self):
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 self.assertIsInstance(request.segments, dict)

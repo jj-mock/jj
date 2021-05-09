@@ -28,6 +28,7 @@ class TestDefaultApp(TestCase):
     @pytest.mark.asyncio
     async def test_default_app_with_handler(self):
         path, status, text = "/route", 201, "text"
+
         @PathMatcher(path, resolver=self.resolver)
         async def handler(request):
             return Response(status=status, text=text)
@@ -43,6 +44,7 @@ class TestDefaultApp(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @PathMatcher(path, resolver=resolver)
             async def handler(request):
                 return Response(status=status, text=text)
@@ -63,6 +65,7 @@ class TestDefaultApp(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @PathMatcher(path, resolver=resolver)
             async def handler(request):
                 return Response(status=status2, text=text2)

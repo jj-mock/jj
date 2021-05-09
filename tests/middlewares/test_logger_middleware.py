@@ -46,6 +46,7 @@ class TestLoggerMiddleware(TestCase):
         @LoggerMiddleware(self.resolver, mock)
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 record["request"] = request
@@ -75,6 +76,7 @@ class TestLoggerMiddleware(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @LoggerMiddleware(self.resolver, mock)
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
@@ -105,6 +107,7 @@ class TestLoggerMiddleware(TestCase):
         @LoggerMiddleware(self.resolver, app_logger)
         class App(jj.App):
             resolver = self.resolver
+
             @LoggerMiddleware(resolver, handler_logger)
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
@@ -121,6 +124,7 @@ class TestLoggerMiddleware(TestCase):
     async def test_handler_without_logger(self):
         class App(jj.App):
             resolver = self.resolver
+
             @LoggerMiddleware(self.resolver, None)
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):

@@ -5,7 +5,7 @@ if sys.version_info >= (3, 8):
 else:
     from unittest import TestCase
 
-from unittest.mock import Mock, call
+from unittest.mock import Mock
 
 import pytest
 
@@ -56,6 +56,7 @@ class TestSelfMiddleware(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 mock(request)
@@ -76,6 +77,7 @@ class TestSelfMiddleware(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(self, request):
                 mock(self, request)
@@ -97,6 +99,7 @@ class TestSelfMiddleware(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @PathMatcher("/path", resolver=resolver)
             @BaseMiddleware(resolver)
             @MethodMatcher("*", resolver=resolver)

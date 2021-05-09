@@ -54,6 +54,7 @@ class TestRootMiddleware(TestCase):
     async def test_middleware_without_impl_but_with_handlers(self):
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return Response(status=200)
@@ -131,6 +132,7 @@ class TestRootMiddleware(TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return Response(status=200)

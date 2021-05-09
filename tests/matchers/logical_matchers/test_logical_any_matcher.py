@@ -102,7 +102,7 @@ def test_repr(*, resolver_):
         actual = repr(matcher)
 
     with then:
-        assert actual == f"AnyMatcher([<SubMatcher1>, <SubMatcher2>], resolver=<Resolver>)"
+        assert actual == "AnyMatcher([<SubMatcher1>, <SubMatcher2>], resolver=<Resolver>)"
 
 
 def test_pack(*, resolver_):
