@@ -2,14 +2,14 @@
 
 
 [![Codecov](https://img.shields.io/codecov/c/github/nikitanovosibirsk/jj/master.svg?style=flat-square)](https://codecov.io/gh/nikitanovosibirsk/jj)
-[![PyPI](https://img.shields.io/pypi/v/jj/2.0.0-dev.5.svg?style=flat-square)](https://pypi.python.org/pypi/jj/2.0.0-dev.5)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/jj?style=flat-square)](https://pypi.python.org/pypi/jj/2.0.0-dev.5)
-[![Python Version](https://img.shields.io/pypi/pyversions/jj/2.0.0-dev.5.svg?style=flat-square)](https://pypi.python.org/pypi/jj/2.0.0-dev.5)
+[![PyPI](https://img.shields.io/pypi/v/jj.svg?style=flat-square)](https://pypi.python.org/pypi/jj)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/jj?style=flat-square)](https://pypi.python.org/pypi/jj)
+[![Python Version](https://img.shields.io/pypi/pyversions/jj.svg?style=flat-square)](https://pypi.python.org/pypi/jj)
 
 ## Installation
 
 ```bash
-pip3 install jj==2.0.0-dev.5
+pip3 install jj
 ```
 
 ## Usage
@@ -507,7 +507,7 @@ History:
             status=200,
             reason='OK',
             headers=<CIMultiDictProxy('Content-Type': 'application/json',
-                                      'Server': 'jj/2.0.0-dev.5 via aiohttp/3.7.3',
+                                      'Server': 'jj via aiohttp/3.7.3',
                                       'Content-Length': '2',
                                       'Date': 'Sun, 09 May 2021 08:08:19 GMT')>,
             body=b'[]',
