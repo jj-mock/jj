@@ -1,4 +1,10 @@
-import unittest
+import sys
+
+if sys.version_info >= (3, 8):
+    from unittest import IsolatedAsyncioTestCase as TestCase
+else:
+    from unittest import TestCase
+
 from unittest.mock import Mock, call, sentinel
 
 import pytest
@@ -15,7 +21,7 @@ from jj.responses import Response
 from .._test_utils import run
 
 
-class TestRootMiddleware(unittest.TestCase):
+class TestRootMiddleware(TestCase):
     def setUp(self):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)

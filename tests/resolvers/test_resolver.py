@@ -1,4 +1,10 @@
-import unittest
+import sys
+
+if sys.version_info >= (3, 8):
+    from unittest import IsolatedAsyncioTestCase as TestCase
+else:
+    from unittest import TestCase
+
 from unittest.mock import Mock, call, sentinel
 
 import pytest
@@ -8,7 +14,7 @@ from jj.apps import create_app
 from jj.resolvers import Registry, Resolver
 
 
-class TestResolver(unittest.TestCase):
+class TestResolver(TestCase):
     def setUp(self):
         self.default_handler = CoroutineMock(return_value=sentinel.default_response)
         self.default_app = create_app()
