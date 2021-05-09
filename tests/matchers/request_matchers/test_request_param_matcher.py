@@ -1,7 +1,13 @@
+import sys
+
+if sys.version_info >= (3, 8):
+    from unittest.mock import AsyncMock
+else:
+    from asynctest.mock import CoroutineMock as AsyncMock
+
 from unittest.mock import Mock, call, sentinel
 
 import pytest
-from asynctest.mock import CoroutineMock as CoroMock
 from multidict import MultiDict
 
 from jj.matchers import AttributeMatcher, ParamMatcher, RequestMatcher
@@ -64,7 +70,7 @@ async def test_param_matcher(expected, actual, res, *, resolver_, request_):
 async def test_param_matcher_with_custom_submatcher(ret_val, params, *, resolver_, request_):
     with given:
         request_.query = MultiDict(params)
-        submatcher_ = Mock(AttributeMatcher, match=CoroMock(return_value=ret_val))
+        submatcher_ = Mock(AttributeMatcher, match=AsyncMock(return_value=ret_val))
         matcher = ParamMatcher(submatcher_, resolver=resolver_)
 
     with when:
@@ -82,7 +88,7 @@ async def test_param_matcher_with_value_submatchers_superset(request_):
             ("key1", "1.1"),
             ("key1", "1.2"),
         ])
-        submatcher1_ = Mock(AttributeMatcher, match=CoroMock(return_value=True))
+        submatcher1_ = Mock(AttributeMatcher, match=AsyncMock(return_value=True))
         submatcher2_ = Mock(AttributeMatcher)
         matcher = ParamMatcher(resolver=resolver_, params={
             "key1": submatcher1_,
@@ -107,8 +113,8 @@ async def test_param_matcher_with_value_submatchers_subset(request_):
             ("key2", "2.2"),
             ("key3", "3"),
         ])
-        submatcher1_ = Mock(AttributeMatcher, match=CoroMock(side_effect=(True,)))
-        submatcher2_ = Mock(AttributeMatcher, match=CoroMock(side_effect=(False, True)))
+        submatcher1_ = Mock(AttributeMatcher, match=AsyncMock(side_effect=(True,)))
+        submatcher2_ = Mock(AttributeMatcher, match=AsyncMock(side_effect=(False, True)))
         matcher = ParamMatcher(resolver=resolver_, params={
             "key1": submatcher1_,
             "key2": submatcher2_,

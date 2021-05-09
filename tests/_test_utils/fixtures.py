@@ -1,5 +1,13 @@
+import sys
+
+if sys.version_info >= (3, 8):
+    from unittest.mock import AsyncMock
+else:
+    from asynctest.mock import CoroutineMock as AsyncMock
+
+from unittest.mock import Mock, sentinel
+
 import pytest
-from asynctest.mock import CoroutineMock, Mock, sentinel
 
 from jj.requests import Request
 from jj.resolvers import Resolver
@@ -17,4 +25,4 @@ def request_():
 
 @pytest.fixture
 def handler_():
-    return CoroutineMock(return_value=sentinel.response)
+    return AsyncMock(return_value=sentinel.response)

@@ -1,7 +1,13 @@
+import sys
+
+if sys.version_info >= (3, 8):
+    from unittest.mock import AsyncMock
+else:
+    from asynctest.mock import CoroutineMock as AsyncMock
+
 from unittest.mock import Mock, call, sentinel
 
 import pytest
-from asynctest.mock import CoroutineMock as CoroMock
 from multidict import MultiDict
 
 from jj.matchers import AttributeMatcher
@@ -38,7 +44,7 @@ async def test_multi_dict_matcher(expected, actual, res):
 @pytest.mark.asyncio
 async def test_multi_dict_matcher_with_value_submatchers_superset():
     with given:
-        submatcher1_ = Mock(AttributeMatcher, match=CoroMock(return_value=True))
+        submatcher1_ = Mock(AttributeMatcher, match=AsyncMock(return_value=True))
         submatcher2_ = Mock(AttributeMatcher)
         matcher = MultiDictMatcher({
             "key1": submatcher1_,
@@ -60,8 +66,8 @@ async def test_multi_dict_matcher_with_value_submatchers_superset():
 @pytest.mark.asyncio
 async def test_multi_dict_matcher_with_value_submatchers_subset():
     with given:
-        submatcher1_ = Mock(AttributeMatcher, match=CoroMock(side_effect=(True,)))
-        submatcher2_ = Mock(AttributeMatcher, match=CoroMock(side_effect=(False, True)))
+        submatcher1_ = Mock(AttributeMatcher, match=AsyncMock(side_effect=(True,)))
+        submatcher2_ = Mock(AttributeMatcher, match=AsyncMock(side_effect=(False, True)))
         matcher = MultiDictMatcher({
             "key1": submatcher1_,
             "key2": submatcher2_,

@@ -1,7 +1,13 @@
+import sys
+
+if sys.version_info >= (3, 8):
+    from unittest.mock import AsyncMock
+else:
+    from asynctest.mock import CoroutineMock as AsyncMock
+
 from unittest.mock import Mock, call, sentinel
 
 import pytest
-from asynctest.mock import CoroutineMock as CoroMock
 
 from jj.matchers import AttributeMatcher, PathMatcher, RequestMatcher
 from jj.matchers.attribute_matchers import RouteMatcher
@@ -48,7 +54,7 @@ async def test_path_matcher(expected, actual, res, *, resolver_, request_):
 async def test_path_matcher_with_custom_submatcher(ret_val, path, *, resolver_, request_):
     with given:
         request_.path = path
-        submatcher_ = Mock(AttributeMatcher, match=CoroMock(return_value=ret_val))
+        submatcher_ = Mock(AttributeMatcher, match=AsyncMock(return_value=ret_val))
         matcher = PathMatcher(submatcher_, resolver=resolver_)
 
     with when:

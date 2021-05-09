@@ -1,7 +1,13 @@
+import sys
+
+if sys.version_info >= (3, 8):
+    from unittest.mock import AsyncMock
+else:
+    from asynctest.mock import CoroutineMock as AsyncMock
+
 from unittest.mock import Mock, call
 
 import pytest
-from asynctest.mock import CoroutineMock as CoroMock
 from pytest import raises
 
 from jj.matchers import ResolvableMatcher
@@ -27,7 +33,7 @@ async def test_abstract_match_method_raises_error(*, resolver_, request_):
 @pytest.mark.asyncio
 async def test_concrete_match_method_not_raises_error(*, resolver_, request_):
     with given:
-        matcher_ = Mock(ResolvableMatcher, match=CoroMock(return_value=True))
+        matcher_ = Mock(ResolvableMatcher, match=AsyncMock(return_value=True))
 
     with when:
         actual = await matcher_.match(request_)
@@ -48,7 +54,7 @@ async def test_decorator_registers_matcher(*, resolver_, handler_):
     with then:
         assert actual == handler_
         assert resolver_.mock_calls == [call.register_matcher(matcher.match, handler_)]
-        assert handler_.mock_calls == []
+        handler_.assert_not_called()
 
 
 def test_repr(*, resolver_):

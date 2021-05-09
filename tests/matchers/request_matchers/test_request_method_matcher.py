@@ -1,7 +1,13 @@
+import sys
+
+if sys.version_info >= (3, 8):
+    from unittest.mock import AsyncMock
+else:
+    from asynctest.mock import CoroutineMock as AsyncMock
+
 from unittest.mock import Mock, call, sentinel
 
 import pytest
-from asynctest.mock import CoroutineMock as CoroMock
 
 from jj.matchers import AttributeMatcher, MethodMatcher, RequestMatcher
 from jj.matchers.attribute_matchers import EqualMatcher
@@ -46,7 +52,7 @@ async def test_method_matcher_with_custom_submatcher(ret_vals, res, called_with,
                                                      resolver_, request_):
     with given:
         request_.method = "GET"
-        submatcher_ = Mock(AttributeMatcher, match=CoroMock(side_effect=ret_vals))
+        submatcher_ = Mock(AttributeMatcher, match=AsyncMock(side_effect=ret_vals))
         matcher = MethodMatcher(submatcher_, resolver=resolver_)
 
     with when:
