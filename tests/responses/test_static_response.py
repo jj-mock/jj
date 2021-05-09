@@ -1,5 +1,10 @@
 import os
-import unittest
+import sys
+
+if sys.version_info >= (3, 8):
+    from unittest import IsolatedAsyncioTestCase as TestCase
+else:
+    from unittest import TestCase
 
 import pytest
 
@@ -14,10 +19,11 @@ from jj.responses import StaticResponse
 from .._test_utils import run
 
 
-class TestStaticResponse(unittest.TestCase):
+class TestStaticResponse(TestCase):
     def make_app_with_response(self, *args, **kwargs):
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return StaticResponse(*args, **kwargs)

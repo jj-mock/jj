@@ -33,7 +33,7 @@ __all__ = (
     "match_all", "match_any",
     "match",
     "start", "wait_for", "serve",
-    "default_app", "default_handler",
+    "default_app", "default_handler", "default_logger",
 )
 
 

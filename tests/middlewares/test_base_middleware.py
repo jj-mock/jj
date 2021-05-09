@@ -1,4 +1,10 @@
-import unittest
+import sys
+
+if sys.version_info >= (3, 8):
+    from unittest import IsolatedAsyncioTestCase as TestCase
+else:
+    from unittest import TestCase
+
 from unittest.mock import Mock, call, sentinel
 
 import pytest
@@ -15,7 +21,7 @@ from jj.responses import Response
 from .._test_utils import run
 
 
-class TestBaseMiddleware(unittest.TestCase):
+class TestBaseMiddleware(TestCase):
     def setUp(self):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)
@@ -49,6 +55,7 @@ class TestBaseMiddleware(unittest.TestCase):
         @BaseMiddleware(self.resolver)
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return Response(status=200)
@@ -95,6 +102,7 @@ class TestBaseMiddleware(unittest.TestCase):
         @Middleware(self.resolver)
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return Response(status=200)
@@ -128,6 +136,7 @@ class TestBaseMiddleware(unittest.TestCase):
         @Middleware2(self.resolver)
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 mock(App.__name__, sentinel.BEFORE)
@@ -333,6 +342,7 @@ class TestBaseMiddleware(unittest.TestCase):
         @AppMiddleware()
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             @HandlerMiddleware()
             async def handler(request):

@@ -1,4 +1,9 @@
-import unittest
+import sys
+
+if sys.version_info >= (3, 8):
+    from unittest import IsolatedAsyncioTestCase as TestCase
+else:
+    from unittest import TestCase
 
 import pytest
 from multidict import MultiDictProxy
@@ -13,7 +18,7 @@ from jj.responses import Response
 from .._test_utils import run
 
 
-class TestRequest(unittest.TestCase):
+class TestRequest(TestCase):
     def setUp(self):
         self.default_app = create_app()
         self.resolver = ReversedResolver(Registry(), self.default_app, default_handler)
@@ -24,6 +29,7 @@ class TestRequest(unittest.TestCase):
     async def test_request_params_without_query(self):
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 self.assertIsInstance(request.params, MultiDictProxy)
@@ -40,6 +46,7 @@ class TestRequest(unittest.TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 self.assertIsInstance(request.params, MultiDictProxy)
@@ -56,6 +63,7 @@ class TestRequest(unittest.TestCase):
     async def test_request_without_segments(self):
         class App(jj.App):
             resolver = self.resolver
+
             @PathMatcher("/users/1", resolver=resolver)
             async def handler(request):
                 self.assertIsInstance(request.segments, dict)
@@ -70,6 +78,7 @@ class TestRequest(unittest.TestCase):
     async def test_request_with_segments(self):
         class App(jj.App):
             resolver = self.resolver
+
             @PathMatcher("/users/{user_id}", resolver=resolver)
             async def handler(request):
                 self.assertIsInstance(request.segments, dict)
@@ -84,6 +93,7 @@ class TestRequest(unittest.TestCase):
     async def test_request_segments_with_other_matchers(self):
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 self.assertIsInstance(request.segments, dict)

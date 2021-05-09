@@ -1,7 +1,13 @@
+import sys
+
+if sys.version_info >= (3, 8):
+    from unittest.mock import AsyncMock
+else:
+    from asynctest.mock import CoroutineMock as AsyncMock
+
 from unittest.mock import Mock, call, sentinel
 
 import pytest
-from asynctest.mock import CoroutineMock as CoroMock
 from pytest import raises
 
 from jj.matchers import AnyMatcher, LogicalMatcher, ResolvableMatcher
@@ -19,7 +25,7 @@ __all__ = ("request_", "resolver_",)
 ])
 async def test_single_submatcher(ret_val, res, *, resolver_, request_):
     with given:
-        submatcher_ = Mock(ResolvableMatcher, match=CoroMock(return_value=ret_val))
+        submatcher_ = Mock(ResolvableMatcher, match=AsyncMock(return_value=ret_val))
         matcher = AnyMatcher([submatcher_], resolver=resolver_)
 
     with when:
@@ -37,8 +43,8 @@ async def test_single_submatcher(ret_val, res, *, resolver_, request_):
 ])
 async def test_multiple_truthy_submatchers(ret_val1, ret_val2, res, *, resolver_, request_):
     with given:
-        submatcher1_ = Mock(ResolvableMatcher, match=CoroMock(return_value=ret_val1))
-        submatcher2_ = Mock(ResolvableMatcher, match=CoroMock(return_value=ret_val2))
+        submatcher1_ = Mock(ResolvableMatcher, match=AsyncMock(return_value=ret_val1))
+        submatcher2_ = Mock(ResolvableMatcher, match=AsyncMock(return_value=ret_val2))
         matcher = AnyMatcher([submatcher1_, submatcher2_], resolver=resolver_)
 
     with when:
@@ -57,8 +63,8 @@ async def test_multiple_truthy_submatchers(ret_val1, ret_val2, res, *, resolver_
 ])
 async def test_multiple_false_submatchers(ret_val1, ret_val2, res, *, resolver_, request_):
     with given:
-        submatcher1_ = Mock(ResolvableMatcher, match=CoroMock(return_value=ret_val1))
-        submatcher2_ = Mock(ResolvableMatcher, match=CoroMock(return_value=ret_val2))
+        submatcher1_ = Mock(ResolvableMatcher, match=AsyncMock(return_value=ret_val1))
+        submatcher2_ = Mock(ResolvableMatcher, match=AsyncMock(return_value=ret_val2))
         matcher = AnyMatcher([submatcher1_, submatcher2_], resolver=resolver_)
 
     with when:
@@ -102,7 +108,7 @@ def test_repr(*, resolver_):
         actual = repr(matcher)
 
     with then:
-        assert actual == f"AnyMatcher([<SubMatcher1>, <SubMatcher2>], resolver=<Resolver>)"
+        assert actual == "AnyMatcher([<SubMatcher1>, <SubMatcher2>], resolver=<Resolver>)"
 
 
 def test_pack(*, resolver_):

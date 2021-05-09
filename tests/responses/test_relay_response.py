@@ -1,4 +1,9 @@
-import unittest
+import sys
+
+if sys.version_info >= (3, 8):
+    from unittest import IsolatedAsyncioTestCase as TestCase
+else:
+    from unittest import TestCase
 
 import pytest
 from aiohttp import FormData
@@ -15,7 +20,7 @@ from .._test_utils import TestServer, run
 from ._request_formatter import RequestFormatter
 
 
-class TestRelayResponse(unittest.TestCase):
+class TestRelayResponse(TestCase):
     def make_app_with_response(self, *args, **kwargs):
         class App(jj.App):
             resolver = self.resolver

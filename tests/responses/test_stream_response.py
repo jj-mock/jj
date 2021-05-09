@@ -1,4 +1,9 @@
-import unittest
+import sys
+
+if sys.version_info >= (3, 8):
+    from unittest import IsolatedAsyncioTestCase as TestCase
+else:
+    from unittest import TestCase
 
 import pytest
 
@@ -13,10 +18,11 @@ from jj.responses import StreamResponse
 from .._test_utils import run
 
 
-class TestStreamResponse(unittest.TestCase):
+class TestStreamResponse(TestCase):
     def make_app_with_response(self, *args, **kwargs):
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 return StreamResponse(*args, **kwargs)
@@ -32,6 +38,7 @@ class TestStreamResponse(unittest.TestCase):
 
         class App(jj.App):
             resolver = self.resolver
+
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
                 stream = StreamResponse()
