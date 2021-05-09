@@ -90,9 +90,12 @@ class Response(web.Response, StreamResponse):
         cookies = [self._cookie_to_dict(cookie) for cookie in self.cookies.values()]
 
         body = self.get_body()
-        compression = self._compression_force
-        if isinstance(compression, ContentCoding):
-            compression = compression.value
+
+        compression: Optional[str] = None
+        if isinstance(self._compression_force, ContentCoding):
+            compression = self._compression_force.value
+        else:
+            compression = self._compression_force
 
         return {
             "status": self.status,
