@@ -26,40 +26,49 @@ jj.serve()
 
 ## Documentation
 
-* [Matchers](#matchers)
-  * [Method](#method)
-    * [match_method(`method`)](#match_methodmethod)
-  * [Path](#path)
-    * [match_path(`path`)](#match_pathpath)
-  * [Segments](#segments)
-  * [Params](#params)
-    * [match_param(`name`, `val`)](#match_paramname-val)
-    * [match_params(`params`)](#match_paramsparams)
-  * [Headers](#headers)
-    * [match_header(`name`, `val`)](#match_headername-val)
-    * [match_headers(`headers`)](#match_headersheaders)
-  * [Combining Matchers](#combining-matchers)
-    * [match_any(`matchers`)](#match_anymatchers)
-    * [match_all(`matchers`)](#match_allmatchers)
-    * [match(`method`, `path`, `params`, `headers`)](#matchmethod-path-params-headers)
-* [Responses](#responses)
-  * [Response](#response)
-    * [JSON Response](#json-response)
-    * [HTML Response](#html-response)
-    * [Binary Response](#binary-response)
-    * [Not Found Response](#not-found-response)
-    * [Predefined Body](#predefined-body)
-  * [StaticResponse](#staticresponse)
-    * [Inline Content](#inline-content)
-    * [Downloadable File](#downloadable-file)
-  * [RelayResponse `β`](#relayresponse-β)
-* [Apps](#apps)
-  * [Single App](#single-app)
-  * [Multiple Apps](#multiple-apps)
-  * [App Inheritance](#app-inheritance)
-* [Middlewares](#middlewares)
-  * [Handler Middleware](#handler-middleware)
-  * [App Middleware](#app-middleware)
+* [Documentation](#documentation)
+  * [Matchers](#matchers)
+    * [Method](#method)
+      * [match_method(`method`)](#match_methodmethod)
+    * [Path](#path)
+      * [match_path(`path`)](#match_pathpath)
+    * [Segments](#segments)
+    * [Params](#params)
+      * [match_param(`name`, `val`)](#match_paramname-val)
+      * [match_params(`params`)](#match_paramsparams)
+    * [Headers](#headers)
+      * [match_header(`name`, `val`)](#match_headername-val)
+      * [match_headers(`headers`)](#match_headersheaders)
+    * [Combining Matchers](#combining-matchers)
+      * [match_any(`matchers`)](#match_anymatchers)
+      * [match_all(`matchers`)](#match_allmatchers)
+      * [match(`method`, `path`, `params`, `headers`)](#matchmethod-path-params-headers)
+  * [Responses](#responses)
+    * [Response](#response)
+      * [JSON Response](#json-response)
+      * [HTML Response](#html-response)
+      * [Binary Response](#binary-response)
+      * [Not Found Response](#not-found-response)
+      * [Predefined Body](#predefined-body)
+    * [StaticResponse](#staticresponse)
+      * [Inline Content](#inline-content)
+      * [Downloadable File](#downloadable-file)
+    * [RelayResponse `β`](#relayresponse-β)
+  * [Apps](#apps)
+    * [Single App](#single-app)
+    * [Multiple Apps](#multiple-apps)
+    * [App Inheritance](#app-inheritance)
+  * [Middlewares](#middlewares)
+    * [Handler Middleware](#handler-middleware)
+    * [App Middleware](#app-middleware)
+  * [Remote Mock](#remote-mock)
+    * [Server Side](#server-side)
+      * [Start Remote Mock](#start-remote-mock)
+    * [Client Side](#client-side)
+      * [Register Remote Handler](#register-remote-handler)
+      * [Deregister Remote Handler](#deregister-remote-handler)
+      * [Retrieve Remote Handler History](#retrieve-remote-handler-history)
+      * [Register & Deregister Remote Handler (via context manager)](#register--deregister-remote-handler-via-context-manager)
 
 ---
 
@@ -384,4 +393,148 @@ class App(jj.App):
         return jj.Response(status=OK, body="Ok")
 
 jj.serve(App())
+```
+
+---
+
+### Remote Mock
+
+#### Server Side
+
+##### Start Remote Mock
+
+```python
+import jj
+from jj.mock import Mock
+
+jj.serve(Mock(), port=8080)
+```
+
+#### Client Side
+
+##### Register Remote Handler
+
+```python
+import asyncio
+
+import jj
+from jj.mock import RemoteMock
+
+
+async def main():
+    remote_mock = RemoteMock("http://localhost:8080")
+
+    matcher = jj.match("GET", "/users")
+    response = jj.Response(status=200, json=[])
+    remote_handler = remote_mock.create_handler(matcher, response)
+    await remote_handler.register()
+
+    # Request GET /users
+    # Returns status=200 body=[]
+
+asyncio.run(main())
+```
+
+##### Deregister Remote Handler
+
+```python
+import asyncio
+
+import jj
+from jj.mock import RemoteMock
+
+
+async def main():
+    remote_mock = RemoteMock("http://localhost:8080")
+
+    matcher = jj.match("GET", "/users")
+    response = jj.Response(status=200, json=[])
+    remote_handler = remote_mock.create_handler(matcher, response)
+    await remote_handler.register()
+
+    # Request GET /users
+    # Returns status=200 body=[]
+
+    await remote_handler.deregister()
+
+asyncio.run(main())
+```
+
+##### Retrieve Remote Handler History
+
+```python
+import asyncio
+
+import jj
+from jj.mock import RemoteMock
+
+
+async def main():
+    remote_mock = RemoteMock("http://localhost:8080")
+
+    matcher = jj.match("GET", "/users")
+    response = jj.Response(status=200, json=[])
+    remote_handler = remote_mock.create_handler(matcher, response)
+    await remote_handler.register()
+
+    # Request GET /users
+    # Returns status=200 body=[]
+
+    history = await remote_handler.history()
+    print(history)
+
+    await remote_handler.deregister()
+
+asyncio.run(main())
+```
+
+History:
+
+```python
+[
+    {
+        'request': HistoryRequest(
+            method='GET',
+            path='/users',
+            params=<MultiDictProxy()>,
+            headers=<CIMultiDictProxy('Host': 'localhost:8080',
+                                      'Accept': '*/*',
+                                      'Accept-Encoding': 'gzip, deflate',
+                                      'User-Agent': 'Python/3.8 aiohttp/3.7.3')>,
+            body=b'',
+        ),
+        'response': HistoryResponse(
+            status=200,
+            reason='OK',
+            headers=<CIMultiDictProxy('Content-Type': 'application/json',
+                                      'Server': 'jj/2.0.0-dev.5 via aiohttp/3.7.3',
+                                      'Content-Length': '2',
+                                      'Date': 'Sun, 09 May 2021 08:08:19 GMT')>,
+            body=b'[]',
+        ),
+        'tags': ['f75c2ab7-f68d-4b4a-85e0-1f38bb0abe9a']
+    }
+]
+```
+
+##### Register & Deregister Remote Handler (via context manager)
+
+```python
+import asyncio
+
+import jj
+from jj.mock import RemoteMock
+
+
+async def main():
+    remote_mock = RemoteMock("http://localhost:8080")
+
+    matcher = jj.match("GET", "/users")
+    response = jj.Response(status=200, json=[])
+
+    async with remote_mock.create_handler(matcher, response):
+        # Request GET /users
+        # Returns status=200 body=[]
+
+asyncio.run(main())
 ```
