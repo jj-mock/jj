@@ -1,61 +1,89 @@
-import logging
-import unittest
-from unittest.mock import Mock, sentinel
+from unittest.mock import Mock, call, sentinel
+
+import pytest
 
 from jj.logs import Formatter
 
+from .._test_utils.steps import given, then, when
 from ._log_record import TestLogRecord
 
 
-class TestFormatter(unittest.TestCase):
-    def setUp(self):
-        self.formatter = Formatter()
-        self.formatter.format_request = Mock(return_value=sentinel.formatted_request)
-        self.formatter.format_response = Mock(return_value=sentinel.formatted_response)
+class _Formatter(Formatter):
+    format_request: Mock
+    format_response: Mock
 
-    def test_inheritance(self):
-        self.assertIsInstance(self.formatter, logging.Formatter)
 
-    def test_format_without_request_and_response(self):
-        record = TestLogRecord(sentinel.message)
+@pytest.fixture()
+def formatter():
+    formatter = Formatter()
+    formatter.format_request = Mock(return_value=sentinel.formatted_request)
+    formatter.format_response = Mock(return_value=sentinel.formatted_response)
+    return formatter
 
-        self.assertEqual(self.formatter.format(record), str(sentinel.message))
 
-        self.formatter.format_request.assert_not_called()
-        self.formatter.format_response.assert_not_called()
+@pytest.fixture()
+def record():
+    return TestLogRecord(sentinel.message)
 
-    def test_format_with_request(self):
-        record = TestLogRecord(sentinel.message)
+
+def test_format_without_request_and_response(formatter: _Formatter, record: TestLogRecord):
+    with when:
+        res = formatter.format(record)
+
+    with then:
+        assert res == str(record.msg)
+        assert formatter.format_request.mock_calls == []
+        assert formatter.format_response.mock_calls == []
+
+
+def test_format_with_request(formatter: _Formatter, record: TestLogRecord):
+    with given:
         record.jj_request = sentinel.request
 
-        expected = self.formatter.format_request.return_value
-        self.assertEqual(self.formatter.format(record), expected)
+    with when:
+        res = formatter.format(record)
 
-        self.formatter.format_request.assert_called_once_with(sentinel.request, record)
-        self.formatter.format_response.assert_not_called()
+    with then:
+        assert res == formatter.format_request.return_value
+        assert formatter.format_request.mock_calls == [
+            call(sentinel.request, record)
+        ]
+        assert formatter.format_response.mock_calls == []
 
-    def test_format_with_response(self):
-        record = TestLogRecord(sentinel.message)
+
+def test_format_with_response(formatter: _Formatter, record: TestLogRecord):
+    with given:
         record.jj_request = sentinel.request
         record.jj_response = sentinel.response
 
-        expected = self.formatter.format_response.return_value
-        self.assertEqual(self.formatter.format(record), expected)
+    with when:
+        res = formatter.format(record)
 
-        self.formatter.format_response.assert_called_once_with(sentinel.response,
-                                                               sentinel.request, record)
-        self.formatter.format_request.assert_not_called()
+    with then:
+        assert res == formatter.format_response.return_value
+        assert formatter.format_request.mock_calls == []
+        assert formatter.format_response.mock_calls == [
+            call(sentinel.response, sentinel.request, record)
+        ]
 
-    def test_request_format(self):
+
+def test_request_format(record: TestLogRecord):
+    with given:
         formatter = Formatter()
-        record = TestLogRecord(sentinel.message)
 
+    with when:
         res = formatter.format_request(sentinel.request, record)
-        self.assertEqual(res, str(sentinel.message))
 
-    def test_response_format(self):
+    with then:
+        assert res == str(record.msg)
+
+
+def test_response_format(record: TestLogRecord):
+    with given:
         formatter = Formatter()
-        record = TestLogRecord(sentinel.message)
 
+    with when:
         res = formatter.format_response(sentinel.response, sentinel.request, record)
-        self.assertEqual(res, str(sentinel.message))
+
+    with then:
+        assert res == str(record.msg)

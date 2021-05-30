@@ -1,30 +1,41 @@
 import logging
-import unittest
+
+import pytest
 
 from jj.logs import Logger
 
+from .._test_utils.steps import given, then, when
 
-class TestLogger(unittest.TestCase):
-    def setUp(self):
-        self.logger = Logger(__name__)
 
-    def test_inheritance(self):
-        self.assertIsInstance(self.logger, logging.Logger)
+@pytest.fixture()
+def logger():
+    return Logger(__name__)
 
-    def test_no_default_handlers(self):
-        self.assertEqual(len(self.logger.handlers), 0)
 
-    def test_add_handler(self):
+def test_no_default_handlers(logger: Logger):
+    with when:
+        assert len(logger.handlers) == 0
+
+
+def test_add_handler(logger: Logger):
+    with given:
         handler = logging.NullHandler()
-        self.logger.addHandler(handler)
-        self.assertEqual(len(self.logger.handlers), 1)
 
-    def test_clear_handlers(self):
+    with when:
+        logger.addHandler(handler)
+
+    with then:
+        assert len(logger.handlers) == 1
+
+
+def test_clear_handlers(logger: Logger):
+    with given:
         handler = logging.NullHandler()
-        self.logger.addHandler(handler)
+        logger.addHandler(handler)
 
-        res = self.logger.clearHandlers()
+    with when:
+        res = logger.clearHandlers()
 
-        self.assertIsInstance(res, type(self.logger))
-        self.assertEqual(res, self.logger)
-        self.assertEqual(len(self.logger.handlers), 0)
+    with then:
+        assert res == logger
+        assert len(logger.handlers) == 0
