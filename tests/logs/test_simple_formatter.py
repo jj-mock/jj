@@ -1,34 +1,49 @@
-import logging
-import unittest
 from unittest.mock import Mock, sentinel
+
+import pytest
 
 from jj.logs import SimpleFormatter
 
+from .._test_utils.steps import given, then, when
 from ._log_record import TestLogRecord
 
 
-class TestSimpleFormatter(unittest.TestCase):
-    def setUp(self):
-        self.formatter = SimpleFormatter()
+@pytest.fixture()
+def formatter():
+    return SimpleFormatter()
 
-    def test_inheritance(self):
-        self.assertIsInstance(self.formatter, logging.Formatter)
 
-    def test_format_without_request_and_response(self):
-        record = TestLogRecord(sentinel.message)
-        self.assertEqual(self.formatter.format(record), str(sentinel.message))
+@pytest.fixture()
+def record():
+    return TestLogRecord(sentinel.message)
 
-    def test_format_with_request(self):
-        record = TestLogRecord(sentinel.message)
+
+def test_format_without_request_and_response(formatter: SimpleFormatter, record: TestLogRecord):
+    with when:
+        res = formatter.format(record)
+
+    with then:
+        assert res == str(sentinel.message)
+
+
+def test_format_with_request(formatter: SimpleFormatter, record: TestLogRecord):
+    with given:
         record.jj_request = Mock(url=Mock(path=sentinel.path))
 
-        expected = "-> {}".format(sentinel.path)
-        self.assertEqual(self.formatter.format(record), expected)
+    with when:
+        res = formatter.format(record)
 
-    def test_format_with_response(self):
-        record = TestLogRecord(sentinel.message)
+    with then:
+        assert res == "-> {}".format(sentinel.path)
+
+
+def test_format_with_response(formatter: SimpleFormatter, record: TestLogRecord):
+    with given:
         record.jj_request = Mock()
         record.jj_response = Mock(status=sentinel.status, reason=sentinel.reason)
 
-        expected = "<- {} {}\n".format(sentinel.status, sentinel.reason)
-        self.assertEqual(self.formatter.format(record), expected)
+    with when:
+        res = formatter.format(record)
+
+    with then:
+        assert res == "<- {} {}\n".format(sentinel.status, sentinel.reason)

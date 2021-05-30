@@ -69,6 +69,7 @@ jj.serve()
       * [Deregister Remote Handler](#deregister-remote-handler)
       * [Retrieve Remote Handler History](#retrieve-remote-handler-history)
       * [Register & Deregister Remote Handler (via context manager)](#register--deregister-remote-handler-via-context-manager)
+    * [Custom Logger](#custom-logger)
 
 ---
 
@@ -537,4 +538,33 @@ async def main():
         # Returns status=200 body=[]
 
 asyncio.run(main())
+```
+
+#### Custom Logger
+
+```python
+import logging
+
+import jj
+from jj.logs import SimpleFormatter
+from jj.mock import Mock, SystemLogFilter
+
+
+class Formatter(SimpleFormatter):
+    def format_request(self, request: jj.Request, record: logging.LogRecord) -> str:
+        return f"-> {request.method} {request.url.path_qs} {request.headers}"
+
+    def format_response(self, response: jj.Response, request: jj.Request, record: logging.LogRecord) -> str:
+        return f"<- {response.status} {response.reason} {response.body}"
+
+
+handler = logging.StreamHandler()
+handler.setFormatter(Formatter())
+
+logger = logging.getLogger("custom_logger")
+logger.setLevel(logging.INFO)
+logger.addHandler(handler)
+logger.addFilter(SystemLogFilter())
+
+jj.serve(Mock(), logger=logger)
 ```
