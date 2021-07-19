@@ -23,6 +23,7 @@ setup(
     url="https://github.com/nikitanovosibirsk/jj",
     license="Apache-2.0",
     packages=find_packages(exclude=("tests",)),
+    package_data={"jj": ["py.typed"]},
     install_requires=find_required(),
     tests_require=find_dev_required(),
     classifiers=[
@@ -31,5 +32,6 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Typing :: Typed",
     ],
 )
