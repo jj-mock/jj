@@ -1,9 +1,11 @@
 from types import TracebackType
-from typing import Any, Optional, Type, Union
+from typing import Any, List, Optional, Type, Union, cast
 from uuid import UUID, uuid4
 
 from jj.matchers import LogicalMatcher, RequestMatcher
 from jj.responses import Response
+
+from ._history import HistoryItem
 
 __all__ = ("RemoteHandler",)
 
@@ -36,8 +38,8 @@ class RemoteHandler:
     async def deregister(self) -> None:
         await self._mock.deregister(self)
 
-    async def history(self) -> Any:
-        return await self._mock.history(self)
+    async def history(self) -> List[HistoryItem]:
+        return cast(List[HistoryItem], await self._mock.history(self))
 
     async def __aenter__(self) -> None:
         await self.register()
