@@ -1,7 +1,8 @@
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from ...requests import Request
 from ...responses import Response
+from ._history_item import HistoryItem
 from ._history_request import HistoryRequest
 from ._history_response import HistoryResponse
 
@@ -10,7 +11,7 @@ __all__ = ("HistoryRepository",)
 
 class HistoryRepository:
     def __init__(self) -> None:
-        self._storage: List[Dict[str, Any]] = []
+        self._storage: List[HistoryItem] = []
 
     async def add(self,
                   request: Request,
@@ -27,5 +28,5 @@ class HistoryRepository:
     async def delete_by_tag(self, tag: str) -> None:
         self._storage = [x for x in self._storage if tag not in x["tags"]]
 
-    async def get_by_tag(self, tag: str) -> List[Dict[str, Any]]:
+    async def get_by_tag(self, tag: str) -> List[HistoryItem]:
         return [x for x in self._storage if tag in x["tags"]]

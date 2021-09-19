@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import List, Union, cast
 
 from aiohttp import ClientSession
 from packed import pack, unpack
@@ -7,6 +7,7 @@ from jj.http.codes import OK
 from jj.matchers import LogicalMatcher, RequestMatcher
 from jj.responses import Response
 
+from ._history import HistoryItem
 from ._remote_handler import RemoteHandler
 
 __all__ = ("RemoteMock",)
@@ -49,7 +50,7 @@ class RemoteMock:
                 assert response.status == OK, response
         return self
 
-    async def history(self, handler: RemoteHandler) -> Any:
+    async def fetch_history(self, handler: RemoteHandler) -> List[HistoryItem]:
         headers = {"x-jj-remote-mock": ""}
         payload = {
             "id": str(handler.id),
@@ -63,4 +64,4 @@ class RemoteMock:
                 assert response.status == OK, response
                 body = await response.read()
                 unpacked = unpack(body)
-                return unpacked
+                return cast(List[HistoryItem], unpacked)

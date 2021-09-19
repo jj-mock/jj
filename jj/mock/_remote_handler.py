@@ -1,16 +1,24 @@
 from types import TracebackType
-from typing import Any, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
 from uuid import UUID, uuid4
 
 from jj.matchers import LogicalMatcher, RequestMatcher
 from jj.responses import Response
+
+if TYPE_CHECKING:
+    from ._remote_mock import RemoteMock
+    MockType = RemoteMock
+else:
+    MockType = Any
+
+from ._history import HistoryItem
 
 __all__ = ("RemoteHandler",)
 
 
 class RemoteHandler:
     def __init__(self,
-                 mock: Any,
+                 mock: MockType,
                  matcher: Union[RequestMatcher, LogicalMatcher],
                  response: Response) -> None:
         self._id = uuid4()
@@ -36,8 +44,8 @@ class RemoteHandler:
     async def deregister(self) -> None:
         await self._mock.deregister(self)
 
-    async def history(self) -> Any:
-        return await self._mock.history(self)
+    async def fetch_history(self) -> List[HistoryItem]:
+        return await self._mock.fetch_history(self)
 
     async def __aenter__(self) -> None:
         await self.register()

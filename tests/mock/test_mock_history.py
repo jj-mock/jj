@@ -20,7 +20,7 @@ async def test_mock_history_request():
             resp = await client.get("/", params={"key": "val"})
             assert resp.status == 200
 
-            history = await handler.history()
+            history = await handler.fetch_history()
             req = history[0]["request"]
             assert req.method == "GET"
             assert req.path == "/"
@@ -48,7 +48,7 @@ async def test_mock_history_multiple_requests():
             resp2 = await client.get("/path2")
             assert resp2.status == 200
 
-            history = await handler.history()
+            history = await handler.fetch_history()
             req1 = history[-1]["request"]
             assert req1.method == "GET"
             assert req1.path == "/path1"
@@ -70,7 +70,7 @@ async def test_mock_history_post_no_data():
             resp = await client.post("/")
             assert resp.status == 200
 
-            history = await handler.history()
+            history = await handler.fetch_history()
             req = history[0]["request"]
             assert req.method == "POST"
             assert req.path == "/"
@@ -93,7 +93,7 @@ async def test_mock_history_post_json():
             resp = await client.post("/", json=payload)
             assert resp.status == 200
 
-            history = await handler.history()
+            history = await handler.fetch_history()
             req = history[0]["request"]
             assert req.method == "POST"
             assert req.path == "/"
@@ -117,7 +117,7 @@ async def test_mock_history_post_data():
             resp = await client.post("/", data=payload)
             assert resp.status == 200
 
-            history = await handler.history()
+            history = await handler.fetch_history()
             req = history[0]["request"]
             assert req.method == "POST"
             assert req.path == "/"
@@ -143,7 +143,7 @@ async def test_mock_history_post_form_data():
             resp = await client.post("/", data=payload)
             assert resp.status == 200
 
-            history = await handler.history()
+            history = await handler.fetch_history()
             req = history[0]["request"]
             assert req.method == "POST"
             assert req.path == "/"
@@ -162,7 +162,7 @@ async def test_mock_history_post_binary_data():
             resp = await client.post("/", data=b"binary")
             assert resp.status == 200
 
-            history = await handler.history()
+            history = await handler.fetch_history()
             req = history[0]["request"]
             assert req.method == "POST"
             assert req.path == "/"
