@@ -44,8 +44,8 @@ class RemoteHandler:
     async def deregister(self) -> None:
         await self._mock.deregister(self)
 
-    async def history(self) -> List[HistoryItem]:
-        return await self._mock.history(self)
+    async def fetch_history(self) -> List[HistoryItem]:
+        return await self._mock.fetch_history(self)
 
     async def __aenter__(self) -> None:
         await self.register()

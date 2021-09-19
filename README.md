@@ -471,20 +471,20 @@ from jj.mock import RemoteMock
 
 
 async def main():
-    remote_mock = RemoteMock("http://localhost:8080")
+  remote_mock = RemoteMock("http://localhost:8080")
 
-    matcher = jj.match("GET", "/users")
-    response = jj.Response(status=200, json=[])
-    remote_handler = remote_mock.create_handler(matcher, response)
-    await remote_handler.register()
+  matcher = jj.match("GET", "/users")
+  response = jj.Response(status=200, json=[])
+  remote_handler = remote_mock.create_handler(matcher, response)
+  await remote_handler.register()
 
-    # Request GET /users
-    # Returns status=200 body=[]
+  # Request GET /users
+  # Returns status=200 body=[]
 
-    history = await remote_handler.history()
-    print(history)
+  history = await remote_handler.fetch_history()
+  print(history)
 
-    await remote_handler.deregister()
+  await remote_handler.deregister()
 
 asyncio.run(main())
 ```

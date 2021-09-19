@@ -24,7 +24,7 @@ class Mocked:
         return self._history
 
     async def fetch_history(self) -> List[HistoryItem]:
-        self._history = await self._handler.history()
+        self._history = await self._handler.fetch_history()
         return self._history
 
     async def wait_for_requests(self, count: int = 1, *,

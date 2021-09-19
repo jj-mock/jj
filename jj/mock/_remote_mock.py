@@ -50,7 +50,7 @@ class RemoteMock:
                 assert response.status == OK, response
         return self
 
-    async def history(self, handler: RemoteHandler) -> List[HistoryItem]:
+    async def fetch_history(self, handler: RemoteHandler) -> List[HistoryItem]:
         headers = {"x-jj-remote-mock": ""}
         payload = {
             "id": str(handler.id),
