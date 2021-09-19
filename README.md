@@ -65,10 +65,10 @@ jj.serve()
     * [Server Side](#server-side)
       * [Start Remote Mock](#start-remote-mock)
     * [Client Side](#client-side)
-      * [Register Remote Handler](#register-remote-handler)
-      * [Deregister Remote Handler](#deregister-remote-handler)
-      * [Retrieve Remote Handler History](#retrieve-remote-handler-history)
-      * [Register & Deregister Remote Handler (via context manager)](#register--deregister-remote-handler-via-context-manager)
+      * [Low Level API](#low-level-api)
+        * [Register Remote Handler](#register-remote-handler)
+        * [Deregister Remote Handler](#deregister-remote-handler)
+        * [Retrieve Remote Handler History](#retrieve-remote-handler-history)
     * [Custom Logger](#custom-logger)
 
 ---
@@ -411,9 +411,35 @@ from jj.mock import Mock
 jj.serve(Mock(), port=8080)
 ```
 
+or via docker
+```shell
+docker run -p 8080:80 nikitanovosibirsk/jj:0.1
+```
+
 #### Client Side
 
-##### Register Remote Handler
+```python
+import asyncio
+
+import jj
+from jj.mock import mocked
+
+
+async def main():
+    matcher = jj.match("GET", "/users")
+    response = jj.Response(status=200, json=[])
+
+    async with mocked(matcher, response) as mock:
+        # Request GET /users
+        # Returns status=200 body=[]
+    assert len(mock.history) == 1
+
+asyncio.run(main())
+```
+
+##### Low Level API
+
+###### Register Remote Handler
 
 ```python
 import asyncio
@@ -436,7 +462,7 @@ async def main():
 asyncio.run(main())
 ```
 
-##### Deregister Remote Handler
+###### Deregister Remote Handler
 
 ```python
 import asyncio
@@ -461,7 +487,7 @@ async def main():
 asyncio.run(main())
 ```
 
-##### Retrieve Remote Handler History
+###### Retrieve Remote Handler History
 
 ```python
 import asyncio
@@ -516,28 +542,6 @@ History:
         'tags': ['f75c2ab7-f68d-4b4a-85e0-1f38bb0abe9a']
     }
 ]
-```
-
-##### Register & Deregister Remote Handler (via context manager)
-
-```python
-import asyncio
-
-import jj
-from jj.mock import RemoteMock
-
-
-async def main():
-    remote_mock = RemoteMock("http://localhost:8080")
-
-    matcher = jj.match("GET", "/users")
-    response = jj.Response(status=200, json=[])
-
-    async with remote_mock.create_handler(matcher, response):
-        # Request GET /users
-        # Returns status=200 body=[]
-
-asyncio.run(main())
 ```
 
 #### Custom Logger
