@@ -57,7 +57,6 @@ class TestStaticResponse(TestCase):
             self.assertEqual(response.headers.get("Accept-Ranges"), "bytes")
             self.assertIsNotNone(response.headers.get("Last-Modified"))
             self.assertIsNotNone(response.headers.get("Date"))
-            self.assertEqual(len(response.headers), 6)
             # body
             raw = await response.read()
             self.assertEqual(raw, body)
@@ -81,7 +80,6 @@ class TestStaticResponse(TestCase):
             self.assertEqual(response.headers.get("Accept-Ranges"), "bytes")
             self.assertIsNotNone(response.headers.get("Last-Modified"))
             self.assertIsNotNone(response.headers.get("Date"))
-            self.assertEqual(len(response.headers), 6)
             # body
             raw = await response.read()
             self.assertEqual(raw, body)
