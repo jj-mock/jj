@@ -66,7 +66,7 @@ class HistoryRequest:
             body=body,
         )
 
-    def __packed__(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         params = [[key, val] for key, val in self._params.items()]
         headers = [[key, val] for key, val in self._headers.items()]
         return {
@@ -77,6 +77,9 @@ class HistoryRequest:
             "headers": headers,
             "body": self.body,
         }
+
+    def __packed__(self) -> Dict[str, Any]:
+        return self.to_dict()
 
     @classmethod
     def __unpacked__(cls, *,
