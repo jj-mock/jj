@@ -10,9 +10,10 @@ from jj.http.methods import ANY, DELETE, GET, POST
 from jj.matchers import LogicalMatcher, RequestMatcher, ResolvableMatcher, exists
 from jj.requests import Request
 from jj.resolvers import Registry, Resolver
-from jj.responses import Response
+from jj.responses import RelayResponse, Response, StreamResponse
 
 from ._history import HistoryRepository
+from ._remote_response import RemoteResponseType
 
 __all__ = ("Mock",)
 
@@ -28,7 +29,7 @@ class Mock(jj.App):
         self._app = app_factory(resolver=self._resolver)
         self._repo = HistoryRepository()
 
-    def _decode(self, payload: bytes) -> Tuple[str, MatcherType, Response]:
+    def _decode(self, payload: bytes) -> Tuple[str, MatcherType, RemoteResponseType]:
         def resolver(cls: Any, **kwargs: Any) -> Any:
             return cls.__unpacked__(**kwargs, resolver=self._resolver)
         decoded = unpack(payload, {ResolvableMatcher: resolver})
@@ -40,7 +41,7 @@ class Mock(jj.App):
         assert isinstance(matcher, (RequestMatcher, LogicalMatcher))
 
         response = decoded.get("response")
-        assert isinstance(response, Response)
+        assert isinstance(response, (Response, RelayResponse))
 
         return handler_id, matcher, response
 
@@ -52,7 +53,7 @@ class Mock(jj.App):
         except Exception:
             return Response(status=BAD_REQUEST, json={"status": BAD_REQUEST})
 
-        async def handler(request: Request) -> Response:
+        async def handler(request: Request) -> RemoteResponseType:
             return response.copy()
 
         self._resolver.register_attribute("handler_id", handler_id, handler)
@@ -90,7 +91,7 @@ class Mock(jj.App):
         return Response(status=OK, body=packed)
 
     @jj.match(ANY)
-    async def resolve(self, request: Request) -> Response:
+    async def resolve(self, request: Request) -> StreamResponse:
         handler = await self._resolver.resolve(request, self._app)
         response = await handler(request)
 

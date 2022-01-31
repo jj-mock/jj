@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from ...requests import Request
-from ...responses import Response
+from ...responses import StreamResponse
 from ._history_item import HistoryItem
 from ._history_request import HistoryRequest
 from ._history_response import HistoryResponse
@@ -15,7 +15,7 @@ class HistoryRepository:
 
     async def add(self,
                   request: Request,
-                  response: Response,
+                  response: StreamResponse,
                   tags: Optional[List[str]] = None) -> None:
         req = await HistoryRequest.from_request(request)
         res = await HistoryResponse.from_response(response)
