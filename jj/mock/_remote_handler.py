@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
 from uuid import UUID, uuid4
 
 from jj.matchers import LogicalMatcher, RequestMatcher
-from jj.responses import Response
 
 if TYPE_CHECKING:
     from ._remote_mock import RemoteMock
@@ -12,6 +11,7 @@ else:
     MockType = Any
 
 from ._history import HistoryItem
+from ._remote_response import RemoteResponseType
 
 __all__ = ("RemoteHandler",)
 
@@ -20,7 +20,7 @@ class RemoteHandler:
     def __init__(self,
                  mock: MockType,
                  matcher: Union[RequestMatcher, LogicalMatcher],
-                 response: Response) -> None:
+                 response: RemoteResponseType) -> None:
         self._id = uuid4()
         self._mock = mock
         self._matcher = matcher
@@ -35,7 +35,7 @@ class RemoteHandler:
         return self._matcher
 
     @property
-    def response(self) -> Response:
+    def response(self) -> RemoteResponseType:
         return self._response
 
     async def register(self) -> None:

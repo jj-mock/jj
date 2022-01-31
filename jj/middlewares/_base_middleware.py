@@ -5,7 +5,7 @@ from ..handlers import HandlerFunction
 from ._abstract_middleware import AbstractMiddleware
 from ._middleware_type import MiddlewareType
 
-__all__ = ("BaseMiddleware",)
+__all__ = ("BaseMiddleware", "AppOrHandler",)
 
 
 AppOrHandler = Union[Type[AbstractApp], HandlerFunction]

@@ -1,10 +1,11 @@
-from typing import Optional
+from typing import Any, Dict, Optional
 from urllib.parse import urljoin
 
 from aiohttp import ClientSession
 from aiohttp.abc import AbstractStreamWriter
 from aiohttp.web_request import BaseRequest
 from multidict import CIMultiDict, MultiDict
+from packed import packable
 
 from ._stream_response import StreamResponse
 
@@ -19,12 +20,13 @@ _HOP_BY_HOP_HEADERS = (
     "proxy-authorization",
     "te",
     "trailers",
-    "transfer-encoding"
+    "transfer-encoding",
     "upgrade")
 
 _FILTERED_HEADERS = _HOP_BY_HOP_HEADERS + ("host", "content-length")
 
 
+@packable("jj.responses.RelayResponse")
 class RelayResponse(StreamResponse):
     def __init__(self, *, target: str) -> None:
         super().__init__()
@@ -59,3 +61,14 @@ class RelayResponse(StreamResponse):
                 await self.write_eof()
 
         return await super().prepare(request)
+
+    def copy(self) -> "RelayResponse":
+        assert not self.prepared
+        return self.__class__(target=self._target)
+
+    def __packed__(self) -> Dict[str, Any]:
+        return {"target": self._target}
+
+    @classmethod
+    def __unpacked__(cls, *, target: str, **kwargs: Any) -> "RelayResponse":
+        return cls(target=target)

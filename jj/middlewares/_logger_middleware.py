@@ -5,7 +5,7 @@ from ..handlers import HandlerFunction
 from ..logs import Logger
 from ..requests import Request
 from ..resolvers import Resolver
-from ..responses import Response
+from ..responses import StreamResponse
 from ._base_middleware import AppOrHandler, BaseMiddleware
 from ._middleware_type import MiddlewareType
 
@@ -31,7 +31,8 @@ class LoggerMiddleware(BaseMiddleware):
         new_middlewares = [middleware] + old_middlewares
         self._resolver.register_attribute("middlewares", new_middlewares, app_or_handler)
 
-    async def do(self, request: Request, handler: HandlerFunction, app: AbstractApp) -> Response:
+    async def do(self, request: Request, handler: HandlerFunction,
+                 app: AbstractApp) -> StreamResponse:
         logger = self._resolver.get_attribute("logger", handler, None)
         if logger is None:
             logger = self._resolver.get_attribute("logger", type(app), None)

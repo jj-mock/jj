@@ -5,10 +5,10 @@ from packed import pack, unpack
 
 from jj.http.codes import OK
 from jj.matchers import LogicalMatcher, RequestMatcher
-from jj.responses import Response
 
 from ._history import HistoryItem
 from ._remote_handler import RemoteHandler
+from ._remote_response import RemoteResponseType
 
 __all__ = ("RemoteMock",)
 
@@ -19,7 +19,7 @@ class RemoteMock:
 
     def create_handler(self,
                        matcher: Union[RequestMatcher, LogicalMatcher],
-                       response: Response) -> RemoteHandler:
+                       response: RemoteResponseType) -> RemoteHandler:
         return RemoteHandler(self, matcher, response)
 
     async def register(self, handler: RemoteHandler) -> "RemoteMock":

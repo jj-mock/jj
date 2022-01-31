@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Tuple
 from multidict import CIMultiDict, CIMultiDictProxy
 from packed import packable
 
-from ...responses import Response
+from ...responses import Response, StreamResponse
 
 __all__ = ("HistoryResponse",)
 
@@ -37,8 +37,11 @@ class HistoryResponse:
         return self._body
 
     @staticmethod
-    async def from_response(response: Response) -> "HistoryResponse":
-        body = response.get_body()
+    async def from_response(response: StreamResponse) -> "HistoryResponse":
+        if isinstance(response, Response):
+            body = response.get_body()
+        else:
+            body = b"<stream response>"
         return HistoryResponse(
             status=response.status,
             reason=response.reason,

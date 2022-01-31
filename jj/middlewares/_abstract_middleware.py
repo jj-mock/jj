@@ -4,7 +4,7 @@ from ..apps import AbstractApp
 from ..handlers import HandlerFunction
 from ..requests import Request
 from ..resolvers import Resolver
-from ..responses import Response
+from ..responses import StreamResponse
 
 __all__ = ("AbstractMiddleware",)
 
@@ -15,8 +15,9 @@ class AbstractMiddleware:
         assert self._resolver is not None
 
     async def _do(self, request: Request, *,
-                  handler: HandlerFunction, app: AbstractApp) -> Response:
+                  handler: HandlerFunction, app: AbstractApp) -> StreamResponse:
         return await self.do(request, handler, app)
 
-    async def do(self, request: Request, handler: HandlerFunction, app: AbstractApp) -> Response:
+    async def do(self, request: Request, handler: HandlerFunction,
+                 app: AbstractApp) -> StreamResponse:
         return await handler(request)

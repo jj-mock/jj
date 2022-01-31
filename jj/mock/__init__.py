@@ -3,20 +3,20 @@ from distutils.util import strtobool
 from typing import Optional, Union
 
 from jj.matchers import LogicalMatcher, RequestMatcher
-from jj.responses import Response
 
 from ._history import HistoryItem, HistoryRepository, HistoryRequest, HistoryResponse
 from ._mock import Mock
 from ._mocked import Mocked
 from ._remote_handler import RemoteHandler
 from ._remote_mock import RemoteMock
+from ._remote_response import RemoteResponseType
 from ._system_log_filter import SystemLogFilter
 
 _REMOTE_MOCK_URL = os.environ.get("JJ_REMOTE_MOCK_URL", "http://localhost:8080")
 _REMOTE_MOCK_DISPOSABLE = os.environ.get("JJ_REMOTE_MOCK_DISPOSABLE", "True")
 
 
-def mocked(matcher: Union[RequestMatcher, LogicalMatcher], response: Response, *,
+def mocked(matcher: Union[RequestMatcher, LogicalMatcher], response: RemoteResponseType, *,
            disposable: Optional[bool] = None,
            prefetch_history: bool = True) -> "Mocked":
     if disposable is None:
@@ -27,4 +27,4 @@ def mocked(matcher: Union[RequestMatcher, LogicalMatcher], response: Response, *
 
 __all__ = ("Mock", "mocked", "RemoteMock", "RemoteHandler", "Mocked",
            "HistoryRepository", "HistoryRequest", "HistoryResponse", "HistoryItem",
-           "SystemLogFilter",)
+           "SystemLogFilter", "RemoteResponseType",)
