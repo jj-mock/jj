@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.2
+
+### v2.2.0 (2021-02-02)
+
+- Drop Python 3.6
+- Add sync mocked context manager [#25](https://github.com/nikitanovosibirsk/jj/pull/25)
+
 ## v2.1
 
 ### v2.1.3 (2022-01-31)
