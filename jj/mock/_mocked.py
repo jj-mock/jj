@@ -1,3 +1,4 @@
+import asyncio
 from types import TracebackType
 from typing import List, Optional, Type, Union
 
@@ -55,6 +56,20 @@ class Mocked:
 
         if self._disposable:
             await self._handler.deregister()
+
+    def __enter__(self) -> "Mocked":
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            return asyncio.run(self.__aenter__())
+        else:
+            raise RuntimeError("Use 'async with' instead")
+
+    def __exit__(self,
+                 exc_type: Optional[Type[BaseException]],
+                 exc_val: Optional[BaseException],
+                 exc_tb: Optional[TracebackType]) -> None:
+        return asyncio.run(self.__aexit__(exc_type, exc_val, exc_tb))
 
     def __repr__(self) -> str:
         return (f"Mocked<{self._handler}, "
