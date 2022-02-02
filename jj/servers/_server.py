@@ -35,6 +35,5 @@ class Server:
             self._loop.run_until_complete(runner.cleanup())
 
     def shutdown(self) -> None:
-        if hasattr(self._loop, "shutdown_asyncgens"):  # python 3.6+
-            self._loop.run_until_complete(self._loop.shutdown_asyncgens())
+        self._loop.run_until_complete(self._loop.shutdown_asyncgens())
         self._loop.close()
