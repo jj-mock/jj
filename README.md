@@ -30,6 +30,7 @@ jj.serve()
   * [Matchers](#matchers)
     * [Method](#method)
       * [match_method(`method`)](#match_methodmethod)
+      * [match_methods(`methods`)](#match_methodsmethods)
     * [Path](#path)
       * [match_path(`path`)](#match_pathpath)
     * [Segments](#segments)
@@ -83,6 +84,16 @@ jj.serve()
 from jj.http.methods import ANY, GET, POST
 
 @jj.match_method(GET)
+async def handler(request):
+    return jj.Response(body="Method: " + request.method)
+```
+
+##### match_methods(`methods`)
+
+```python
+from jj.http.methods import PUT, PATCH
+
+@jj.match_methods(PUT, PATCH)
 async def handler(request):
     return jj.Response(body="Method: " + request.method)
 ```
