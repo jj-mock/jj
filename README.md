@@ -81,7 +81,7 @@ jj.serve()
 ##### match_method(`method`)
 
 ```python
-from jj.http.methods import ANY, GET, POST
+from jj.http.methods import GET
 
 @jj.match_method(GET)
 async def handler(request):
