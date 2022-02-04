@@ -26,7 +26,7 @@ from .servers import Server
 __all__ = (
     "App",
     "Middleware",
-    "match_method",
+    "match_method", "match_methods",
     "match_path",
     "match_headers", "match_header",
     "match_params", "match_param",
@@ -35,7 +35,6 @@ __all__ = (
     "start", "wait_for", "serve",
     "default_app", "default_handler", "default_logger",
 )
-
 
 default_app = DefaultApp()
 registry = Registry()
@@ -59,6 +58,14 @@ class Middleware(BaseMiddleware):
 
 def match_method(method: StrOrAttrMatcher) -> MethodMatcher:
     return MethodMatcher(method, resolver=resolver)
+
+
+def match_methods(*methods: StrOrAttrMatcher) -> AnyMatcher:
+    matchers: List[ResolvableMatcher] = [
+        MethodMatcher(method, resolver=resolver)
+        for method in methods
+    ]
+    return AnyMatcher(matchers, resolver=resolver)
 
 
 def match_path(path: StrOrAttrMatcher) -> PathMatcher:

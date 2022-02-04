@@ -10,6 +10,7 @@ from ._core import (
     match_header,
     match_headers,
     match_method,
+    match_methods,
     match_param,
     match_params,
     match_path,
@@ -24,7 +25,7 @@ from .responses import RelayResponse, Response, StaticResponse, StreamResponse
 __all__ = (
     "App",
     "Middleware",
-    "match_method",
+    "match_method", "match_methods",
     "match_path",
     "match_headers", "match_header",
     "match_params", "match_param",
