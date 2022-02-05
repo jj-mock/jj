@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, cast
 
 from ..apps import AbstractApp
 from ..handlers import HandlerFunction
@@ -11,8 +11,10 @@ __all__ = ("AbstractMiddleware",)
 
 class AbstractMiddleware:
     def __init__(self, resolver: Optional[Resolver] = None) -> None:
-        self._resolver = resolver if resolver else getattr(self, "resolver", None)
-        assert self._resolver is not None
+        if resolver is None:
+            resolver = getattr(self, "resolver", None)
+            assert resolver is not None
+        self._resolver = cast(Resolver, resolver)
 
     async def _do(self, request: Request, *,
                   handler: HandlerFunction, app: AbstractApp) -> StreamResponse:

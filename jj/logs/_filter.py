@@ -17,7 +17,7 @@ class Filter(logging.Filter):
     def filter(self, record: LogRecord) -> bool:
         request = getattr(record, "jj_request", None)
         response = getattr(record, "jj_response", None)
-        if response is not None:
+        if (response is not None) and (request is not None):
             return self.filter_response(response, request, record)
         elif request is not None:
             return self.filter_request(request, record)
