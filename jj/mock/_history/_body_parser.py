@@ -11,26 +11,26 @@ __all__ = ("BodyParser",)
 
 
 class BodyParser:
-    def _parse_by_content_type(self, content_type: str, raw: bytes) -> Any:
+    def _parse_by_content_type(self, content_type: str, body: bytes) -> Any:
         if content_type.lower().startswith("application/json"):
             try:
-                return json.loads(raw)
+                return json.loads(body)
             except:  # noqa: E722
                 pass
         elif content_type.lower().startswith("text/plain"):
             try:
-                return raw.decode()
+                return body.decode()
             except:  # noqa: E722
                 pass
-        return raw
+        return body
 
     def _parse_request_body(self, request: HistoryRequest) -> Any:
         content_type = request.headers.get(CONTENT_TYPE, "")
-        return self._parse_by_content_type(content_type, request.raw)
+        return self._parse_by_content_type(content_type, request.body)
 
     def _parse_response_body(self, response: HistoryResponse) -> Any:
         content_type = response.headers.get(CONTENT_TYPE, "")
-        return self._parse_by_content_type(content_type, response.raw)
+        return self._parse_by_content_type(content_type, response.body)
 
     def parse(self, history_item: HistoryItem) -> HistoryItem:
         request = history_item["request"].to_dict()
