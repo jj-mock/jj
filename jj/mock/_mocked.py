@@ -1,6 +1,6 @@
 import asyncio
 from types import TracebackType
-from typing import Callable, List, Optional, Type, Union
+from typing import List, Optional, Type, Union
 
 from rtry import CancelledError, retry
 from rtry.types import AttemptValue, DelayCallable, DelayValue, LoggerCallable, TimeoutValue
@@ -8,32 +8,24 @@ from rtry.types import AttemptValue, DelayCallable, DelayValue, LoggerCallable, 
 from ._history import HistoryItem
 from ._remote_handler import RemoteHandler
 
-__all__ = ("Mocked", "HistoryAdapterType",)
-
-HistoryAdapterType = Callable[[HistoryItem], HistoryItem]
+__all__ = ("Mocked",)
 
 
 class Mocked:
     def __init__(self, handler: RemoteHandler, *,
                  disposable: bool = True,
-                 prefetch_history: bool = True,
-                 history_adapter: Optional[HistoryAdapterType] = None) -> None:
+                 prefetch_history: bool = True) -> None:
         self._handler = handler
         self._disposable = disposable
         self._prefetch_history = prefetch_history
         self._history: Union[List[HistoryItem], None] = None
-        self._history_adapter = history_adapter
 
     @property
     def history(self) -> Union[List[HistoryItem], None]:
         return self._history
 
     async def fetch_history(self) -> List[HistoryItem]:
-        history = await self._handler.fetch_history()
-        if self._history_adapter:
-            self._history = [self._history_adapter(x) for x in history]
-        else:
-            self._history = history
+        self._history = await self._handler.fetch_history()
         return self._history
 
     async def wait_for_requests(self, count: int = 1, *,

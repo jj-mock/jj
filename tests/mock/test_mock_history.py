@@ -23,14 +23,17 @@ async def test_mock_history_request():
             history = await handler.fetch_history()
             req = history[0]["request"]
             assert req.method == "GET"
+            assert req.segments == {}
             assert req.path == "/"
             assert req.params == {"key": "val"}
-            assert req.body == b""
+            assert req.headers.get("User-Agent")
+            assert req.body == req.raw == b""
 
             res = history[0]["response"]
             assert res.status == 200
+            assert res.headers.get("Server")
             assert res.reason == "OK"
-            assert res.body == b"text"
+            assert res.body == res.raw == b"text"
 
 
 @pytest.mark.asyncio
@@ -74,7 +77,7 @@ async def test_mock_history_post_no_data():
             req = history[0]["request"]
             assert req.method == "POST"
             assert req.path == "/"
-            assert req.body == b""
+            assert req.body == req.raw == b""
 
 
 @pytest.mark.asyncio
@@ -97,7 +100,8 @@ async def test_mock_history_post_json():
             req = history[0]["request"]
             assert req.method == "POST"
             assert req.path == "/"
-            assert req.body == b'{"field1": "value1", "field2": null}'
+            assert req.body == payload
+            assert req.raw == b'{"field1": "value1", "field2": null}'
 
 
 @pytest.mark.asyncio
@@ -121,7 +125,7 @@ async def test_mock_history_post_data():
             req = history[0]["request"]
             assert req.method == "POST"
             assert req.path == "/"
-            assert req.body == b'field1=value1&field1=value2&field2=null'
+            assert req.body == req.raw == b'field1=value1&field1=value2&field2=null'
 
 
 @pytest.mark.asyncio
@@ -148,6 +152,7 @@ async def test_mock_history_post_form_data():
             assert req.method == "POST"
             assert req.path == "/"
             assert isinstance(req.body, bytes)
+            assert isinstance(req.raw, bytes)
 
 
 @pytest.mark.asyncio
@@ -166,4 +171,4 @@ async def test_mock_history_post_binary_data():
             req = history[0]["request"]
             assert req.method == "POST"
             assert req.path == "/"
-            assert req.body == b"binary"
+            assert req.body == req.raw == b"binary"

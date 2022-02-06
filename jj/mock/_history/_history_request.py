@@ -81,8 +81,8 @@ class HistoryRequest:
             "segments": self._segments,
             "params": params,
             "headers": headers,
-            "body": self.body,
-            "raw": self.raw,
+            "body": self._body,
+            "raw": self._raw,
         }
 
     def __packed__(self) -> Dict[str, Any]:

@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 else:
     MockType = Any
 
-from ._history import HistoryItem
+from ._history import HistoryAdapterType, HistoryItem, default_history_adapter
 from ._remote_response import RemoteResponseType
 
 __all__ = ("RemoteHandler",)
@@ -20,11 +20,14 @@ class RemoteHandler:
     def __init__(self,
                  mock: MockType,
                  matcher: Union[RequestMatcher, LogicalMatcher],
-                 response: RemoteResponseType) -> None:
+                 response: RemoteResponseType,
+                 *,
+                 history_adapter: Optional[HistoryAdapterType] = default_history_adapter) -> None:
         self._id = uuid4()
         self._mock = mock
         self._matcher = matcher
         self._response = response
+        self._history_adapter = history_adapter
 
     @property
     def id(self) -> UUID:
@@ -45,7 +48,10 @@ class RemoteHandler:
         await self._mock.deregister(self)
 
     async def fetch_history(self) -> List[HistoryItem]:
-        return await self._mock.fetch_history(self)
+        history = await self._mock.fetch_history(self)
+        if self._history_adapter:
+            return [self._history_adapter(x) for x in history]
+        return history
 
     async def __aenter__(self) -> None:
         await self.register()
