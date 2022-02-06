@@ -448,6 +448,8 @@ async def main():
 asyncio.run(main())
 ```
 
+Use [jj-district42](https://pypi.org/project/jj-district42/) for testing requests
+
 ##### Low Level API
 
 ###### Register Remote Handler
