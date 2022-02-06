@@ -17,13 +17,15 @@ class HistoryRequest:
                  segments: Dict[str, str],
                  params: "MultiDictProxy[str]",
                  headers: "CIMultiDictProxy[str]",
-                 body: bytes) -> None:
+                 body: Any,
+                 raw: bytes) -> None:
         self._method = method
         self._path = path
         self._segments = segments
         self._params = params
         self._headers = headers
         self._body = body
+        self._raw = raw
 
     @property
     def method(self) -> str:
@@ -46,24 +48,28 @@ class HistoryRequest:
         return self._headers
 
     @property
-    def body(self) -> bytes:
+    def body(self) -> Any:
         return self._body
 
-    @staticmethod
-    async def from_request(request: Request) -> "HistoryRequest":
-        try:
-            body = await request.read()
-        except HTTPRequestEntityTooLarge:
-            body = b"<binary>"
-            await request.release()
+    @property
+    def raw(self) -> bytes:
+        return self._raw
 
-        return HistoryRequest(
+    @classmethod
+    async def from_request(cls, request: Request) -> "HistoryRequest":
+        try:
+            raw = await request.read()
+        except HTTPRequestEntityTooLarge:
+            raw = b"<binary>"
+            await request.release()
+        return cls(
             method=request.method,
             path=request.path,
             segments=request.segments,
             params=request.params,
             headers=request.headers,
-            body=body,
+            body=raw,
+            raw=raw,
         )
 
     def to_dict(self) -> Dict[str, Any]:
@@ -75,11 +81,27 @@ class HistoryRequest:
             "segments": self._segments,
             "params": params,
             "headers": headers,
-            "body": self.body,
+            "body": self._body,
+            "raw": self._raw,
         }
 
     def __packed__(self) -> Dict[str, Any]:
         return self.to_dict()
+
+    @classmethod
+    def from_dict(cls, request: Dict[str, Any]) -> "HistoryRequest":
+        real_params = MultiDictProxy(MultiDict(request["params"]))
+        real_headers = CIMultiDictProxy(CIMultiDict(request["headers"]))
+        raw = request.get("raw", request["body"])  # backward compatibility
+        return cls(
+            method=request["method"],
+            path=request["path"],
+            segments=request["segments"],
+            params=real_params,
+            headers=real_headers,
+            body=request["body"],
+            raw=raw,
+        )
 
     @classmethod
     def __unpacked__(cls, *,
@@ -88,18 +110,17 @@ class HistoryRequest:
                      segments: Dict[str, str],
                      params: List[Tuple[str, str]],
                      headers: List[Tuple[str, str]],
-                     body: bytes,
+                     body: Any,
                      **kwargs: Any) -> "HistoryRequest":
-        real_params = MultiDictProxy(MultiDict(params))
-        real_headers = CIMultiDictProxy(CIMultiDict(headers))
-        return HistoryRequest(
-            method=method,
-            path=path,
-            segments=segments,
-            params=real_params,
-            headers=real_headers,
-            body=body,
-        )
+        return cls.from_dict({
+            "method": method,
+            "path": path,
+            "segments": segments,
+            "params": params,
+            "headers": headers,
+            "body": body,
+            **kwargs,
+        })
 
     def __repr__(self) -> str:
         return (f"HistoryRequest("

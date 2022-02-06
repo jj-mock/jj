@@ -1,4 +1,4 @@
-from typing import List, Union, cast
+from typing import List, Optional, Union, cast
 
 from aiohttp import ClientSession
 from packed import pack, unpack
@@ -6,7 +6,7 @@ from packed import pack, unpack
 from jj.http.codes import OK
 from jj.matchers import LogicalMatcher, RequestMatcher
 
-from ._history import HistoryItem
+from ._history import HistoryAdapterType, HistoryItem, default_history_adapter
 from ._remote_handler import RemoteHandler
 from ._remote_response import RemoteResponseType
 
@@ -19,8 +19,11 @@ class RemoteMock:
 
     def create_handler(self,
                        matcher: Union[RequestMatcher, LogicalMatcher],
-                       response: RemoteResponseType) -> RemoteHandler:
-        return RemoteHandler(self, matcher, response)
+                       response: RemoteResponseType,
+                       *,
+                       history_adapter: Optional[HistoryAdapterType] = default_history_adapter
+                       ) -> RemoteHandler:
+        return RemoteHandler(self, matcher, response, history_adapter=history_adapter)
 
     async def register(self, handler: RemoteHandler) -> "RemoteMock":
         headers = {"x-jj-remote-mock": ""}

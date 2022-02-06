@@ -1,5 +1,5 @@
 from inspect import isclass
-from typing import Any, List, Type
+from typing import Any, List, Type, Union
 from unittest.mock import sentinel as nil
 
 from undecorated import undecorated
@@ -12,6 +12,8 @@ from ._registry import Registry
 
 __all__ = ("Resolver",)
 
+AppOrHandler = Union[Type[AbstractApp], HandlerFunction]
+
 
 class Resolver:
     def __init__(self, registry: Registry,
@@ -21,12 +23,12 @@ class Resolver:
         self._default_app = default_app
         self._default_handler = default_handler
 
-    def unwrap(self, fn: HandlerFunction) -> HandlerFunction:
+    def unwrap(self, fn: Any) -> Any:
         try:
             unwrapped = undecorated(fn)
         except ValueError:
             return fn
-        return fn if unwrapped is None else unwrapped  # type: ignore
+        return fn if (unwrapped is None) else unwrapped
 
     # Apps
 
@@ -77,16 +79,16 @@ class Resolver:
 
     # Attributes
 
-    def register_attribute(self, name: Any, value: Any, handler: HandlerFunction) -> None:
+    def register_attribute(self, name: Any, value: Any, handler: AppOrHandler) -> None:
         unwrapped = self.unwrap(handler)
         self._registry.add(unwrapped, "attributes", name, value)
 
-    def deregister_attribute(self, attribute_name: Any, handler: HandlerFunction) -> None:
+    def deregister_attribute(self, attribute_name: Any, handler: AppOrHandler) -> None:
         unwrapped = self.unwrap(handler)
         self._registry.remove(unwrapped, "attributes", attribute_name)
 
     def get_attribute(self, attribute_name: Any,
-                      handler: HandlerFunction,
+                      handler: AppOrHandler,
                       default: Any = nil) -> Any:
         unwrapped = self.unwrap(handler)
         attributes = self._registry.get(unwrapped, "attributes")

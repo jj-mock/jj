@@ -14,11 +14,13 @@ class HistoryResponse:
                  status: int,
                  reason: str,
                  headers: "CIMultiDictProxy[str]",
-                 body: bytes) -> None:
+                 body: Any,
+                 raw: bytes) -> None:
         self._status = status
         self._reason = reason
         self._headers = headers
         self._body = body
+        self._raw = raw
 
     @property
     def status(self) -> int:
@@ -33,20 +35,25 @@ class HistoryResponse:
         return self._headers
 
     @property
-    def body(self) -> bytes:
+    def body(self) -> Any:
         return self._body
 
-    @staticmethod
-    async def from_response(response: StreamResponse) -> "HistoryResponse":
+    @property
+    def raw(self) -> bytes:
+        return self._raw
+
+    @classmethod
+    async def from_response(cls, response: StreamResponse) -> "HistoryResponse":
         if isinstance(response, Response):
-            body = response.get_body()
+            raw = response.get_body()
         else:
-            body = b"<stream response>"
-        return HistoryResponse(
+            raw = b"<stream response>"
+        return cls(
             status=response.status,
             reason=response.reason,
             headers=CIMultiDictProxy(response.headers),
-            body=body,
+            body=raw,
+            raw=raw,
         )
 
     def to_dict(self) -> Dict[str, Any]:
@@ -56,25 +63,38 @@ class HistoryResponse:
             "reason": self._reason,
             "headers": headers,
             "body": self._body,
+            "raw": self._raw,
         }
 
     def __packed__(self) -> Dict[str, Any]:
         return self.to_dict()
 
     @classmethod
+    def from_dict(cls, request: Dict[str, Any]) -> "HistoryResponse":
+        real_headers = CIMultiDictProxy(CIMultiDict(request["headers"]))
+        raw = request.get("raw", request["body"])  # backward compatibility
+        return cls(
+            status=request["status"],
+            reason=request["reason"],
+            headers=real_headers,
+            body=request["body"],
+            raw=raw,
+        )
+
+    @classmethod
     def __unpacked__(cls, *,
                      status: int,
                      reason: str,
                      headers: List[Tuple[str, str]],
-                     body: bytes,
+                     body: Any,
                      **kwargs: Any) -> "HistoryResponse":
-        real_headers = CIMultiDictProxy(CIMultiDict(headers))
-        return HistoryResponse(
-            status=status,
-            reason=reason,
-            headers=real_headers,
-            body=body,
-        )
+        return cls.from_dict({
+            "status": status,
+            "reason": reason,
+            "headers": headers,
+            "body": body,
+            **kwargs,
+        })
 
     def __repr__(self) -> str:
         return (f"HistoryResponse("
