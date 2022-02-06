@@ -1,11 +1,20 @@
 # Changelog
 
+## v2.3
+
+### v2.3.1 (2021-02-06)
+
+- Add history body parsing [#29](https://github.com/nikitanovosibirsk/jj/pull/29)
+- Add @match_methods [#27](https://github.com/nikitanovosibirsk/jj/pull/27)
+
+
 ## v2.2
 
 ### v2.2.0 (2021-02-02)
 
 - Drop Python 3.6
 - Add sync mocked context manager [#25](https://github.com/nikitanovosibirsk/jj/pull/25)
+
 
 ## v2.1
 
