@@ -105,6 +105,26 @@ async def test_mock_history_post_json():
 
 
 @pytest.mark.asyncio
+async def test_mock_history_post_invalid_json():
+    mock = Mock()
+    self_middleware = SelfMiddleware(Mock().resolver)
+    matcher, response = jj.match("*"), jj.Response()
+
+    async with run(mock, middlewares=[self_middleware]) as client:
+        handler = RemoteMock(client.make_url("/")).create_handler(matcher, response)
+        async with handler:
+            resp = await client.post("/", data="[010]",
+                                     headers={"Content-Type": "application/json"})
+            assert resp.status == 200
+
+            history = await handler.fetch_history()
+            req = history[0]["request"]
+            assert req.method == "POST"
+            assert req.path == "/"
+            assert req.body == req.raw == b"[010]"
+
+
+@pytest.mark.asyncio
 async def test_mock_history_post_data():
     mock = Mock()
     self_middleware = SelfMiddleware(Mock().resolver)
@@ -172,3 +192,23 @@ async def test_mock_history_post_binary_data():
             assert req.method == "POST"
             assert req.path == "/"
             assert req.body == req.raw == b"binary"
+
+
+@pytest.mark.asyncio
+async def test_mock_history_post_text_data():
+    mock = Mock()
+    self_middleware = SelfMiddleware(Mock().resolver)
+    matcher, response = jj.match("*"), jj.Response()
+
+    async with run(mock, middlewares=[self_middleware]) as client:
+        handler = RemoteMock(client.make_url("/")).create_handler(matcher, response)
+        async with handler:
+            resp = await client.post("/", data="text")
+            assert resp.status == 200
+
+            history = await handler.fetch_history()
+            req = history[0]["request"]
+            assert req.method == "POST"
+            assert req.path == "/"
+            assert req.body == "text"
+            assert req.raw == b"text"
