@@ -45,7 +45,7 @@ class RemoteHandler:
         return self._response
 
     @property
-    def allowed_number_of_requests(self) -> int:
+    def allowed_number_of_requests(self) -> Union[int, None]:
         return self._allowed_number_of_requests
 
     async def register(self) -> None:
