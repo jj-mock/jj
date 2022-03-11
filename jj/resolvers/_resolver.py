@@ -56,7 +56,7 @@ class Resolver:
         assert isclass(app)
         self._registry.remove(app, "handlers", handler)
 
-    def _skip_handler(self, handler) -> bool:
+    def _skip_handler(self, handler: HandlerFunction) -> bool:
         allowed_number_of_requests = self.get_attribute(
             "allowed_number_of_requests", handler, default=None
         )

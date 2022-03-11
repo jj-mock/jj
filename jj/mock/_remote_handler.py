@@ -22,7 +22,7 @@ class RemoteHandler:
                  matcher: Union[RequestMatcher, LogicalMatcher],
                  response: RemoteResponseType,
                  *,
-                 allowed_number_of_requests: int,
+                 allowed_number_of_requests: Union[int, None],
                  history_adapter: Optional[HistoryAdapterType] = default_history_adapter,
                  ) -> None:
         self._id = uuid4()
