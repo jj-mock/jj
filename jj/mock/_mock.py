@@ -11,6 +11,7 @@ from jj.matchers import LogicalMatcher, RequestMatcher, ResolvableMatcher, exist
 from jj.requests import Request
 from jj.resolvers import Registry, Resolver
 from jj.responses import RelayResponse, Response, StreamResponse
+
 from ._history import HistoryRepository
 from ._remote_response import RemoteResponseType
 

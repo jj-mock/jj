@@ -3,6 +3,7 @@ from distutils.util import strtobool
 from typing import Optional, Union
 
 from jj.matchers import LogicalMatcher, RequestMatcher
+
 from ._history import (
     HistoryAdapterType,
     HistoryItem,
