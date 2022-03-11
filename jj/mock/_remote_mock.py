@@ -21,9 +21,16 @@ class RemoteMock:
                        matcher: Union[RequestMatcher, LogicalMatcher],
                        response: RemoteResponseType,
                        *,
-                       history_adapter: Optional[HistoryAdapterType] = default_history_adapter
+                       allowed_number_of_requests: Union[int, None] = None,
+                       history_adapter: Optional[HistoryAdapterType] = default_history_adapter,
                        ) -> RemoteHandler:
-        return RemoteHandler(self, matcher, response, history_adapter=history_adapter)
+        return RemoteHandler(
+            self,
+            matcher,
+            response,
+            allowed_number_of_requests=allowed_number_of_requests,
+            history_adapter=history_adapter,
+        )
 
     async def register(self, handler: RemoteHandler) -> "RemoteMock":
         headers = {"x-jj-remote-mock": ""}
@@ -31,6 +38,7 @@ class RemoteMock:
             "id": str(handler.id),
             "request": handler.matcher,
             "response": handler.response,
+            "allowed_number_of_requests": handler.allowed_number_of_requests,
         }
         binary = pack(payload)
 
@@ -45,6 +53,7 @@ class RemoteMock:
             "id": str(handler.id),
             "request": handler.matcher,
             "response": handler.response,
+            "allowed_number_of_requests": handler.allowed_number_of_requests,
         }
         binary = pack(payload)
 
@@ -59,6 +68,7 @@ class RemoteMock:
             "id": str(handler.id),
             "request": handler.matcher,
             "response": handler.response,
+            "allowed_number_of_requests": handler.allowed_number_of_requests,
         }
         binary = pack(payload)
 

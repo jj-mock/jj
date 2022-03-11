@@ -11,12 +11,10 @@ from jj.matchers import LogicalMatcher, RequestMatcher, ResolvableMatcher, exist
 from jj.requests import Request
 from jj.resolvers import Registry, Resolver
 from jj.responses import RelayResponse, Response, StreamResponse
-
 from ._history import HistoryRepository
 from ._remote_response import RemoteResponseType
 
 __all__ = ("Mock",)
-
 
 MatcherType = Union[RequestMatcher, LogicalMatcher]
 
@@ -29,9 +27,11 @@ class Mock(jj.App):
         self._app = app_factory(resolver=self._resolver)
         self._repo = HistoryRepository()
 
-    def _decode(self, payload: bytes) -> Tuple[str, MatcherType, RemoteResponseType]:
+    def _decode(self, payload: bytes) -> Tuple[str, MatcherType, RemoteResponseType,
+                                               Union[int, None]]:
         def resolver(cls: Any, **kwargs: Any) -> Any:
             return cls.__unpacked__(**kwargs, resolver=self._resolver)
+
         decoded = unpack(payload, {ResolvableMatcher: resolver})
 
         handler_id = decoded.get("id")
@@ -43,13 +43,17 @@ class Mock(jj.App):
         response = decoded.get("response")
         assert isinstance(response, (Response, RelayResponse))
 
-        return handler_id, matcher, response
+        allowed_number_of_requests = decoded.get("allowed_number_of_requests")
+        assert type(allowed_number_of_requests) == int or \
+               allowed_number_of_requests is None
+
+        return handler_id, matcher, response, allowed_number_of_requests
 
     @jj.match(POST, headers={"x-jj-remote-mock": exists})
     async def register(self, request: Request) -> Response:
         payload = await request.read()
         try:
-            handler_id, matcher, response = self._decode(payload)
+            handler_id, matcher, response, allowed_number_of_requests = self._decode(payload)
         except Exception:
             return Response(status=BAD_REQUEST, json={"status": BAD_REQUEST})
 
@@ -58,6 +62,10 @@ class Mock(jj.App):
 
         self._resolver.register_attribute("handler_id", handler_id, handler)
         setattr(self._app.__class__, handler_id, matcher(handler))
+
+        self._resolver.register_attribute(
+            "allowed_number_of_requests", allowed_number_of_requests, handler
+        )
 
         return Response(status=OK, json={"status": OK})
 

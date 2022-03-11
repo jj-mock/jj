@@ -3,7 +3,6 @@ from distutils.util import strtobool
 from typing import Optional, Union
 
 from jj.matchers import LogicalMatcher, RequestMatcher
-
 from ._history import (
     HistoryAdapterType,
     HistoryItem,
@@ -26,11 +25,17 @@ _REMOTE_MOCK_DISPOSABLE = os.environ.get("JJ_REMOTE_MOCK_DISPOSABLE", "True")
 def mocked(matcher: Union[RequestMatcher, LogicalMatcher], response: RemoteResponseType, *,
            disposable: Optional[bool] = None,
            prefetch_history: bool = True,
-           history_adapter: Optional[HistoryAdapterType] = default_history_adapter) -> "Mocked":
+           history_adapter: Optional[HistoryAdapterType] = default_history_adapter,
+           allowed_number_of_requests: Union[int, None] = None) -> "Mocked":
     if disposable is None:
         disposable = strtobool(_REMOTE_MOCK_DISPOSABLE)
-    handler = RemoteMock(_REMOTE_MOCK_URL).create_handler(matcher, response,
-                                                          history_adapter=history_adapter)
+
+    handler = RemoteMock(_REMOTE_MOCK_URL).create_handler(
+        matcher,
+        response,
+        allowed_number_of_requests=allowed_number_of_requests,
+        history_adapter=history_adapter
+    )
     return Mocked(handler, disposable=disposable, prefetch_history=prefetch_history)
 
 

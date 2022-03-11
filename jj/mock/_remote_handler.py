@@ -22,12 +22,15 @@ class RemoteHandler:
                  matcher: Union[RequestMatcher, LogicalMatcher],
                  response: RemoteResponseType,
                  *,
-                 history_adapter: Optional[HistoryAdapterType] = default_history_adapter) -> None:
+                 allowed_number_of_requests: int,
+                 history_adapter: Optional[HistoryAdapterType] = default_history_adapter,
+                 ) -> None:
         self._id = uuid4()
         self._mock = mock
         self._matcher = matcher
         self._response = response
         self._history_adapter = history_adapter
+        self._allowed_number_of_requests = allowed_number_of_requests
 
     @property
     def id(self) -> UUID:
@@ -40,6 +43,10 @@ class RemoteHandler:
     @property
     def response(self) -> RemoteResponseType:
         return self._response
+
+    @property
+    def allowed_number_of_requests(self) -> int:
+        return self._allowed_number_of_requests
 
     async def register(self) -> None:
         await self._mock.register(self)

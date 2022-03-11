@@ -56,6 +56,22 @@ class Resolver:
         assert isclass(app)
         self._registry.remove(app, "handlers", handler)
 
+    def _skip_handler(self, handler) -> bool:
+        allowed_number_of_requests = self.get_attribute(
+            "allowed_number_of_requests", handler, default=None
+        )
+
+        if allowed_number_of_requests == 0:
+            return True
+        if allowed_number_of_requests is None:
+            return False
+
+        allowed_number_of_requests -= 1
+        self.register_attribute(
+            "allowed_number_of_requests", allowed_number_of_requests, handler
+        )
+        return False
+
     def get_handlers(self, app: Type[AbstractApp]) -> List[HandlerFunction]:
         assert isclass(app)
         handlers = self._registry.get(app, "handlers")
@@ -110,5 +126,7 @@ class Resolver:
         for handler in reversed(handlers):
             matchers = self.get_matchers(handler)
             if await self._match_request(request, matchers):
+                if self._skip_handler(handler):
+                    continue
                 return handler
         return self._default_handler
