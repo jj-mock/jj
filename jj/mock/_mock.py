@@ -67,7 +67,6 @@ class Mock(jj.App):
         self._resolver.register_attribute(
             "expiration_policy", expiration_policy, handler
         )
-
         return Response(status=OK, json={"status": OK})
 
     @jj.match(DELETE, headers={"x-jj-remote-mock": exists})

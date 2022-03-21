@@ -25,8 +25,7 @@ class RemoteHandler:
                  response: RemoteResponseType,
                  expiration_policy: Optional[ExpirationPolicyType] = None,
                  *,
-                 history_adapter: Optional[HistoryAdapterType] = default_history_adapter,
-                 ) -> None:
+                 history_adapter: Optional[HistoryAdapterType] = default_history_adapter) -> None:
         self._id = uuid4()
         self._mock = mock
         self._matcher = matcher
