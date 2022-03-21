@@ -22,7 +22,7 @@ class RemoteHandler:
                  mock: MockType,
                  matcher: Union[RequestMatcher, LogicalMatcher],
                  response: RemoteResponseType,
-                 expiration_policy: ExpirationPolicyType,
+                 expiration_policy: Optional[ExpirationPolicyType] = None,
                  *,
                  history_adapter: Optional[HistoryAdapterType] = default_history_adapter,
                  ) -> None:
@@ -31,7 +31,11 @@ class RemoteHandler:
         self._matcher = matcher
         self._response = response
         self._history_adapter = history_adapter
-        self._expiration_policy = expiration_policy
+        if expiration_policy is None:
+            self._expiration_policy = ExpireNever()
+        else:
+            self._expiration_policy = self.expiration_policy
+        # self._expiration_policy = expiration_policy
 
     @property
     def id(self) -> UUID:
@@ -46,7 +50,7 @@ class RemoteHandler:
         return self._response
 
     @property
-    def expiration_policy(self) -> Union[ExpireNever, ExpireAfterRequests]:
+    def expiration_policy(self) -> ExpirationPolicyType:
         return self._expiration_policy
 
     async def register(self) -> None:
