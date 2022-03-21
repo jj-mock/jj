@@ -3,7 +3,7 @@ from typing import List, Optional, Union, cast
 from aiohttp import ClientSession
 from packed import pack, unpack
 
-from expiration_policy import ExpireNever
+from jj.expiration_policy import ExpireNever
 from jj.expiration_policy import ExpirationPolicyType
 from jj.http.codes import OK
 from jj.matchers import LogicalMatcher, RequestMatcher

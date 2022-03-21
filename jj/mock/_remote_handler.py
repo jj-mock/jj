@@ -2,11 +2,12 @@ from types import TracebackType
 from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
 from uuid import UUID, uuid4
 
-from jj.expiration_policy import ExpirationPolicyType, ExpireAfterRequests, ExpireNever
+from jj.expiration_policy import ExpirationPolicyType, ExpireNever
 from jj.matchers import LogicalMatcher, RequestMatcher
 
 if TYPE_CHECKING:
     from ._remote_mock import RemoteMock
+
     MockType = RemoteMock
 else:
     MockType = Any
@@ -31,11 +32,7 @@ class RemoteHandler:
         self._matcher = matcher
         self._response = response
         self._history_adapter = history_adapter
-        if expiration_policy is None:
-            self._expiration_policy = ExpireNever()
-        else:
-            self._expiration_policy = self.expiration_policy
-        # self._expiration_policy = expiration_policy
+        self._expiration_policy = expiration_policy
 
     @property
     def id(self) -> UUID:
@@ -51,7 +48,10 @@ class RemoteHandler:
 
     @property
     def expiration_policy(self) -> ExpirationPolicyType:
-        return self._expiration_policy
+        if self._expiration_policy is None:
+            return ExpireNever()
+        else:
+            return self._expiration_policy
 
     async def register(self) -> None:
         await self._mock.register(self)
