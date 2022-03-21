@@ -1,4 +1,3 @@
-import logging
 from typing import List, Optional, Union, cast
 
 from aiohttp import ClientSession

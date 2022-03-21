@@ -29,7 +29,8 @@ class Mock(jj.App):
         self._app = app_factory(resolver=self._resolver)
         self._repo = HistoryRepository()
 
-    def _decode(self, payload: bytes) -> Tuple[str, MatcherType, RemoteResponseType, ExpirationPolicyType]:
+    def _decode(self, payload: bytes) -> Tuple[str, MatcherType, RemoteResponseType,
+                                               ExpirationPolicyType]:
         def resolver(cls: Any, **kwargs: Any) -> Any:
             return cls.__unpacked__(**kwargs, resolver=self._resolver)
 
