@@ -23,7 +23,8 @@ class RemoteMock:
                        response: RemoteResponseType,
                        expiration_policy: Optional[ExpirationPolicyType] = None,
                        *,
-                       history_adapter: Optional[HistoryAdapterType] = default_history_adapter) -> RemoteHandler:
+                       history_adapter: Optional[HistoryAdapterType] = default_history_adapter
+                       ) -> RemoteHandler:
         if expiration_policy is None:
             expiration_policy = ExpireNever()
 
