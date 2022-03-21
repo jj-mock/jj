@@ -3,10 +3,10 @@ from typing import List, Optional, Union, cast
 from aiohttp import ClientSession
 from packed import pack, unpack
 
-from jj.expiration_policy import ExpireNever
-from jj.expiration_policy import ExpirationPolicyType
+from jj.expiration_policy import ExpirationPolicyType, ExpireNever
 from jj.http.codes import OK
 from jj.matchers import LogicalMatcher, RequestMatcher
+
 from ._history import HistoryAdapterType, HistoryItem, default_history_adapter
 from ._remote_handler import RemoteHandler
 from ._remote_response import RemoteResponseType
