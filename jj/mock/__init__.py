@@ -2,6 +2,7 @@ import os
 from distutils.util import strtobool
 from typing import Optional, Union
 
+from jj.expiration_policy import ExpirationPolicyType, ExpireNever
 from jj.matchers import LogicalMatcher, RequestMatcher
 
 from ._history import (
@@ -23,18 +24,24 @@ _REMOTE_MOCK_URL = os.environ.get("JJ_REMOTE_MOCK_URL", "http://localhost:8080")
 _REMOTE_MOCK_DISPOSABLE = os.environ.get("JJ_REMOTE_MOCK_DISPOSABLE", "True")
 
 
-def mocked(matcher: Union[RequestMatcher, LogicalMatcher], response: RemoteResponseType, *,
+def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
+           response: RemoteResponseType,
+           expiration_policy: Optional[ExpirationPolicyType] = None,
+           *,
            disposable: Optional[bool] = None,
            prefetch_history: bool = True,
            history_adapter: Optional[HistoryAdapterType] = default_history_adapter,
-           allowed_number_of_requests: Union[int, None] = None) -> "Mocked":
+           ) -> "Mocked":
     if disposable is None:
         disposable = strtobool(_REMOTE_MOCK_DISPOSABLE)
+
+    if expiration_policy is None:
+        expiration_policy = ExpireNever()
 
     handler = RemoteMock(_REMOTE_MOCK_URL).create_handler(
         matcher,
         response,
-        allowed_number_of_requests=allowed_number_of_requests,
+        expiration_policy,
         history_adapter=history_adapter
     )
     return Mocked(handler, disposable=disposable, prefetch_history=prefetch_history)

@@ -4,6 +4,8 @@ from unittest.mock import sentinel as nil
 
 from undecorated import undecorated
 
+from jj.expiration_policy import ExpirationPolicyType
+
 from ..apps import AbstractApp
 from ..handlers import HandlerFunction
 from ..requests import Request
@@ -56,22 +58,6 @@ class Resolver:
         assert isclass(app)
         self._registry.remove(app, "handlers", handler)
 
-    def _skip_handler(self, handler: HandlerFunction) -> bool:
-        allowed_number_of_requests = self.get_attribute(
-            "allowed_number_of_requests", handler, default=None
-        )
-
-        if allowed_number_of_requests == 0:
-            return True
-        if allowed_number_of_requests is None:
-            return False
-
-        allowed_number_of_requests -= 1
-        self.register_attribute(
-            "allowed_number_of_requests", allowed_number_of_requests, handler
-        )
-        return False
-
     def get_handlers(self, app: Type[AbstractApp]) -> List[HandlerFunction]:
         assert isclass(app)
         handlers = self._registry.get(app, "handlers")
@@ -120,13 +106,24 @@ class Resolver:
                 return False
         return True
 
+    # ExpirationPolicy
+
+    def _is_expired_request(self, handler: HandlerFunction) -> bool:
+        expiration_policy: ExpirationPolicyType = self.get_attribute(
+            "expiration_policy", handler, default=None
+        )
+        if expiration_policy is None:
+            return False
+
+        return expiration_policy.is_expired()
+
     async def resolve(self, request: Request, app: AbstractApp) -> HandlerFunction:
         assert not isclass(app)
         handlers = self.get_handlers(type(app))
         for handler in reversed(handlers):
             matchers = self.get_matchers(handler)
             if await self._match_request(request, matchers):
-                if self._skip_handler(handler):
+                if self._is_expired_request(handler):
                     continue
                 return handler
         return self._default_handler

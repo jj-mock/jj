@@ -1,8 +1,10 @@
+import logging
 from typing import List, Optional, Union, cast
 
 from aiohttp import ClientSession
 from packed import pack, unpack
 
+from jj.expiration_policy import ExpirationPolicyType
 from jj.http.codes import OK
 from jj.matchers import LogicalMatcher, RequestMatcher
 
@@ -20,15 +22,15 @@ class RemoteMock:
     def create_handler(self,
                        matcher: Union[RequestMatcher, LogicalMatcher],
                        response: RemoteResponseType,
+                       expiration_policy: ExpirationPolicyType,
                        *,
-                       allowed_number_of_requests: Union[int, None] = None,
                        history_adapter: Optional[HistoryAdapterType] = default_history_adapter,
                        ) -> RemoteHandler:
         return RemoteHandler(
             self,
             matcher,
             response,
-            allowed_number_of_requests=allowed_number_of_requests,
+            expiration_policy,
             history_adapter=history_adapter,
         )
 
@@ -38,7 +40,7 @@ class RemoteMock:
             "id": str(handler.id),
             "request": handler.matcher,
             "response": handler.response,
-            "allowed_number_of_requests": handler.allowed_number_of_requests,
+            "expiration_policy": handler.expiration_policy,
         }
         binary = pack(payload)
 
@@ -53,7 +55,7 @@ class RemoteMock:
             "id": str(handler.id),
             "request": handler.matcher,
             "response": handler.response,
-            "allowed_number_of_requests": handler.allowed_number_of_requests,
+            "expiration_policy": handler.expiration_policy,
         }
         binary = pack(payload)
 
@@ -68,7 +70,7 @@ class RemoteMock:
             "id": str(handler.id),
             "request": handler.matcher,
             "response": handler.response,
-            "allowed_number_of_requests": handler.allowed_number_of_requests,
+            "expiration_policy": handler.expiration_policy,
         }
         binary = pack(payload)
 
