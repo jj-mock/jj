@@ -2,7 +2,7 @@ from types import TracebackType
 from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
 from uuid import UUID, uuid4
 
-from jj.expiration_policy import ExpirationPolicyType, ExpireNever
+from jj.expiration_policy import ExpirationPolicy, ExpireNever
 from jj.matchers import LogicalMatcher, RequestMatcher
 
 if TYPE_CHECKING:
@@ -23,7 +23,7 @@ class RemoteHandler:
                  mock: MockType,
                  matcher: Union[RequestMatcher, LogicalMatcher],
                  response: RemoteResponseType,
-                 expiration_policy: Optional[ExpirationPolicyType] = None,
+                 expiration_policy: Optional[ExpirationPolicy] = None,
                  *,
                  history_adapter: Optional[HistoryAdapterType] = default_history_adapter) -> None:
         self._id = uuid4()
@@ -50,7 +50,7 @@ class RemoteHandler:
         return self._response
 
     @property
-    def expiration_policy(self) -> ExpirationPolicyType:
+    def expiration_policy(self) -> ExpirationPolicy:
         return self._expiration_policy
 
     async def register(self) -> None:

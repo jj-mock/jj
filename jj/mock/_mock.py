@@ -3,6 +3,7 @@ from typing import Any, Callable, Tuple, Union
 from packed import pack, unpack
 
 import jj
+from expiration_policy import ExpirationPolicy
 from jj import default_app, default_handler
 from jj.apps import BaseApp, create_app
 from jj.expiration_policy import ExpirationPolicyTuple, ExpirationPolicyType
@@ -29,7 +30,7 @@ class Mock(jj.App):
         self._repo = HistoryRepository()
 
     def _decode(self, payload: bytes) -> Tuple[str, MatcherType, RemoteResponseType,
-                                               ExpirationPolicyType]:
+                                               ExpirationPolicy]:
         def resolver(cls: Any, **kwargs: Any) -> Any:
             return cls.__unpacked__(**kwargs, resolver=self._resolver)
 
@@ -45,7 +46,7 @@ class Mock(jj.App):
         assert isinstance(response, (Response, RelayResponse))
 
         expiration_policy = decoded.get("expiration_policy")
-        assert isinstance(expiration_policy, ExpirationPolicyTuple)
+        assert isinstance(expiration_policy, ExpirationPolicy)
 
         return handler_id, matcher, response, expiration_policy
 
