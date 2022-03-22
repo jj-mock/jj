@@ -21,13 +21,12 @@ async def main():
     async with mocked(matcher, response_200) as mock_200:
         async with mocked(matcher, response_500, expiration_policy=policy) as mock_500:
             async with httpx.AsyncClient() as client:
-                while requests_count > 0:
+                for _ in range(requests_count):
                     response = await client.post("http://localhost:8080/users", json={
                         "id": str(uuid4()),
                         "name": "User",
                     })
                     print("response", response)
-                    requests_count -= 1
 
     assert len(mock_500.history) == 2, f"History: {pf(mock_500.history)}"
     assert len(mock_200.history) == 1, f"History: {pf(mock_200.history)}"
