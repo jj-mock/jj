@@ -8,7 +8,7 @@ from ._expiration_policy import ExpirationPolicy
 
 
 @packable("jj.expiration_policy.ExpireNever")
-class ExpireNever(ExpirationPolicy):  # default
+class ExpireNever(ExpirationPolicy):
     def is_expired(self) -> bool:
         return False
 
