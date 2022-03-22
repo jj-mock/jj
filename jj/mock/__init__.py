@@ -34,9 +34,6 @@ def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
     if disposable is None:
         disposable = strtobool(_REMOTE_MOCK_DISPOSABLE)
 
-    if expiration_policy is None:
-        expiration_policy = ExpireNever()
-
     handler = RemoteMock(_REMOTE_MOCK_URL).create_handler(
         matcher,
         response,

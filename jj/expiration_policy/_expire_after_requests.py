@@ -28,5 +28,5 @@ class ExpireAfterRequests(ExpirationPolicy):
         }
 
     @classmethod
-    def __unpacked__(cls, max_requests_count: int) -> "ExpireAfterRequests":
+    def __unpacked__(cls, *, max_requests_count: int, **kwargs: Any) -> "ExpireAfterRequests":
         return cls(max_requests_count=max_requests_count)

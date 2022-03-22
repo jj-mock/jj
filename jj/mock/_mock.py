@@ -3,10 +3,9 @@ from typing import Any, Callable, Tuple, Union
 from packed import pack, unpack
 
 import jj
-from expiration_policy import ExpirationPolicy
 from jj import default_app, default_handler
 from jj.apps import BaseApp, create_app
-from jj.expiration_policy import ExpirationPolicyTuple, ExpirationPolicyType
+from jj.expiration_policy import ExpirationPolicyTuple, ExpirationPolicyType, ExpirationPolicy
 from jj.http.codes import BAD_REQUEST, OK
 from jj.http.methods import ANY, DELETE, GET, POST
 from jj.matchers import LogicalMatcher, RequestMatcher, ResolvableMatcher, exists

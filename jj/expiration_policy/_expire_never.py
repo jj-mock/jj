@@ -1,6 +1,6 @@
 __all__ = ("ExpireNever",)
 
-from typing import Dict
+from typing import Dict, Any
 
 from packed import packable
 
@@ -19,5 +19,5 @@ class ExpireNever(ExpirationPolicy):
         return dict()
 
     @classmethod
-    def __unpacked__(cls) -> "ExpireNever":
+    def __unpacked__(cls, **kwargs: Any) -> "ExpireNever":
         return cls()
