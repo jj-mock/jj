@@ -4,7 +4,7 @@ from unittest.mock import sentinel as nil
 
 from undecorated import undecorated
 
-from jj.expiration_policy import ExpirationPolicyType
+from jj.expiration_policy import ExpirationPolicy
 
 from ..apps import AbstractApp
 from ..handlers import HandlerFunction
@@ -109,7 +109,7 @@ class Resolver:
     # ExpirationPolicy
 
     def _is_handler_expired(self, handler: HandlerFunction) -> bool:
-        expiration_policy: ExpirationPolicyType = self.get_attribute(
+        expiration_policy: ExpirationPolicy = self.get_attribute(
             "expiration_policy", handler, default=None
         )
         if expiration_policy is None:
