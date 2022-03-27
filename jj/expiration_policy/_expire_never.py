@@ -15,7 +15,7 @@ class ExpireNever(ExpirationPolicy):
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}()"
 
-    def __packed__(self) -> Dict:  # type: ignore
+    def __packed__(self) -> Dict[str, Any]:
         return dict()
 
     @classmethod
