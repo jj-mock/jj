@@ -1,8 +1,10 @@
+from ..requests import Request
+
 __all__ = ("ExpirationPolicy",)
 
 
 class ExpirationPolicy:
-    def is_expired(self) -> bool:
+    def is_expired(self, request: Request) -> bool:
         raise NotImplementedError()
 
     def __repr__(self) -> str:

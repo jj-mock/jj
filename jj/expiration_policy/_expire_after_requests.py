@@ -2,6 +2,7 @@ from typing import Any, Dict
 
 from packed import packable
 
+from ..requests import Request
 from ._expiration_policy import ExpirationPolicy
 
 __all__ = ("ExpireAfterRequests",)
@@ -13,7 +14,7 @@ class ExpireAfterRequests(ExpirationPolicy):
         self.max_requests_count = max_requests_count
         self.current_requests_count = 0
 
-    def is_expired(self) -> bool:
+    def is_expired(self, request: Request) -> bool:
         if self.current_requests_count < self.max_requests_count:
             self.current_requests_count += 1
             return False

@@ -2,6 +2,7 @@ from typing import Any, Dict
 
 from packed import packable
 
+from ..requests import Request
 from ._expiration_policy import ExpirationPolicy
 
 __all__ = ("ExpireNever",)
@@ -9,7 +10,7 @@ __all__ = ("ExpireNever",)
 
 @packable("jj.expiration_policy.ExpireNever")
 class ExpireNever(ExpirationPolicy):
-    def is_expired(self) -> bool:
+    def is_expired(self, request: Request) -> bool:
         return False
 
     def __repr__(self) -> str:
