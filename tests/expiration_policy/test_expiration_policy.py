@@ -65,7 +65,7 @@ async def test_expire_after_requests_with_invalid_count_requests(count_requests:
     mock = Mock()
     self_middleware = SelfMiddleware(mock.resolver)
     matcher, response = jj.match("*"), jj.Response(status=200, body=b"text")
-    policy = ExpireAfterRequests(-1)
+    policy = ExpireAfterRequests(count_requests)
 
     async with run(mock, middlewares=[self_middleware]) as client:
         remote_mock = RemoteMock(client.make_url("/"))
