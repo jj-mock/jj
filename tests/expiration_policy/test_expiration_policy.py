@@ -4,6 +4,7 @@ import jj
 from jj.expiration_policy import ExpireAfterRequests, ExpireNever
 from jj.middlewares import SelfMiddleware
 from jj.mock import Mock, RemoteMock
+
 from .._test_utils import run
 
 
