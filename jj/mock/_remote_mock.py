@@ -3,9 +3,10 @@ from typing import List, Optional, Union, cast
 from aiohttp import ClientSession
 from packed import pack, unpack
 
-from jj.expiration_policy import ExpirationPolicyType
+from jj.expiration_policy import ExpirationPolicy
 from jj.http.codes import OK
 from jj.matchers import LogicalMatcher, RequestMatcher
+
 from ._history import HistoryAdapterType, HistoryItem, default_history_adapter
 from ._remote_handler import RemoteHandler
 from ._remote_response import RemoteResponseType
@@ -20,7 +21,7 @@ class RemoteMock:
     def create_handler(self,
                        matcher: Union[RequestMatcher, LogicalMatcher],
                        response: RemoteResponseType,
-                       expiration_policy: Optional[ExpirationPolicyType] = None,
+                       expiration_policy: Optional[ExpirationPolicy] = None,
                        *,
                        history_adapter: Optional[HistoryAdapterType] = default_history_adapter
                        ) -> RemoteHandler:

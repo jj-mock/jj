@@ -1,10 +1,10 @@
-__all__ = ("ExpireAfterRequests",)
-
 from typing import Any, Dict
 
 from packed import packable
 
 from ._expiration_policy import ExpirationPolicy
+
+__all__ = ("ExpireAfterRequests",)
 
 
 @packable("jj.expiration_policy.ExpireAfterRequests")

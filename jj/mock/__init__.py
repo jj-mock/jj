@@ -2,7 +2,7 @@ import os
 from distutils.util import strtobool
 from typing import Optional, Union
 
-from jj.expiration_policy import ExpirationPolicyType, ExpireNever
+from jj.expiration_policy import ExpirationPolicy
 from jj.matchers import LogicalMatcher, RequestMatcher
 
 from ._history import (
@@ -26,7 +26,7 @@ _REMOTE_MOCK_DISPOSABLE = os.environ.get("JJ_REMOTE_MOCK_DISPOSABLE", "True")
 
 def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
            response: RemoteResponseType,
-           expiration_policy: Optional[ExpirationPolicyType] = None,
+           expiration_policy: Optional[ExpirationPolicy] = None,
            *,
            disposable: Optional[bool] = None,
            prefetch_history: bool = True,
