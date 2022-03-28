@@ -1,5 +1,5 @@
 from inspect import isclass
-from typing import Any, List, Type, Union
+from typing import Any, List, Optional, Type, Union
 from unittest.mock import sentinel as nil
 
 from undecorated import undecorated
@@ -109,7 +109,7 @@ class Resolver:
     # ExpirationPolicy
 
     def _is_handler_expired(self, handler: HandlerFunction, request: Request) -> bool:
-        expiration_policy: ExpirationPolicy = self.get_attribute(
+        expiration_policy: Optional[ExpirationPolicy] = self.get_attribute(
             "expiration_policy", handler, default=None
         )
         if expiration_policy is None:
