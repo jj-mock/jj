@@ -2,7 +2,7 @@ from types import TracebackType
 from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
 from uuid import UUID, uuid4
 
-from jj.expiration_policy import ExpirationPolicy, ExpireNever
+from jj.expiration_policy import ExpirationPolicy
 from jj.matchers import LogicalMatcher, RequestMatcher
 
 if TYPE_CHECKING:

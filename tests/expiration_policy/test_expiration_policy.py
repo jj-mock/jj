@@ -1,36 +1,11 @@
 import pytest
 
 import jj
-from jj.expiration_policy import ExpireAfterRequests, ExpireNever
+from jj.expiration_policy import ExpireAfterRequests
 from jj.middlewares import SelfMiddleware
 from jj.mock import Mock, RemoteMock
 
 from .._test_utils import run
-
-
-@pytest.mark.asyncio
-async def test_expire_never():
-    mock = Mock()
-    self_middleware = SelfMiddleware(mock.resolver)
-    matcher, response = jj.match("*"), jj.Response(status=200, body=b"text")
-    policy = ExpireNever()
-
-    async with run(mock, middlewares=[self_middleware]) as client:
-        remote_mock = RemoteMock(client.make_url("/"))
-        handler = remote_mock.create_handler(matcher, response, expiration_policy=policy)
-        await handler.register()
-
-        for _ in range(2):
-            response = await client.get("/")
-            assert response.status == 200
-
-            response_body = await response.read()
-            assert response_body == b"text"
-
-        await handler.deregister()
-
-        response_after_deregister = await client.get("/")
-        assert response_after_deregister.status == 404
 
 
 @pytest.mark.asyncio
