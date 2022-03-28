@@ -9,23 +9,30 @@ from .._test_utils import run
 
 
 @pytest.mark.asyncio
-async def test_expiration_policy_history_request():
+async def test_expire_after_requests_history_request():
     mock = Mock()
     self_middleware = SelfMiddleware(Mock().resolver)
     matcher, response = jj.match("*"), jj.Response(status=200, body=b"text")
-    policy = ExpireAfterRequests(2)
+
+    requests_count = 2
+    policy = ExpireAfterRequests(requests_count)
 
     async with run(mock, middlewares=[self_middleware]) as client:
         handler = RemoteMock(client.make_url("/")).create_handler(
             matcher, response, expiration_policy=policy
         )
         async with handler:
-            for _ in range(2):
+            for _ in range(requests_count):
                 resp = await client.get("/", params={"key": "val"})
                 assert resp.status == 200
 
+            excess_response = await client.get("/")
+            assert excess_response.status == 404
+
             history = await handler.fetch_history()
-            for i in range(2):
+            assert len(history) == requests_count
+
+            for i in range(requests_count):
                 req = history[i]["request"]
                 assert req.method == "GET"
                 assert req.segments == {}

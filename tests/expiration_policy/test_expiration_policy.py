@@ -61,26 +61,6 @@ async def test_expire_after_requests(count_requests: int):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("count_requests", [0, -1])
-async def test_expire_after_requests_with_invalid_count_requests(count_requests: int):
-    mock = Mock()
-    self_middleware = SelfMiddleware(mock.resolver)
-    matcher, response = jj.match("*"), jj.Response(status=200, body=b"text")
-    policy = ExpireAfterRequests(count_requests)
-
-    async with run(mock, middlewares=[self_middleware]) as client:
-        remote_mock = RemoteMock(client.make_url("/"))
-        handler = remote_mock.create_handler(matcher, response, expiration_policy=policy)
-        await handler.register()
-
-        response = await client.get("/")
-        assert response.status == 404
-
-        response_body = await response.read()
-        assert response_body == b""
-
-
-@pytest.mark.asyncio
 async def test_expire_after_requests_with_request_and_deregister():
     mock = Mock()
     self_middleware = SelfMiddleware(mock.resolver)

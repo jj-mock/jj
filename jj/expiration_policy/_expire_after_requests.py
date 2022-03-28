@@ -11,6 +11,9 @@ __all__ = ("ExpireAfterRequests",)
 @packable("jj.expiration_policy.ExpireAfterRequests")
 class ExpireAfterRequests(ExpirationPolicy):
     def __init__(self, max_requests_count: int) -> None:
+        assert max_requests_count > 0, \
+            f'max_requests_count must be more than 0, {max_requests_count} given'
+
         self._max_requests_count = max_requests_count
         self._current_requests_count = 0
 
