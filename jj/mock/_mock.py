@@ -45,8 +45,10 @@ class Mock(jj.App):
         response = decoded.get("response")
         assert isinstance(response, (Response, RelayResponse))
 
-        expiration_policy = decoded.get("expiration_policy")
-        assert isinstance(expiration_policy, ExpirationPolicy)
+        expiration_policy = decoded.get("expiration_policy", None)
+
+        if expiration_policy is not None:
+            assert isinstance(expiration_policy, ExpirationPolicy)
 
         return handler_id, matcher, response, expiration_policy
 
