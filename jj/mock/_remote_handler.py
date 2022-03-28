@@ -31,11 +31,7 @@ class RemoteHandler:
         self._matcher = matcher
         self._response = response
         self._history_adapter = history_adapter
-
-        if expiration_policy is None:
-            self._expiration_policy: ExpirationPolicy = ExpireNever()
-        else:
-            self._expiration_policy = expiration_policy
+        self._expiration_policy = expiration_policy or ExpireNever()
 
     @property
     def id(self) -> UUID:
