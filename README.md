@@ -55,6 +55,8 @@ jj.serve()
       * [Inline Content](#inline-content)
       * [Downloadable File](#downloadable-file)
     * [RelayResponse `β`](#relayresponse-β)
+  * [ExpirationPolicy](#expiration-policy)
+    * [ExpireAfterRequests](#expires-after-requests) 
   * [Apps](#apps)
     * [Single App](#single-app)
     * [Multiple Apps](#multiple-apps)
@@ -194,6 +196,19 @@ async def handler(request):
 @jj.match("*", "/", {"locale": "en_US"}, {"x-request-id": "0fefbf48"})
 async def handler(request):
     return jj.Response(body="200 OK")
+```
+---
+
+### ExpirationPolicy
+
+#### ExpireAfterRequests
+
+```python
+import jj
+
+@jj.expiration_policy.ExpireAfterRequests(3)
+async def handler(request):
+    return jj.Response(json={"message": "200 OK"})
 ```
 
 ---
