@@ -1,0 +1,15 @@
+version: "2.4"
+
+services:
+  mock:
+    image: nikitanovosibirsk/jj:0.2
+    ports:
+      - "8080:80"
+
+  proxy:
+    image: fsouza/docker-ssl-proxy:1.5
+    environment:
+      TARGET_HOST: mock
+      TARGET_PORRT: 80
+    ports:
+      - "4443:443"
