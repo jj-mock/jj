@@ -2,24 +2,25 @@ import pytest
 from pytest import raises
 
 from jj.expiration_policy import ExpireAfterRequests
+
 from .._test_utils.steps import given, then, when
 
 
-def test_not_expired_after_requests():
+async def test_not_expired_after_requests():
     with given:
         expiration_policy = ExpireAfterRequests(1)
 
     with when:
-        is_expired = expiration_policy.is_expired(None)
+        is_expired = await expiration_policy.is_expired(None)
 
     with then:
         assert not is_expired
 
 
-def test_expired_after_requests():
+async def test_expired_after_requests():
     with given:
         expiration_policy = ExpireAfterRequests(1)
-        expiration_policy.is_expired(None)
+        await expiration_policy.is_expired(None)
 
     with when:
         is_expired = expiration_policy.is_expired(None)

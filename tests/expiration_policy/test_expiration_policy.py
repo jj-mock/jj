@@ -32,6 +32,9 @@ async def test_expire_never():
         response_after_deregister = await client.get("/")
         assert response_after_deregister.status == 404
 
+        response_body_after_deregister = await response_after_deregister.read()
+        assert response_body_after_deregister == b""
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("count_requests", [1, 2])
@@ -56,8 +59,8 @@ async def test_expire_after_requests(count_requests: int):
         excess_response = await client.get("/")
         assert excess_response.status == 404
 
-        excess_response_body = await response.read()
-        assert excess_response_body == b"text"
+        excess_response_body = await excess_response.read()
+        assert excess_response_body == b""
 
 
 @pytest.mark.asyncio
@@ -83,6 +86,9 @@ async def test_expire_after_requests_with_request_and_deregister():
         response_after_deregister = await client.get("/")
         assert response_after_deregister.status == 404
 
+        response_body_after_deregister = await response_after_deregister.read()
+        assert response_body_after_deregister == b""
+
 
 @pytest.mark.asyncio
 async def test_expiration_after_request_without_request_and_deregister():
@@ -99,3 +105,6 @@ async def test_expiration_after_request_without_request_and_deregister():
 
         response = await client.get("/")
         assert response.status == 404
+
+        response_body = await response.read()
+        assert response_body == b""

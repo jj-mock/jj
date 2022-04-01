@@ -4,7 +4,8 @@ __all__ = ("ExpirationPolicy",)
 
 
 class ExpirationPolicy:
-    def is_expired(self, request: Request) -> bool:
+    async def is_expired(self, request: Request) -> bool:
+        await request.post()
         raise NotImplementedError()
 
     def __repr__(self) -> str:

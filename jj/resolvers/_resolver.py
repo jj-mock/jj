@@ -108,14 +108,14 @@ class Resolver:
 
     # ExpirationPolicy
 
-    def _is_handler_expired(self, handler: HandlerFunction, request: Request) -> bool:
+    async def _is_handler_expired(self, handler: HandlerFunction, request: Request) -> bool:
         expiration_policy: Optional[ExpirationPolicy] = self.get_attribute(
             "expiration_policy", handler, default=None
         )
         if expiration_policy is None:
             return False
 
-        return expiration_policy.is_expired(request)
+        return await expiration_policy.is_expired(request)
 
     async def resolve(self, request: Request, app: AbstractApp) -> HandlerFunction:
         assert not isclass(app)
@@ -123,7 +123,7 @@ class Resolver:
         for handler in reversed(handlers):
             matchers = self.get_matchers(handler)
             if await self._match_request(request, matchers):
-                if self._is_handler_expired(handler, request):
+                if await self._is_handler_expired(handler, request):
                     continue
                 return handler
         return self._default_handler

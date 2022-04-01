@@ -222,7 +222,7 @@ async with mocked(matcher, response, expiration_policy=policy) as history:
 ```
 
 #### ExpireAfterRequests
-> **Handler expires after multiple requests**
+> **Handler expires after several requests**
 
 ```python
 import httpx
