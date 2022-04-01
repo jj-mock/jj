@@ -18,8 +18,8 @@ async def main():
     response_500 = jj.Response(status=500, json=[])
     policy = ExpireAfterRequests(requests_count - 1)
 
-    async with mocked(matcher, response_200) as history_200:
-        async with mocked(matcher, response_500, expiration_policy=policy) as history_500:
+    async with mocked(matcher, response_200) as mock_200:
+        async with mocked(matcher, response_500, expiration_policy=policy) as mock_500:
             async with httpx.AsyncClient() as client:
                 for _ in range(requests_count):
                     response = await client.post("http://localhost:8080/users", json={
@@ -28,8 +28,8 @@ async def main():
                     })
                     print("response", response)
 
-    assert len(history_500.history) == 2, f"History: {pf(history_500.history)}"
-    assert len(history_200.history) == 1, f"History: {pf(history_200.history)}"
+    assert len(mock_500.history) == 2, f"History: {pf(mock_500.history)}"
+    assert len(mock_200.history) == 1, f"History: {pf(mock_200.history)}"
 
 
 if __name__ == "__main__":
