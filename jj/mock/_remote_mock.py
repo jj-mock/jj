@@ -29,7 +29,7 @@ class RemoteMock:
             self,
             matcher,
             response,
-            expiration_policy,
+            expiration_policy=expiration_policy,
             history_adapter=history_adapter,
         )
 

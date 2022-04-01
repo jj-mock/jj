@@ -91,7 +91,7 @@ async def test_expire_after_requests_with_request_and_deregister():
 
 
 @pytest.mark.asyncio
-async def test_expiration_after_request_without_request_and_deregister():
+async def test_expire_after_request_without_request_and_deregister():
     mock = Mock()
     self_middleware = SelfMiddleware(mock.resolver)
     matcher, response = jj.match("*"), jj.Response(status=200, body=b"text")
