@@ -56,7 +56,8 @@ jj.serve()
       * [Downloadable File](#downloadable-file)
     * [RelayResponse `β`](#relayresponse-β)
   * [ExpirationPolicy](#expiration-policy)
-    * [ExpireAfterRequests](#expires-after-requests) 
+    * [ExpireNever](#expire-never) 
+    * [ExpireAfterRequests](#expire-after-requests) 
   * [Apps](#apps)
     * [Single App](#single-app)
     * [Multiple Apps](#multiple-apps)
@@ -200,15 +201,42 @@ async def handler(request):
 ---
 
 ### ExpirationPolicy
+> **For RemoteMock only**
 
-#### ExpireAfterRequests
+#### ExpireNever
+> **ExpireNever => expiration_policy=None**
 
 ```python
+import httpx
 import jj
+from jj.mock import mocked
+from jj.expiration_policy import ExpireNever
 
-@jj.expiration_policy.ExpireAfterRequests(3)
-async def handler(request):
-    return jj.Response(json={"message": "200 OK"})
+policy = ExpireNever()
+matcher = jj.match("GET", "/")
+response = jj.Response(status=500, json=[])
+
+async with mocked(matcher, response, expiration_policy=policy) as history:
+    async with httpx.AsyncClient() as client:
+        response = await client.get("/")
+```
+
+#### ExpireAfterRequests
+> **Handler expires after multiple requests**
+
+```python
+import httpx
+import jj
+from jj.mock import mocked
+from jj.expiration_policy import ExpireAfterRequests
+
+policy = ExpireAfterRequests(3)
+matcher = jj.match("GET", "/")
+response = jj.Response(status=500, json=[])
+
+async with mocked(matcher, response, expiration_policy=policy) as history:
+    async with httpx.AsyncClient() as client:
+        response = await client.get("/")
 ```
 
 ---

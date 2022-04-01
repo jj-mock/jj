@@ -2,7 +2,6 @@ import pytest
 from pytest import raises
 
 from jj.expiration_policy import ExpireAfterRequests
-
 from .._test_utils.steps import given, then, when
 
 
@@ -34,4 +33,6 @@ def test_expired_after_requests_with_invalid_count_requests(count_requests: int)
     with when:
         with raises(Exception) as exception:
             ExpireAfterRequests(count_requests)
+
+    with then:
         assert exception.type is AssertionError
