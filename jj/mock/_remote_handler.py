@@ -7,7 +7,6 @@ from jj.matchers import LogicalMatcher, RequestMatcher
 
 if TYPE_CHECKING:
     from ._remote_mock import RemoteMock
-
     MockType = RemoteMock
 else:
     MockType = Any

@@ -204,7 +204,7 @@ async def handler(request):
 > **For RemoteMock only**
 
 #### ExpireNever
-> **ExpireNever => expiration_policy=None**
+> ExpireNever => expiration_policy=None
 
 ```python
 import httpx
@@ -222,7 +222,7 @@ async with mocked(matcher, response, expiration_policy=policy) as history:
 ```
 
 #### ExpireAfterRequests
-> **Handler expires after several requests**
+> Handler expires after several requests
 
 ```python
 import httpx
