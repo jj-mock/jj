@@ -4,6 +4,7 @@ from pytest import raises
 import jj
 from jj.middlewares import SelfMiddleware
 from jj.mock import Mock, RemoteMock
+from jj.mock._remote_mock import _RemoteMockError
 
 from .._test_utils import run
 
@@ -47,7 +48,7 @@ async def test_mock_register_bad_request():
 
         with raises(Exception) as exception:
             await handler.register()
-        assert exception.type is AssertionError
+        assert exception.type is _RemoteMockError
 
 
 @pytest.mark.asyncio
@@ -89,7 +90,7 @@ async def test_mock_deregister_bad_request():
 
         with raises(Exception) as exception:
             await handler.deregister()
-        assert exception.type is AssertionError
+        assert exception.type is _RemoteMockError
 
 
 @pytest.mark.asyncio

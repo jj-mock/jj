@@ -28,13 +28,13 @@ def test_format_without_request_and_response(formatter: SimpleFormatter, record:
 
 def test_format_with_request(formatter: SimpleFormatter, record: TestLogRecord):
     with given:
-        record.jj_request = Mock(url=Mock(path=sentinel.path))
+        record.jj_request = Mock(method=sentinel.method, url=Mock(path=sentinel.path))
 
     with when:
         res = formatter.format(record)
 
     with then:
-        assert res == "-> {}".format(sentinel.path)
+        assert res == "-> {} {}".format(sentinel.method, sentinel.path)
 
 
 def test_format_with_response(formatter: SimpleFormatter, record: TestLogRecord):

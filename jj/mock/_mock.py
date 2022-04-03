@@ -21,6 +21,10 @@ __all__ = ("Mock",)
 MatcherType = Union[RequestMatcher, LogicalMatcher]
 
 
+class _DecodeError(Exception):
+    pass
+
+
 class Mock(jj.App):
     def __init__(self,
                  app_factory: Callable[..., BaseApp] = create_app,
@@ -34,50 +38,66 @@ class Mock(jj.App):
         def resolver(cls: Any, **kwargs: Any) -> Any:
             return cls.__unpacked__(**kwargs, resolver=self._resolver)
 
-        decoded = unpack(payload, {ResolvableMatcher: resolver})
+        try:
+            decoded = unpack(payload, {ResolvableMatcher: resolver})
+        except Exception as e:
+            raise _DecodeError(f"Decode Error: can't unpack message ({e})")
+
+        errors = []
 
         handler_id = decoded.get("id")
-        assert isinstance(handler_id, str)
+        if not isinstance(handler_id, str):
+            errors.append(f"Decode Error: invalid handler id ({handler_id!r})")
 
         matcher = decoded.get("request")
-        assert isinstance(matcher, (RequestMatcher, LogicalMatcher))
+        if not isinstance(matcher, (RequestMatcher, LogicalMatcher)):
+            errors.append(f"Decode Error: invalid request field ({matcher!r})")
 
         response = decoded.get("response")
-        assert isinstance(response, (Response, RelayResponse))
+        if not isinstance(response, (Response, RelayResponse)):
+            errors.append(f"Decode Error: invalid response field ({response!r})")
 
-        expiration_policy = decoded.get("expiration_policy", None)
+        expiration_policy = decoded.get("expiration_policy")
+        if not isinstance(expiration_policy, (ExpirationPolicy, type(None))):
+            errors.append(f"Decode Error: invalid expiration policy ({expiration_policy!r})")
 
-        if expiration_policy is not None:
-            assert isinstance(expiration_policy, ExpirationPolicy)
+        if len(errors) > 0:
+            raise _DecodeError("\n".join(errors))
 
         return handler_id, matcher, response, expiration_policy
 
-    @jj.match(POST, headers={"x-jj-remote-mock": exists})
+    @jj.match_any([
+        jj.match(POST, "/__jj__/register", headers={"x-jj-remote-mock": exists}),
+        # backward compatibility
+        jj.match(POST, headers={"x-jj-remote-mock": exists})
+    ])
     async def register(self, request: Request) -> Response:
         payload = await request.read()
         try:
             handler_id, matcher, response, expiration_policy = self._decode(payload)
-        except Exception:
-            return Response(status=BAD_REQUEST, json={"status": BAD_REQUEST})
+        except Exception as e:
+            return Response(status=BAD_REQUEST, json={"status": BAD_REQUEST, "error": str(e)})
 
         async def handler(request: Request) -> RemoteResponseType:
             return response.copy()
 
         self._resolver.register_attribute("handler_id", handler_id, handler)
+        self._resolver.register_attribute("expiration_policy", expiration_policy, handler)
         setattr(self._app.__class__, handler_id, matcher(handler))
 
-        self._resolver.register_attribute(
-            "expiration_policy", expiration_policy, handler
-        )
         return Response(status=OK, json={"status": OK})
 
-    @jj.match(DELETE, headers={"x-jj-remote-mock": exists})
+    @jj.match_any([
+        jj.match(DELETE, "/__jj__/deregister", headers={"x-jj-remote-mock": exists}),
+        # backward compatibility
+        jj.match(DELETE, headers={"x-jj-remote-mock": exists})
+    ])
     async def deregister(self, request: Request) -> Response:
         payload = await request.read()
         try:
             handler_id, *_ = self._decode(payload)
-        except Exception:
-            return Response(status=BAD_REQUEST, json={"status": BAD_REQUEST})
+        except Exception as e:
+            return Response(status=BAD_REQUEST, json={"status": BAD_REQUEST, "error": str(e)})
 
         try:
             delattr(self._app.__class__, handler_id)
@@ -88,13 +108,17 @@ class Mock(jj.App):
 
         return Response(status=OK, json={"status": OK})
 
-    @jj.match(GET, headers={"x-jj-remote-mock": exists})
+    @jj.match_any([
+        jj.match(GET, "/__jj__/history", headers={"x-jj-remote-mock": exists}),
+        # backward compatibility
+        jj.match(GET, headers={"x-jj-remote-mock": exists})
+    ])
     async def history(self, request: Request) -> Response:
         payload = await request.read()
         try:
             handler_id, *_ = self._decode(payload)
-        except Exception:
-            return Response(status=BAD_REQUEST, json={"status": BAD_REQUEST})
+        except Exception as e:
+            return Response(status=BAD_REQUEST, json={"status": BAD_REQUEST, "error": str(e)})
 
         history = await self._repo.get_by_tag(handler_id)
         packed = pack(history)
