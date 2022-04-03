@@ -55,9 +55,6 @@ jj.serve()
       * [Inline Content](#inline-content)
       * [Downloadable File](#downloadable-file)
     * [RelayResponse `β`](#relayresponse-β)
-  * [ExpirationPolicy](#expirationpolicy)
-    * [ExpireNever](#expirenever) 
-    * [ExpireAfterRequests](#expireafterrequests) 
   * [Apps](#apps)
     * [Single App](#single-app)
     * [Multiple Apps](#multiple-apps)
@@ -73,6 +70,7 @@ jj.serve()
         * [Register Remote Handler](#register-remote-handler)
         * [Deregister Remote Handler](#deregister-remote-handler)
         * [Retrieve Remote Handler History](#retrieve-remote-handler-history)
+    * [Expiration Policy](#expiration-policy)
     * [Custom Logger](#custom-logger)
 
 ---
@@ -197,46 +195,6 @@ async def handler(request):
 @jj.match("*", "/", {"locale": "en_US"}, {"x-request-id": "0fefbf48"})
 async def handler(request):
     return jj.Response(body="200 OK")
-```
----
-
-### ExpirationPolicy
-> **For RemoteMock only**
-
-#### ExpireNever
-> ExpireNever => expiration_policy=None
-
-```python
-import httpx
-import jj
-from jj.mock import mocked
-from jj.expiration_policy import ExpireNever
-
-policy = ExpireNever()
-matcher = jj.match("GET", "/")
-response = jj.Response(status=500, json=[])
-
-async with mocked(matcher, response, expiration_policy=policy) as history:
-    async with httpx.AsyncClient() as client:
-        response = await client.get("/")
-```
-
-#### ExpireAfterRequests
-> Handler expires after several requests
-
-```python
-import httpx
-import jj
-from jj.mock import mocked
-from jj.expiration_policy import ExpireAfterRequests
-
-policy = ExpireAfterRequests(3)
-matcher = jj.match("GET", "/")
-response = jj.Response(status=500, json=[])
-
-async with mocked(matcher, response, expiration_policy=policy) as history:
-    async with httpx.AsyncClient() as client:
-        response = await client.get("/")
 ```
 
 ---
@@ -598,6 +556,23 @@ History:
         'tags': ['f75c2ab7-f68d-4b4a-85e0-1f38bb0abe9a']
     }
 ]
+```
+
+#### Expiration Policy
+
+```python
+import jj
+from jj.mock import mocked
+from jj.expiration_policy import ExpireAfterRequests
+from httpx import AsyncClient
+
+matcher = jj.match("GET", "/")
+response = jj.Response(status=200)
+policy = ExpireAfterRequests(1)
+
+async with mocked(matcher, response, expiration_policy=policy):
+    async with AsyncClient() as client:
+        response = await client.get("/")
 ```
 
 #### Custom Logger
