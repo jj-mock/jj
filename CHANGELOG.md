@@ -1,12 +1,20 @@
 # Changelog
 
+## v2.4
+
+### v2.4.0 (2022-04-03)
+
+- Add expiration policy [#30](https://github.com/nikitanovosibirsk/jj/pull/30)
+- Improve remote mock error handling [#31](https://github.com/nikitanovosibirsk/jj/pull/31)
+
+
 ## v2.3
 
-### v2.3.2 (2021-02-06)
+### v2.3.2 (2022-02-06)
 
 - Fix body parser
 
-### v2.3.1 (2021-02-06)
+### v2.3.1 (2022-02-06)
 
 - Add history body parsing [#29](https://github.com/nikitanovosibirsk/jj/pull/29)
 - Add @match_methods [#27](https://github.com/nikitanovosibirsk/jj/pull/27)
@@ -14,7 +22,7 @@
 
 ## v2.2
 
-### v2.2.0 (2021-02-02)
+### v2.2.0 (2022-02-02)
 
 - Drop Python 3.6
 - Add sync mocked context manager [#25](https://github.com/nikitanovosibirsk/jj/pull/25)
