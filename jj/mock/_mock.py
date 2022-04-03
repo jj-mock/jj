@@ -68,11 +68,9 @@ class Mock(jj.App):
             return response.copy()
 
         self._resolver.register_attribute("handler_id", handler_id, handler)
+        self._resolver.register_attribute("expiration_policy", expiration_policy, handler)
         setattr(self._app.__class__, handler_id, matcher(handler))
 
-        self._resolver.register_attribute(
-            "expiration_policy", expiration_policy, handler
-        )
         return Response(status=OK, json={"status": OK})
 
     @jj.match_any([
