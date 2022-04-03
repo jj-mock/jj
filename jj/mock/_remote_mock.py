@@ -3,6 +3,7 @@ from typing import List, Optional, Union, cast
 from aiohttp import ClientSession
 from packed import pack, unpack
 
+from jj.expiration_policy import ExpirationPolicy
 from jj.http.codes import OK
 from jj.matchers import LogicalMatcher, RequestMatcher
 
@@ -20,10 +21,17 @@ class RemoteMock:
     def create_handler(self,
                        matcher: Union[RequestMatcher, LogicalMatcher],
                        response: RemoteResponseType,
+                       expiration_policy: Optional[ExpirationPolicy] = None,
                        *,
                        history_adapter: Optional[HistoryAdapterType] = default_history_adapter
                        ) -> RemoteHandler:
-        return RemoteHandler(self, matcher, response, history_adapter=history_adapter)
+        return RemoteHandler(
+            self,
+            matcher,
+            response,
+            expiration_policy=expiration_policy,
+            history_adapter=history_adapter,
+        )
 
     async def register(self, handler: RemoteHandler) -> "RemoteMock":
         headers = {"x-jj-remote-mock": ""}
@@ -31,6 +39,7 @@ class RemoteMock:
             "id": str(handler.id),
             "request": handler.matcher,
             "response": handler.response,
+            "expiration_policy": handler.expiration_policy,
         }
         binary = pack(payload)
 
@@ -45,6 +54,7 @@ class RemoteMock:
             "id": str(handler.id),
             "request": handler.matcher,
             "response": handler.response,
+            "expiration_policy": handler.expiration_policy,
         }
         binary = pack(payload)
 
@@ -59,6 +69,7 @@ class RemoteMock:
             "id": str(handler.id),
             "request": handler.matcher,
             "response": handler.response,
+            "expiration_policy": handler.expiration_policy,
         }
         binary = pack(payload)
 

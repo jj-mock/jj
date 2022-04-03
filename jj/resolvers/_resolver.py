@@ -1,8 +1,10 @@
 from inspect import isclass
-from typing import Any, List, Type, Union
+from typing import Any, List, Optional, Type, Union
 from unittest.mock import sentinel as nil
 
 from undecorated import undecorated
+
+from jj.expiration_policy import ExpirationPolicy
 
 from ..apps import AbstractApp
 from ..handlers import HandlerFunction
@@ -104,11 +106,24 @@ class Resolver:
                 return False
         return True
 
+    # ExpirationPolicy
+
+    async def _is_handler_expired(self, handler: HandlerFunction, request: Request) -> bool:
+        expiration_policy: Optional[ExpirationPolicy] = self.get_attribute(
+            "expiration_policy", handler, default=None
+        )
+        if expiration_policy is None:
+            return False
+
+        return await expiration_policy.is_expired(request)
+
     async def resolve(self, request: Request, app: AbstractApp) -> HandlerFunction:
         assert not isclass(app)
         handlers = self.get_handlers(type(app))
         for handler in reversed(handlers):
             matchers = self.get_matchers(handler)
             if await self._match_request(request, matchers):
+                if await self._is_handler_expired(handler, request):
+                    continue
                 return handler
         return self._default_handler

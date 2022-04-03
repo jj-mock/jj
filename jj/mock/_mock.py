@@ -1,10 +1,11 @@
-from typing import Any, Callable, Tuple, Union
+from typing import Any, Callable, Optional, Tuple, Union
 
 from packed import pack, unpack
 
 import jj
 from jj import default_app, default_handler
 from jj.apps import BaseApp, create_app
+from jj.expiration_policy import ExpirationPolicy
 from jj.http.codes import BAD_REQUEST, OK
 from jj.http.methods import ANY, DELETE, GET, POST
 from jj.matchers import LogicalMatcher, RequestMatcher, ResolvableMatcher, exists
@@ -17,7 +18,6 @@ from ._remote_response import RemoteResponseType
 
 __all__ = ("Mock",)
 
-
 MatcherType = Union[RequestMatcher, LogicalMatcher]
 
 
@@ -29,9 +29,11 @@ class Mock(jj.App):
         self._app = app_factory(resolver=self._resolver)
         self._repo = HistoryRepository()
 
-    def _decode(self, payload: bytes) -> Tuple[str, MatcherType, RemoteResponseType]:
+    def _decode(self, payload: bytes) -> Tuple[str, MatcherType, RemoteResponseType,
+                                               Optional[ExpirationPolicy]]:
         def resolver(cls: Any, **kwargs: Any) -> Any:
             return cls.__unpacked__(**kwargs, resolver=self._resolver)
+
         decoded = unpack(payload, {ResolvableMatcher: resolver})
 
         handler_id = decoded.get("id")
@@ -43,13 +45,18 @@ class Mock(jj.App):
         response = decoded.get("response")
         assert isinstance(response, (Response, RelayResponse))
 
-        return handler_id, matcher, response
+        expiration_policy = decoded.get("expiration_policy", None)
+
+        if expiration_policy is not None:
+            assert isinstance(expiration_policy, ExpirationPolicy)
+
+        return handler_id, matcher, response, expiration_policy
 
     @jj.match(POST, headers={"x-jj-remote-mock": exists})
     async def register(self, request: Request) -> Response:
         payload = await request.read()
         try:
-            handler_id, matcher, response = self._decode(payload)
+            handler_id, matcher, response, expiration_policy = self._decode(payload)
         except Exception:
             return Response(status=BAD_REQUEST, json={"status": BAD_REQUEST})
 
@@ -59,6 +66,9 @@ class Mock(jj.App):
         self._resolver.register_attribute("handler_id", handler_id, handler)
         setattr(self._app.__class__, handler_id, matcher(handler))
 
+        self._resolver.register_attribute(
+            "expiration_policy", expiration_policy, handler
+        )
         return Response(status=OK, json={"status": OK})
 
     @jj.match(DELETE, headers={"x-jj-remote-mock": exists})
