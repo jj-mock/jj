@@ -11,7 +11,6 @@ __all__ = ("ExpireNever",)
 @packable("jj.expiration_policy.ExpireNever")
 class ExpireNever(ExpirationPolicy):
     async def is_expired(self, request: Request) -> bool:
-        await request.post()
         return False
 
     def __repr__(self) -> str:

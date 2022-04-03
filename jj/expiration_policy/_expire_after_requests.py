@@ -18,7 +18,6 @@ class ExpireAfterRequests(ExpirationPolicy):
         self._current_requests_count = 0
 
     async def is_expired(self, request: Request) -> bool:
-        await request.post()
         if self._current_requests_count < self._max_requests_count:
             self._current_requests_count += 1
             return False
