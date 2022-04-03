@@ -3,6 +3,7 @@ from typing import List, Optional, Union, cast
 from aiohttp import ClientSession
 from packed import pack, unpack
 
+from jj import version
 from jj.expiration_policy import ExpirationPolicy
 from jj.http.codes import OK
 from jj.matchers import LogicalMatcher, RequestMatcher
@@ -34,7 +35,7 @@ class RemoteMock:
         )
 
     async def register(self, handler: RemoteHandler) -> "RemoteMock":
-        headers = {"x-jj-remote-mock": ""}
+        headers = {"x-jj-remote-mock": f"v{version}"}
         payload = {
             "id": str(handler.id),
             "request": handler.matcher,
@@ -44,12 +45,13 @@ class RemoteMock:
         binary = pack(payload)
 
         async with ClientSession() as session:
-            async with session.post(self._url, data=binary, headers=headers) as response:
+            url = f"{self._url}/__jj__/register"
+            async with session.post(url, data=binary, headers=headers) as response:
                 assert response.status == OK, response
         return self
 
     async def deregister(self, handler: RemoteHandler) -> "RemoteMock":
-        headers = {"x-jj-remote-mock": ""}
+        headers = {"x-jj-remote-mock": f"v{version}"}
         payload = {
             "id": str(handler.id),
             "request": handler.matcher,
@@ -59,12 +61,13 @@ class RemoteMock:
         binary = pack(payload)
 
         async with ClientSession() as session:
-            async with session.delete(self._url, data=binary, headers=headers) as response:
+            url = f"{self._url}/__jj__/deregister"
+            async with session.delete(url, data=binary, headers=headers) as response:
                 assert response.status == OK, response
         return self
 
     async def fetch_history(self, handler: RemoteHandler) -> List[HistoryItem]:
-        headers = {"x-jj-remote-mock": ""}
+        headers = {"x-jj-remote-mock": f"v{version}"}
         payload = {
             "id": str(handler.id),
             "request": handler.matcher,
@@ -74,7 +77,8 @@ class RemoteMock:
         binary = pack(payload)
 
         async with ClientSession() as session:
-            async with session.get(self._url, data=binary, headers=headers) as response:
+            url = f"{self._url}/__jj__/history"
+            async with session.get(url, data=binary, headers=headers) as response:
                 assert response.status == OK, response
                 body = await response.read()
                 unpacked = unpack(body)

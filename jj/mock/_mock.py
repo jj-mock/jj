@@ -52,7 +52,11 @@ class Mock(jj.App):
 
         return handler_id, matcher, response, expiration_policy
 
-    @jj.match(POST, headers={"x-jj-remote-mock": exists})
+    @jj.match_any([
+        jj.match(POST, "/__jj__/register", headers={"x-jj-remote-mock": exists}),
+        # backward compatibility
+        jj.match(POST, headers={"x-jj-remote-mock": exists})
+    ])
     async def register(self, request: Request) -> Response:
         payload = await request.read()
         try:
@@ -71,7 +75,11 @@ class Mock(jj.App):
         )
         return Response(status=OK, json={"status": OK})
 
-    @jj.match(DELETE, headers={"x-jj-remote-mock": exists})
+    @jj.match_any([
+        jj.match(DELETE, "/__jj__/deregister", headers={"x-jj-remote-mock": exists}),
+        # backward compatibility
+        jj.match(DELETE, headers={"x-jj-remote-mock": exists})
+    ])
     async def deregister(self, request: Request) -> Response:
         payload = await request.read()
         try:
@@ -88,7 +96,11 @@ class Mock(jj.App):
 
         return Response(status=OK, json={"status": OK})
 
-    @jj.match(GET, headers={"x-jj-remote-mock": exists})
+    @jj.match_any([
+        jj.match(GET, "/__jj__/history", headers={"x-jj-remote-mock": exists}),
+        # backward compatibility
+        jj.match(GET, headers={"x-jj-remote-mock": exists})
+    ])
     async def history(self, request: Request) -> Response:
         payload = await request.read()
         try:
