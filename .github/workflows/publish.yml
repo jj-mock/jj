@@ -2,10 +2,8 @@ name: Publish
 
 on:
   push:
-    branches:
-      - '*'
-    # tags:
-    #   - '*'
+    tags:
+      - 'v*.*.*'
 
 jobs:
   publish_pypi:
@@ -20,11 +18,11 @@ jobs:
         python-version: '3.10'
     - name: Build
       run: make build
-    # - name: Publish
-    #   env:
-    #     TWINE_USERNAME: __token__
-    #     TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-    #   run: make publish
+    - name: Publish
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+      run: make publish
 
   publish_docker_hub:
     runs-on: ubuntu-latest
@@ -32,23 +30,17 @@ jobs:
     - name: Checkout 
       uses: actions/checkout@v2
     - name: Set Env
-      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-    - name: Test Env
-      run: |
-        echo $RELEASE_VERSION
-        echo ${{ env.RELEASE_VERSION }}
-
-    # - name: Login to Docker Hub
-    #   uses: docker/login-action@v1
-    #   with:
-    #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
-    #     password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-    # - name: Set up Docker Buildx
-    #   uses: docker/setup-buildx-action@v1
-    # - name: Build and push
-    #   uses: docker/build-push-action@v2
-    #   with:
-    #     context: .
-    #     file: ./Dockerfile
-    #     push: true
-    #     tags: ${{ secrets.DOCKER_HUB_USERNAME }}/jj:latest
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/v}" >> $GITHUB_ENV
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: nikitanovosibirsk
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Build and Push
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: nikitanovosibirsk/jj:latest,nikitanovosibirsk/jj:${{ env.RELEASE_VERSION }}
