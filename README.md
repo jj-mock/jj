@@ -425,7 +425,7 @@ jj.serve(Mock(), port=8080)
 
 or via docker
 ```shell
-docker run -p 8080:80 nikitanovosibirsk/jj:0.2
+docker run -p 8080:80 nikitanovosibirsk/jj
 ```
 
 #### Client Side

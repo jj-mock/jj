@@ -1,8 +1,9 @@
-FROM python:3.9-alpine
+FROM python:3.10-alpine
 
 WORKDIR /app
 
 RUN apk add --no-cache gcc musl-dev
+RUN pip3 install pip --upgrade
 RUN pip3 install jj
 RUN apk del gcc musl-dev
 
