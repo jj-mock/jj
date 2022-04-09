@@ -2,6 +2,10 @@
 
 ## v2.4
 
+### v2.4.1 (2022-04-09)
+
+- Update Python version in Dockerfile  [#32](https://github.com/nikitanovosibirsk/jj/pull/32)
+
 ### v2.4.0 (2022-04-03)
 
 - Add expiration policy [#30](https://github.com/nikitanovosibirsk/jj/pull/30)
