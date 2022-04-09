@@ -1,5 +1,5 @@
 aiohttp>=3.5,<4.0
-multidict>=4.5,<5.0
-packed>=0.1,<0.2
+multidict>=4.5,<7.0
+packed>=0.1,<0.3
 rtry>=1.3,<2.0
 undecorated>=0.3,<0.4

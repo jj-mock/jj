@@ -6,6 +6,7 @@ from jj.expiration_policy import ExpireAfterRequests
 from .._test_utils.steps import given, then, when
 
 
+@pytest.mark.asyncio
 async def test_not_expired_after_requests():
     with given:
         expiration_policy = ExpireAfterRequests(1)
@@ -17,13 +18,14 @@ async def test_not_expired_after_requests():
         assert not is_expired
 
 
+@pytest.mark.asyncio
 async def test_expired_after_requests():
     with given:
         expiration_policy = ExpireAfterRequests(1)
         await expiration_policy.is_expired(None)
 
     with when:
-        is_expired = expiration_policy.is_expired(None)
+        is_expired = await expiration_policy.is_expired(None)
 
     with then:
         assert is_expired
