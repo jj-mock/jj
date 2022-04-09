@@ -2,6 +2,10 @@
 
 ## v2.4
 
+### v2.4.2 (2022-04-09)
+
+- Update requirements (multidict and packed) [#33](https://github.com/nikitanovosibirsk/jj/pull/33)
+
 ### v2.4.1 (2022-04-09)
 
 - Update Python version in Dockerfile  [#32](https://github.com/nikitanovosibirsk/jj/pull/32)
