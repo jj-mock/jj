@@ -2,9 +2,13 @@
 
 ## v2.4
 
-### v2.4.2 (2022-04-09)
+### v2.4.3 (2022-04-09)
 
 - Update requirements (multidict and packed) [#33](https://github.com/nikitanovosibirsk/jj/pull/33)
+
+### v2.4.2 (2022-04-09)
+
+- Same as 2.4.1
 
 ### v2.4.1 (2022-04-09)
 
