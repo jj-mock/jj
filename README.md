@@ -572,7 +572,11 @@ policy = ExpireAfterRequests(1)
 
 async with mocked(matcher, response, expiration_policy=policy):
     async with AsyncClient() as client:
-        response = await client.get("/")
+        resp1 = await client.get("/")
+        assert resp1.status_code == 200
+        # expired
+        resp2 = await client.get("/")
+        assert resp2.status_code == 404
 ```
 
 #### Custom Logger
