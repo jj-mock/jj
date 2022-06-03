@@ -76,7 +76,7 @@ class AppRunner(BaseRunner):
         return response  # type: ignore
 
     def _make_request(self, *args: Any, **kwargs: Any) -> Request:
-        return Request(*args, **kwargs, loop=self._loop)
+        return Request(*args, **kwargs, client_max_size=0, loop=self._loop)
 
     async def _make_server(self) -> WebServer:
         return WebServer(self._handle, request_factory=self._make_request)  # type: ignore
