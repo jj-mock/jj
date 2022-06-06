@@ -25,7 +25,7 @@ class Server:
         self._runners += [runner]
 
     def start(self, app: Any, host: Optional[str] = None, port: Optional[int] = None) -> None:
-        ensure_future(self._start(app, host, port))
+        ensure_future(self._start(app, host, port), loop=self._loop)
 
     def serve(self) -> None:
         self._loop.run_forever()

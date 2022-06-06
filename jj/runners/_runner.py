@@ -22,12 +22,15 @@ class AppRunner(BaseRunner):
                  resolver: Resolver,
                  middlewares: List[RootMiddleware],
                  loop: AbstractEventLoop,
+                 handle_signals: bool = True,
+                 client_max_size: int = 0,
                  **kwargs: Any) -> None:
-        super().__init__(**kwargs)
+        super().__init__(handle_signals=handle_signals, **kwargs)
         self._app = app
         self._resolver = resolver
         self._middlewares = middlewares
         self._loop = loop
+        self._client_max_size = client_max_size
 
     def _merge_middlewares(self, root_middlewares: List[Any],
                            app_middlewares: List[Any],
@@ -76,7 +79,7 @@ class AppRunner(BaseRunner):
         return response  # type: ignore
 
     def _make_request(self, *args: Any, **kwargs: Any) -> Request:
-        return Request(*args, **kwargs, client_max_size=0, loop=self._loop)
+        return Request(*args, client_max_size=self._client_max_size, loop=self._loop, **kwargs)
 
     async def _make_server(self) -> WebServer:
         return WebServer(self._handle, request_factory=self._make_request)  # type: ignore
