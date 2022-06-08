@@ -1,5 +1,4 @@
-from asyncio import AbstractEventLoop, Event, all_tasks, gather
-from asyncio.exceptions import CancelledError
+from asyncio import AbstractEventLoop, CancelledError, Event, all_tasks, gather
 from typing import Any, List, Optional, Sequence, Type, Union
 
 from aiohttp.web_runner import BaseRunner, TCPSite
