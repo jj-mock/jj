@@ -22,7 +22,7 @@ class AppRunner(BaseRunner):
                  resolver: Resolver,
                  middlewares: List[RootMiddleware],
                  loop: AbstractEventLoop,
-                 handle_signals: bool = True,
+                 handle_signals: bool = False,
                  client_max_size: int = 0,
                  **kwargs: Any) -> None:
         super().__init__(handle_signals=handle_signals, **kwargs)
