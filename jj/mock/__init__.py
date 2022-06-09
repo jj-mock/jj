@@ -32,7 +32,7 @@ def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
            prefetch_history: bool = True,
            history_adapter: Optional[HistoryAdapterType] = default_history_adapter) -> "Mocked":
     if disposable is None:
-        disposable = strtobool(_REMOTE_MOCK_DISPOSABLE)
+        disposable = bool(strtobool(_REMOTE_MOCK_DISPOSABLE))
 
     handler = RemoteMock(_REMOTE_MOCK_URL).create_handler(
         matcher,

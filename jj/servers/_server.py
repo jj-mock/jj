@@ -62,7 +62,7 @@ class Server:
         for task in tasks:
             task.cancel()
 
-        self._loop.run_until_complete(gather(*tasks, loop=self._loop, return_exceptions=True))
+        self._loop.run_until_complete(gather(*tasks, return_exceptions=True))
 
         for task in tasks:
             if task.cancelled():
