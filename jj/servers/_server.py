@@ -1,5 +1,5 @@
-from asyncio import AbstractEventLoop, CancelledError, Event, all_tasks, gather
-from typing import Any, List, Optional, Sequence, Type, Union
+from asyncio import AbstractEventLoop, CancelledError, Event, Task, all_tasks, gather
+from typing import Any, List, Optional, Sequence, Type
 
 from aiohttp.web_runner import BaseRunner, TCPSite
 
@@ -13,58 +13,70 @@ class Server:
         self._loop = loop
         self._runner_factory = runner_factory
         self._site_factory = site_factory
+        self._tasks: List["Task[Any]"] = []
+        self._events: List[Event] = []
 
-        self._apps: List[Any] = []
-        self._runners: List[BaseRunner] = []
-        self._event: Union[Event, None] = None
+    async def _start(self, app: Any, event: Event,
+                     host: Optional[str] = None,
+                     port: Optional[int] = None) -> None:
+        runner = self._runner_factory(app, loop=self._loop)  # type: ignore
+        await runner.setup()
 
-    def start(self, app: Any, host: Optional[str] = None, port: Optional[int] = None) -> None:
-        self._apps.append((app, host, port))
+        site = self._site_factory(runner, host=host, port=port)
+        await site.start()
 
-    async def _start_apps(self) -> None:
-        for app, host, port in self._apps:
-            runner = self._runner_factory(app, loop=self._loop)  # type: ignore
-            await runner.setup()
-
-            site = self._site_factory(runner, host=host, port=port)
-            await site.start()
-
-            self._runners.append(runner)
-
-    async def _stop_apps(self) -> None:
-        for runner in reversed(self._runners):
-            await runner.cleanup()
-
-    async def _serve(self) -> None:
-        self._event = Event()
-
-        await self._start_apps()
         try:
-            await self._event.wait()
+            await event.wait()
         except CancelledError:
             pass
         finally:
-            await self._stop_apps()
+            await runner.cleanup()
+
+    def start(self, app: Any, host: Optional[str] = None, port: Optional[int] = None) -> None:
+        event = Event()
+        self._events.append(event)
+        task = self._loop.create_task(self._start(app, event, host, port))
+        self._tasks.append(task)
+
+    async def _serve(self) -> None:
+        try:
+            await gather(*self._tasks)
+        finally:
+            self.cleanup()
 
     def serve(self, exceptions: Sequence[Type[BaseException]] = (KeyboardInterrupt,)) -> None:
-        task = self._loop.create_task(self._serve())
         try:
-            self._loop.run_until_complete(task)
+            self._loop.run_until_complete(self._serve())
         except tuple(exceptions):
             pass
-        finally:
-            task.cancel()
-            self._loop.run_until_complete(task)
 
     def cleanup(self) -> None:
-        if self._event:
-            self._event.set()
+        while self._events:
+            event = self._events.pop()
+            event.set()
 
-    def shutdown(self) -> None:
-        tasks = all_tasks(self._loop)
+    def _cancel_tasks(self, tasks: List["Task[Any]"]) -> None:
+        if not tasks:
+            return
+
         for task in tasks:
             task.cancel()
-        gather(*tasks, return_exceptions=True)
 
-        self._loop.run_until_complete(self._loop.shutdown_asyncgens())
-        self._loop.close()
+        self._loop.run_until_complete(gather(*tasks, loop=self._loop, return_exceptions=True))
+
+        for task in tasks:
+            if task.cancelled():
+                continue
+            if task.exception() is not None:
+                self._loop.call_exception_handler({
+                    "message": "unhandled exception during shutdown",
+                    "exception": task.exception(),
+                    "task": task,
+                })
+
+    def shutdown(self) -> None:
+        try:
+            self._cancel_tasks(list(all_tasks(self._loop)))
+            self._loop.run_until_complete(self._loop.shutdown_asyncgens())
+        finally:
+            self._loop.close()
