@@ -41,7 +41,7 @@ registry = Registry()
 resolver = ReversedResolver(registry, default_app, default_handler)
 loop = asyncio.get_event_loop()
 
-runner = partial(AppRunner, resolver=resolver, middlewares=[
+runner = partial(AppRunner, resolver=resolver, handle_signals=True, middlewares=[
     SelfMiddleware(resolver),
 ])
 # ignore because of https://github.com/python/mypy/issues/1484
@@ -121,12 +121,9 @@ def start(app: AbstractApp, *,
 
 def wait_for(exceptions: Sequence[Type[BaseException]]) -> None:
     try:
-        server.serve()
-    except tuple(exceptions):
-        pass
+        server.serve(exceptions)
     finally:
-        server.cleanup()
-    server.shutdown()
+        server.shutdown()
 
 
 def serve(app: AbstractApp = default_app, *,

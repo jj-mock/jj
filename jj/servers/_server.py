@@ -1,5 +1,5 @@
-from asyncio import AbstractEventLoop, ensure_future
-from typing import Any, List, Optional, Type
+from asyncio import AbstractEventLoop, CancelledError, Event, Task, all_tasks, gather
+from typing import Any, List, Optional, Sequence, Type
 
 from aiohttp.web_runner import BaseRunner, TCPSite
 
@@ -13,27 +13,70 @@ class Server:
         self._loop = loop
         self._runner_factory = runner_factory
         self._site_factory = site_factory
-        self._runners: List[BaseRunner] = []
+        self._tasks: List["Task[Any]"] = []
+        self._events: List[Event] = []
 
-    async def _start(self, app: Any, host: Optional[str], port: Optional[int]) -> None:
+    async def _start(self, app: Any, event: Event,
+                     host: Optional[str] = None,
+                     port: Optional[int] = None) -> None:
         runner = self._runner_factory(app, loop=self._loop)  # type: ignore
         await runner.setup()
 
         site = self._site_factory(runner, host=host, port=port)
         await site.start()
 
-        self._runners += [runner]
+        try:
+            await event.wait()
+        except CancelledError:
+            pass
+        finally:
+            await runner.cleanup()
 
     def start(self, app: Any, host: Optional[str] = None, port: Optional[int] = None) -> None:
-        ensure_future(self._start(app, host, port))
+        event = Event()
+        self._events.append(event)
+        task = self._loop.create_task(self._start(app, event, host, port))
+        self._tasks.append(task)
 
-    def serve(self) -> None:
-        self._loop.run_forever()
+    async def _serve(self) -> None:
+        try:
+            await gather(*self._tasks)
+        finally:
+            self.cleanup()
+
+    def serve(self, exceptions: Sequence[Type[BaseException]] = (KeyboardInterrupt,)) -> None:
+        try:
+            self._loop.run_until_complete(self._serve())
+        except tuple(exceptions):
+            pass
 
     def cleanup(self) -> None:
-        for runner in reversed(self._runners):
-            self._loop.run_until_complete(runner.cleanup())
+        while self._events:
+            event = self._events.pop()
+            event.set()
+
+    def _cancel_tasks(self, tasks: List["Task[Any]"]) -> None:
+        if not tasks:
+            return
+
+        for task in tasks:
+            task.cancel()
+
+        self._loop.run_until_complete(gather(*tasks, return_exceptions=True))
+
+        for task in tasks:
+            if task.cancelled():
+                continue
+            if task.exception() is not None:
+                self._loop.call_exception_handler({
+                    "message": "unhandled exception during shutdown",
+                    "exception": task.exception(),
+                    "task": task,
+                })
 
     def shutdown(self) -> None:
-        self._loop.run_until_complete(self._loop.shutdown_asyncgens())
-        self._loop.close()
+        try:
+            self._cancel_tasks(list(all_tasks(self._loop)))
+            self._loop.run_until_complete(self._loop.shutdown_asyncgens())
+        finally:
+            self._loop.close()
