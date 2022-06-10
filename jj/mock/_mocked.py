@@ -7,6 +7,7 @@ from rtry.types import AttemptValue, DelayCallable, DelayValue, LoggerCallable, 
 
 from ._history import HistoryItem
 from ._remote_handler import RemoteHandler
+from ._utils import run_async
 
 __all__ = ("Mocked",)
 
@@ -58,18 +59,13 @@ class Mocked:
             await self._handler.deregister()
 
     def __enter__(self) -> "Mocked":
-        try:
-            asyncio.get_running_loop()
-        except RuntimeError:
-            return asyncio.run(self.__aenter__())
-        else:
-            raise RuntimeError("Use 'async with' instead")
+        return run_async(self.__aenter__)
 
     def __exit__(self,
                  exc_type: Optional[Type[BaseException]],
                  exc_val: Optional[BaseException],
                  exc_tb: Optional[TracebackType]) -> None:
-        return asyncio.run(self.__aexit__(exc_type, exc_val, exc_tb))
+        return run_async(self.__aexit__, exc_type, exc_val, exc_tb)
 
     def __repr__(self) -> str:
         return (f"Mocked<{self._handler}, "
