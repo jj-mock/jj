@@ -1,6 +1,23 @@
 # Changelog
 
+## v2.6
+
+### v2.6.0 (2022-06-10)
+
+- Add response hook [#37](https://github.com/nikitanovosibirsk/jj/pull/37)
+- Add mocked (sync) [#38](https://github.com/nikitanovosibirsk/jj/pull/38)
+
+## v2.5
+
+### v2.5.0 (2022-06-09)
+
+- Add signal handlers [#36](https://github.com/nikitanovosibirsk/jj/pull/36)
+
 ## v2.4
+
+### v2.4.4 (2022-06-03)
+
+- Remove body size limit [#44e866e](https://github.com/nikitanovosibirsk/jj/commit/44e866ebf50a92a9a9ac8bccbd9da7bd0bdbafaf)
 
 ### v2.4.3 (2022-04-09)
 
