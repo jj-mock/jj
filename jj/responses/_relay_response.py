@@ -1,13 +1,12 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Tuple
 from urllib.parse import urljoin
 
 from aiohttp import ClientSession
-from aiohttp.abc import AbstractStreamWriter
 from aiohttp.web_request import BaseRequest
-from multidict import CIMultiDict, MultiDict
+from multidict import CIMultiDict, CIMultiDictProxy, MultiDict
 from packed import packable
 
-from ._stream_response import StreamResponse
+from ._response import Response
 
 __all__ = ("RelayResponse",)
 
@@ -25,42 +24,45 @@ _HOP_BY_HOP_HEADERS = (
 
 _FILTERED_HEADERS = _HOP_BY_HOP_HEADERS + ("host", "content-length")
 
+_TargetResponseType = Tuple[int, Any, CIMultiDictProxy[str], bytes]
+
 
 @packable("jj.responses.RelayResponse")
-class RelayResponse(StreamResponse):
+class RelayResponse(Response):
     def __init__(self, *, target: str) -> None:
         super().__init__()
         self._target = target
+        self._prepare_hook_called = False
 
     @property
     def target(self) -> str:
         return self._target
 
-    async def prepare(self, request: BaseRequest) -> Optional[AbstractStreamWriter]:
-        url = urljoin(self.target, request.path)
+    async def _do_target_request(self, request: BaseRequest) -> _TargetResponseType:
+        url = urljoin(self._target, request.path)
 
         headers: MultiDict[str] = MultiDict()
         for key, value in request.headers.items():
             if key.lower() not in _FILTERED_HEADERS:
                 headers[key] = value
 
+        data = await request.read()
+
         async with ClientSession(auto_decompress=False) as session:
-            async with session.request(request.method, url,
-                                       params=request.query,
-                                       headers=headers,
-                                       data=request.content,
-                                       allow_redirects=True) as response:
-                self.set_status(response.status, response.reason)
-                self._headers = CIMultiDict(response.headers)
+            async with session.request(request.method, url, params=request.query, headers=headers,
+                                       data=data, allow_redirects=True) as response:
+                body = await response.read()
+        return response.status, response.reason, response.headers, body
 
-                await super().prepare(request)
-
-                async for data in response.content.iter_any():
-                    await self.write(data)
-
-                await self.write_eof()
-
-        return await super().prepare(request)
+    async def _prepare_hook(self, request: BaseRequest) -> "RelayResponse":
+        if self._prepare_hook_called:
+            return self
+        status, reason, headers, body = await self._do_target_request(request)
+        self.set_status(status, reason)
+        self._headers = CIMultiDict(headers)
+        self.body = body
+        self._prepare_hook_called = True
+        return self
 
     def copy(self) -> "RelayResponse":
         assert not self.prepared
@@ -70,5 +72,5 @@ class RelayResponse(StreamResponse):
         return {"target": self._target}
 
     @classmethod
-    def __unpacked__(cls, *, target: str, **kwargs: Any) -> "RelayResponse":
+    def __unpacked__(cls, *, target: str, **kwargs: Any) -> "RelayResponse":  # type: ignore
         return cls(target=target)

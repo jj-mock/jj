@@ -79,7 +79,9 @@ class Mock(jj.App):
             return Response(status=BAD_REQUEST, json={"status": BAD_REQUEST, "error": str(e)})
 
         async def handler(request: Request) -> RemoteResponseType:
-            return response.copy()
+            res = response.copy()
+            await res._prepare_hook(request)
+            return res
 
         self._resolver.register_attribute("handler_id", handler_id, handler)
         self._resolver.register_attribute("expiration_policy", expiration_policy, handler)
