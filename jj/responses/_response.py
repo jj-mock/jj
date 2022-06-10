@@ -5,9 +5,11 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from unittest.mock import sentinel as nil
 
 from aiohttp import web
+from aiohttp.abc import AbstractStreamWriter
 from aiohttp.payload import BytesPayload, IOBasePayload, TextIOPayload
 from aiohttp.typedefs import LooseHeaders
 from aiohttp.web import ContentCoding
+from aiohttp.web_request import BaseRequest
 from multidict import CIMultiDict
 from packed import packable
 
@@ -82,6 +84,13 @@ class Response(web.Response, StreamResponse):
             return bytes(self.body._value.read())
         else:
             raise ValueError("Unsupported body type {}".format(type(self.body)))
+
+    async def _prepare_hook(self, request: BaseRequest) -> "Response":
+        return self
+
+    async def prepare(self, request: BaseRequest) -> Optional[AbstractStreamWriter]:
+        await self._prepare_hook(request)
+        return await super().prepare(request)
 
     def __packed__(self) -> Dict[str, Any]:
         assert not self.prepared
