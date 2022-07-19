@@ -2,8 +2,9 @@ from typing import Any, Dict, Tuple
 from urllib.parse import urljoin
 
 from aiohttp import ClientSession
+from aiohttp.typedefs import LooseHeaders
 from aiohttp.web_request import BaseRequest
-from multidict import CIMultiDict, CIMultiDictProxy, MultiDict
+from multidict import CIMultiDict, CIMultiDictProxy
 from packed import packable
 
 from ._response import Response
@@ -38,13 +39,16 @@ class RelayResponse(Response):
     def target(self) -> str:
         return self._target
 
+    def _filter_headers(self, headers: LooseHeaders) -> CIMultiDict[str]:
+        filtered: CIMultiDict[str] = CIMultiDict()
+        for key, value in headers.items():
+            if key.lower() not in _FILTERED_HEADERS:
+                filtered[key] = value
+        return filtered
+
     async def _do_target_request(self, request: BaseRequest) -> _TargetResponseType:
         url = urljoin(self._target, request.path)
-
-        headers: MultiDict[str] = MultiDict()
-        for key, value in request.headers.items():
-            if key.lower() not in _FILTERED_HEADERS:
-                headers[key] = value
+        headers = self._filter_headers(request.headers)
 
         data = await request.read()
 
@@ -59,7 +63,7 @@ class RelayResponse(Response):
             return self
         status, reason, headers, body = await self._do_target_request(request)
         self.set_status(status, reason)
-        self._headers = CIMultiDict(headers)
+        self._headers = CIMultiDict(self._filter_headers(headers))
         self.body = body
         self._prepare_hook_called = True
         return self
