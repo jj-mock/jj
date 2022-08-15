@@ -2,6 +2,14 @@
 
 ## v2.6
 
+### v2.6.2 (2022-08-15)
+
+- Add Mocked class getters [#fa44c7b](https://github.com/nikitanovosibirsk/jj/commit/fa44c7ba657195a8c98df98ace81beaa55ad06c9)
+
+### v2.6.1 (2022-07-19)
+
+- Fix relay headers [#39](https://github.com/nikitanovosibirsk/jj/pull/39)
+
 ### v2.6.0 (2022-06-10)
 
 - Add response hook [#37](https://github.com/nikitanovosibirsk/jj/pull/37)
