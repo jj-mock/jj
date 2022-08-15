@@ -21,6 +21,18 @@ class Mocked:
         self._history: Union[List[HistoryItem], None] = None
 
     @property
+    def handler(self) -> RemoteHandler:
+        return self._handler
+
+    @property
+    def disposable(self) -> bool:
+        return self._disposable
+
+    @property
+    def prefetch_history(self) -> bool:
+        return self._prefetch_history
+
+    @property
     def history(self) -> Union[List[HistoryItem], None]:
         return self._history
 
