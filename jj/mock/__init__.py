@@ -20,8 +20,12 @@ from ._remote_mock import RemoteMock
 from ._remote_response import RemoteResponseType
 from ._system_log_filter import SystemLogFilter
 
-_REMOTE_MOCK_URL = os.environ.get("JJ_REMOTE_MOCK_URL", "http://localhost:8080")
-_REMOTE_MOCK_DISPOSABLE = os.environ.get("JJ_REMOTE_MOCK_DISPOSABLE", "True")
+REMOTE_MOCK_URL = os.environ.get("JJ_REMOTE_MOCK_URL", "http://localhost:8080")
+REMOTE_MOCK_DISPOSABLE = os.environ.get("JJ_REMOTE_MOCK_DISPOSABLE", "True")
+
+# backward compatibility
+_REMOTE_MOCK_URL = REMOTE_MOCK_URL
+_REMOTE_MOCK_DISPOSABLE = REMOTE_MOCK_DISPOSABLE
 
 
 def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
@@ -32,9 +36,9 @@ def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
            prefetch_history: bool = True,
            history_adapter: Optional[HistoryAdapterType] = default_history_adapter) -> "Mocked":
     if disposable is None:
-        disposable = bool(strtobool(_REMOTE_MOCK_DISPOSABLE))
+        disposable = bool(strtobool(REMOTE_MOCK_DISPOSABLE))
 
-    handler = RemoteMock(_REMOTE_MOCK_URL).create_handler(
+    handler = RemoteMock(REMOTE_MOCK_URL).create_handler(
         matcher,
         response,
         expiration_policy,
@@ -46,4 +50,4 @@ def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
 __all__ = ("Mock", "mocked", "RemoteMock", "RemoteHandler", "Mocked",
            "HistoryRepository", "HistoryRequest", "HistoryResponse", "HistoryItem",
            "SystemLogFilter", "RemoteResponseType", "HistoryAdapterType",
-           "default_history_adapter",)
+           "default_history_adapter", "REMOTE_MOCK_URL", "REMOTE_MOCK_DISPOSABLE",)
