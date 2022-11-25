@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.7
+
+### v2.7.0 (2022-11-25)
+
+- Add Python 3.11 support [#40](https://github.com/nikitanovosibirsk/jj/pull/40)
+- Add `stacked()` [#41](https://github.com/nikitanovosibirsk/jj/pull/41)
+- Add `create_remote_handler()` [#41](https://github.com/nikitanovosibirsk/jj/pull/41)
+
 ## v2.6
 
 ### v2.6.2 (2022-08-15)
