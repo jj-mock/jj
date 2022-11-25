@@ -2,7 +2,7 @@
 
 ## v2.7
 
-### v2.7.0 (2022-11-25)
+### v2.7.1 (2022-11-25)
 
 - Add Python 3.11 support [#40](https://github.com/nikitanovosibirsk/jj/pull/40)
 - Add `stacked()` [#41](https://github.com/nikitanovosibirsk/jj/pull/41)
