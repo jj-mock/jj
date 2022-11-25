@@ -39,16 +39,23 @@ def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
     if disposable is None:
         disposable = bool(strtobool(REMOTE_MOCK_DISPOSABLE))
 
-    handler = RemoteMock(REMOTE_MOCK_URL).create_handler(
-        matcher,
-        response,
-        expiration_policy,
-        history_adapter=history_adapter
-    )
+    handler = create_remote_handler(matcher, response, expiration_policy,
+                                    history_adapter=history_adapter)
     return Mocked(handler, disposable=disposable, prefetch_history=prefetch_history)
 
 
-__all__ = ("Mock", "mocked", "stacked", "RemoteMock", "RemoteHandler", "Mocked",
-           "HistoryRepository", "HistoryRequest", "HistoryResponse", "HistoryItem",
+def create_remote_handler(matcher: Union[RequestMatcher, LogicalMatcher],
+                          response: RemoteResponseType,
+                          expiration_policy: Optional[ExpirationPolicy] = None,
+                          *,
+                          mock_url: str = REMOTE_MOCK_URL,
+                          history_adapter: Optional[HistoryAdapterType] = default_history_adapter
+                          ) -> RemoteHandler:
+    return RemoteMock(mock_url).create_handler(matcher, response, expiration_policy,
+                                               history_adapter=history_adapter)
+
+
+__all__ = ("Mock", "mocked", "stacked", "create_remote_handler", "RemoteMock", "RemoteHandler",
+           "Mocked", "HistoryRepository", "HistoryRequest", "HistoryResponse", "HistoryItem",
            "SystemLogFilter", "RemoteResponseType", "HistoryAdapterType",
            "default_history_adapter", "REMOTE_MOCK_URL", "REMOTE_MOCK_DISPOSABLE",)
