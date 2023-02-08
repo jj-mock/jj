@@ -1,8 +1,8 @@
-from types import TracebackType
-from typing import List, Optional, Type, Union
-
+from pprint import pformat as pf
 from rtry import CancelledError, retry
 from rtry.types import AttemptValue, DelayCallable, DelayValue, LoggerCallable, TimeoutValue
+from types import TracebackType
+from typing import List, Optional, Type, Union
 
 from ._history import HistoryItem
 from ._remote_handler import RemoteHandler
@@ -14,9 +14,15 @@ __all__ = ("Mocked",)
 class Mocked:
     def __init__(self, handler: RemoteHandler, *,
                  disposable: bool = True,
+                 pretty_print: bool = True,
+                 history_output_limit: int = 1000000,
+                 history_output_width: int = None,
                  prefetch_history: bool = True) -> None:
         self._handler = handler
         self._disposable = disposable
+        self._pretty_print = pretty_print
+        self._history_output_limit = history_output_limit
+        self._history_output_width = history_output_width
         self._prefetch_history = prefetch_history
         self._history: Union[List[HistoryItem], None] = None
 
@@ -38,7 +44,22 @@ class Mocked:
 
     async def fetch_history(self) -> List[HistoryItem]:
         self._history = await self._handler.fetch_history()
-        return self._history
+        parsed_history = [{"req": x["request"].to_dict(), "res": x["response"].to_dict()} for x in self._history]
+
+        def cut_str(string: str, length: int, separator: str = "..") -> str:
+            assert length > len(separator)
+            if len(string) <= length:
+                return string
+            length -= len(separator)
+            return string[:length // 2] + separator + string[-length // 2:]
+
+        if self._history_output_width is None:
+            self._history_output_width, _ = shutil.get_terminal_size((80, 20))
+
+        if self._pretty_print:
+            return [cut_str(string=pf(x, width=self._history_output_width), length=self._history_output_limit) for x in
+                    parsed_history]
+        return []
 
     async def wait_for_requests(self, count: int = 1, *,
                                 timeout: TimeoutValue = 0,
@@ -81,4 +102,7 @@ class Mocked:
     def __repr__(self) -> str:
         return (f"Mocked<{self._handler}, "
                 f"disposable={self._disposable}, "
+                f"pretty_print={self._pretty_print}, "
+                f"history_output_limit={self._history_output_limit}, "
+                f"history_output_width={self._history_output_width}, "
                 f"prefetch_history={self._prefetch_history}>")

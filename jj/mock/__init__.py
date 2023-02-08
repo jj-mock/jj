@@ -4,7 +4,6 @@ from typing import Optional, Union
 
 from jj.expiration_policy import ExpirationPolicy
 from jj.matchers import LogicalMatcher, RequestMatcher
-
 from ._history import (
     HistoryAdapterType,
     HistoryItem,
@@ -23,10 +22,16 @@ from ._system_log_filter import SystemLogFilter
 
 REMOTE_MOCK_URL = os.environ.get("JJ_REMOTE_MOCK_URL", "http://localhost:8080")
 REMOTE_MOCK_DISPOSABLE = os.environ.get("JJ_REMOTE_MOCK_DISPOSABLE", "True")
+REMOTE_MOCK_PPRINT = os.environ.get("JJ_REMOTE_MOCK_PPRINT", "True")
+REMOTE_MOCK_PPRINT_LIMIT = os.environ.get("JJ_REMOTE_MOCK_PPRINT_LIMIT", 1000000)
+REMOTE_MOCK_PPRINT_WIDTH = os.environ.get("JJ_REMOTE_MOCK_PPRINT_WIDTH")
 
 # backward compatibility
 _REMOTE_MOCK_URL = REMOTE_MOCK_URL
 _REMOTE_MOCK_DISPOSABLE = REMOTE_MOCK_DISPOSABLE
+_REMOTE_MOCK_PPRINT = REMOTE_MOCK_PPRINT
+_REMOTE_MOCK_PPRINT_LIMIT = REMOTE_MOCK_PPRINT_LIMIT
+_REMOTE_MOCK_PPRINT_WIDTH = REMOTE_MOCK_PPRINT_WIDTH
 
 
 def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
@@ -34,14 +39,24 @@ def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
            expiration_policy: Optional[ExpirationPolicy] = None,
            *,
            disposable: Optional[bool] = None,
+           pretty_print: Optional[bool] = None,
+           history_output_limit: Optional[int] = None,
+           history_output_width: Optional[int] = None,
            prefetch_history: bool = True,
            history_adapter: Optional[HistoryAdapterType] = default_history_adapter) -> "Mocked":
     if disposable is None:
         disposable = bool(strtobool(REMOTE_MOCK_DISPOSABLE))
+    if pretty_print is None:
+        pretty_print = bool(strtobool(_REMOTE_MOCK_PPRINT))
+    if history_output_limit is None:
+        history_output_limit = int(_REMOTE_MOCK_PPRINT_LIMIT)
+    if history_output_width is None:
+        history_output_width = _REMOTE_MOCK_PPRINT_WIDTH
 
     handler = create_remote_handler(matcher, response, expiration_policy,
                                     history_adapter=history_adapter)
-    return Mocked(handler, disposable=disposable, prefetch_history=prefetch_history)
+    return Mocked(handler, disposable=disposable, pretty_print=pretty_print, history_output_limit=history_output_limit,
+                  history_output_width=history_output_width, prefetch_history=prefetch_history)
 
 
 def create_remote_handler(matcher: Union[RequestMatcher, LogicalMatcher],
