@@ -44,6 +44,9 @@ class Mocked:
 
     async def fetch_history(self) -> List[HistoryItem]:
         self._history = await self._handler.fetch_history()
+        return self._history
+
+    async def parse_history(self) -> List[str]:
         parsed_history = [{"req": x["request"].to_dict(), "res": x["response"].to_dict()} for x in self._history]
 
         def cut_str(string: str, length: int, separator: str = "..") -> str:
@@ -99,10 +102,5 @@ class Mocked:
                  exc_tb: Optional[TracebackType]) -> None:
         return run_async(self.__aexit__, exc_type, exc_val, exc_tb)
 
-    def __repr__(self) -> str:
-        return (f"Mocked<{self._handler}, "
-                f"disposable={self._disposable}, "
-                f"pretty_print={self._pretty_print}, "
-                f"history_output_limit={self._history_output_limit}, "
-                f"history_output_width={self._history_output_width}, "
-                f"prefetch_history={self._prefetch_history}>")
+    def __repr__(self) -> List[str]:
+        return self.parse_history()

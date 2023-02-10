@@ -29,9 +29,6 @@ REMOTE_MOCK_PPRINT_WIDTH = os.environ.get("JJ_REMOTE_MOCK_PPRINT_WIDTH")
 # backward compatibility
 _REMOTE_MOCK_URL = REMOTE_MOCK_URL
 _REMOTE_MOCK_DISPOSABLE = REMOTE_MOCK_DISPOSABLE
-_REMOTE_MOCK_PPRINT = REMOTE_MOCK_PPRINT
-_REMOTE_MOCK_PPRINT_LIMIT = REMOTE_MOCK_PPRINT_LIMIT
-_REMOTE_MOCK_PPRINT_WIDTH = REMOTE_MOCK_PPRINT_WIDTH
 
 
 def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
@@ -47,11 +44,11 @@ def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
     if disposable is None:
         disposable = bool(strtobool(REMOTE_MOCK_DISPOSABLE))
     if pretty_print is None:
-        pretty_print = bool(strtobool(_REMOTE_MOCK_PPRINT))
+        pretty_print = bool(strtobool(REMOTE_MOCK_PPRINT))
     if history_output_limit is None:
-        history_output_limit = int(_REMOTE_MOCK_PPRINT_LIMIT)
+        history_output_limit = int(REMOTE_MOCK_PPRINT_LIMIT)
     if history_output_width is None:
-        history_output_width = _REMOTE_MOCK_PPRINT_WIDTH
+        history_output_width = REMOTE_MOCK_PPRINT_WIDTH
 
     handler = create_remote_handler(matcher, response, expiration_policy,
                                     history_adapter=history_adapter)
