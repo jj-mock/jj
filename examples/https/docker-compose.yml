@@ -2,7 +2,7 @@ version: "2.4"
 
 services:
   mock:
-    image: vedro-universe/jj
+    image: vedrouniverse/jj
     ports:
       - "8080:80"
 

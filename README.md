@@ -425,7 +425,7 @@ jj.serve(Mock(), port=8080)
 
 or via docker
 ```shell
-docker run -p 8080:80 vedro-universe/jj
+docker run -p 8080:80 vedrouniverse/jj
 ```
 
 #### Client Side
