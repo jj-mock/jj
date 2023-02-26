@@ -1,7 +1,7 @@
 # jj
 
 
-[![Codecov](https://img.shields.io/codecov/c/github/nikitanovosibirsk/jj/master.svg?style=flat-square)](https://codecov.io/gh/nikitanovosibirsk/jj)
+[![Codecov](https://img.shields.io/codecov/c/github/tsv1/jj/master.svg?style=flat-square)](https://codecov.io/gh/tsv1/jj)
 [![PyPI](https://img.shields.io/pypi/v/jj.svg?style=flat-square)](https://pypi.python.org/pypi/jj)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/jj?style=flat-square)](https://pypi.python.org/pypi/jj)
 [![Python Version](https://img.shields.io/pypi/pyversions/jj.svg?style=flat-square)](https://pypi.python.org/pypi/jj)
@@ -425,7 +425,7 @@ jj.serve(Mock(), port=8080)
 
 or via docker
 ```shell
-docker run -p 8080:80 nikitanovosibirsk/jj
+docker run -p 8080:80 vedro-universe/jj
 ```
 
 #### Client Side
