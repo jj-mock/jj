@@ -13,7 +13,7 @@ def find_dev_required():
 
 setup(
     name="jj",
-    version="2.7.1",
+    version="2.7.2",
     description="Remote HTTP Mock",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
