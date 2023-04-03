@@ -11,6 +11,7 @@ from ._history import (
     HistoryRequest,
     HistoryResponse,
     default_history_adapter,
+    default_history_repr,
 )
 from ._mock import Mock
 from ._mocked import Mocked
@@ -36,24 +37,15 @@ def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
            expiration_policy: Optional[ExpirationPolicy] = None,
            *,
            disposable: Optional[bool] = None,
-           pretty_print: Optional[bool] = None,
-           history_output_limit: Optional[int] = None,
-           history_output_width: Optional[int] = None,
            prefetch_history: bool = True,
+           history_repr: Optional[HistoryReprType] = default_history_repr,
            history_adapter: Optional[HistoryAdapterType] = default_history_adapter) -> "Mocked":
     if disposable is None:
         disposable = bool(strtobool(REMOTE_MOCK_DISPOSABLE))
-    if pretty_print is None:
-        pretty_print = bool(strtobool(REMOTE_MOCK_PPRINT))
-    if history_output_limit is None:
-        history_output_limit = int(REMOTE_MOCK_PPRINT_LIMIT)
-    if history_output_width is None:
-        history_output_width = REMOTE_MOCK_PPRINT_WIDTH
 
     handler = create_remote_handler(matcher, response, expiration_policy,
                                     history_adapter=history_adapter)
-    return Mocked(handler, disposable=disposable, pretty_print=pretty_print, history_output_limit=history_output_limit,
-                  history_output_width=history_output_width, prefetch_history=prefetch_history)
+    return Mocked(handler, disposable=disposable, prefetch_history=prefetch_history, history_repr=history_repr)
 
 
 def create_remote_handler(matcher: Union[RequestMatcher, LogicalMatcher],
@@ -70,4 +62,5 @@ def create_remote_handler(matcher: Union[RequestMatcher, LogicalMatcher],
 __all__ = ("Mock", "mocked", "stacked", "create_remote_handler", "RemoteMock", "RemoteHandler",
            "Mocked", "HistoryRepository", "HistoryRequest", "HistoryResponse", "HistoryItem",
            "SystemLogFilter", "RemoteResponseType", "HistoryAdapterType",
-           "default_history_adapter", "REMOTE_MOCK_URL", "REMOTE_MOCK_DISPOSABLE",)
+           "default_history_adapter", "default_history_repr", "REMOTE_MOCK_URL", "REMOTE_MOCK_DISPOSABLE",
+           "REMOTE_MOCK_PPRINT", "REMOTE_MOCK_PPRINT_LIMIT", "REMOTE_MOCK_PPRINT_WIDTH")

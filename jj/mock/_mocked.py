@@ -4,7 +4,7 @@ from rtry.types import AttemptValue, DelayCallable, DelayValue, LoggerCallable, 
 from types import TracebackType
 from typing import List, Optional, Type, Union
 
-from ._history import HistoryItem
+from ._history import HistoryItem, HistoryReprType
 from ._remote_handler import RemoteHandler
 from ._utils import run_async
 
@@ -14,16 +14,12 @@ __all__ = ("Mocked",)
 class Mocked:
     def __init__(self, handler: RemoteHandler, *,
                  disposable: bool = True,
-                 pretty_print: bool = True,
-                 history_output_limit: int = 1000000,
-                 history_output_width: int = None,
-                 prefetch_history: bool = True) -> None:
+                 prefetch_history: bool = True,
+                 history_repr: HistoryReprType = None) -> None:
         self._handler = handler
         self._disposable = disposable
-        self._pretty_print = pretty_print
-        self._history_output_limit = history_output_limit
-        self._history_output_width = history_output_width
         self._prefetch_history = prefetch_history
+        self._history_repr = history_repr
         self._history: Union[List[HistoryItem], None] = None
 
     @property
@@ -56,8 +52,13 @@ class Mocked:
             length -= len(separator)
             return string[:length // 2] + separator + string[-length // 2:]
 
-        if self._history_output_width is None:
-            self._history_output_width, _ = shutil.get_terminal_size((80, 20))
+        self._pretty_print = self._history_repr._pretty_print if self._history_repr._pretty_print else True
+
+        self._history_output_limit = self._history_repr._history_output_limit if \
+            self._history_repr._history_output_width else 1000000
+
+        self._history_output_width, _ = self._history_repr._history_output_width if \
+            self._history_repr._history_output_width else shutil.get_terminal_size((80, 20))
 
         if self._pretty_print:
             return [cut_str(string=pf(x, width=self._history_output_width), length=self._history_output_limit) for x in
