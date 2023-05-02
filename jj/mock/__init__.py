@@ -4,10 +4,12 @@ from typing import Optional, Union
 
 from jj.expiration_policy import ExpirationPolicy
 from jj.matchers import LogicalMatcher, RequestMatcher
+
 from ._history import (
     HistoryAdapterType,
     HistoryItem,
     HistoryRepository,
+    HistoryRepr,
     HistoryRequest,
     HistoryResponse,
     default_history_adapter,
@@ -23,9 +25,6 @@ from ._system_log_filter import SystemLogFilter
 
 REMOTE_MOCK_URL = os.environ.get("JJ_REMOTE_MOCK_URL", "http://localhost:8080")
 REMOTE_MOCK_DISPOSABLE = os.environ.get("JJ_REMOTE_MOCK_DISPOSABLE", "True")
-REMOTE_MOCK_PPRINT = os.environ.get("JJ_REMOTE_MOCK_PPRINT", "True")
-REMOTE_MOCK_PPRINT_LIMIT = os.environ.get("JJ_REMOTE_MOCK_PPRINT_LIMIT", 1000000)
-REMOTE_MOCK_PPRINT_WIDTH = os.environ.get("JJ_REMOTE_MOCK_PPRINT_WIDTH")
 
 # backward compatibility
 _REMOTE_MOCK_URL = REMOTE_MOCK_URL
@@ -38,14 +37,16 @@ def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
            *,
            disposable: Optional[bool] = None,
            prefetch_history: bool = True,
-           history_repr: Optional[HistoryReprType] = default_history_repr,
+           history_repr: Optional[HistoryRepr] = default_history_repr,
            history_adapter: Optional[HistoryAdapterType] = default_history_adapter) -> "Mocked":
     if disposable is None:
         disposable = bool(strtobool(REMOTE_MOCK_DISPOSABLE))
 
-    handler = create_remote_handler(matcher, response, expiration_policy,
-                                    history_adapter=history_adapter)
-    return Mocked(handler, disposable=disposable, prefetch_history=prefetch_history, history_repr=history_repr)
+    handler = create_remote_handler(
+        matcher, response, expiration_policy, history_adapter=history_adapter
+    )
+    return Mocked(handler, disposable=disposable, prefetch_history=prefetch_history,
+                  history_repr=history_repr)
 
 
 def create_remote_handler(matcher: Union[RequestMatcher, LogicalMatcher],
@@ -61,6 +62,6 @@ def create_remote_handler(matcher: Union[RequestMatcher, LogicalMatcher],
 
 __all__ = ("Mock", "mocked", "stacked", "create_remote_handler", "RemoteMock", "RemoteHandler",
            "Mocked", "HistoryRepository", "HistoryRequest", "HistoryResponse", "HistoryItem",
-           "SystemLogFilter", "RemoteResponseType", "HistoryAdapterType",
-           "default_history_adapter", "default_history_repr", "REMOTE_MOCK_URL", "REMOTE_MOCK_DISPOSABLE",
-           "REMOTE_MOCK_PPRINT", "REMOTE_MOCK_PPRINT_LIMIT", "REMOTE_MOCK_PPRINT_WIDTH")
+           "HistoryRepr", "SystemLogFilter", "RemoteResponseType", "HistoryAdapterType",
+           "default_history_adapter", "default_history_repr", "REMOTE_MOCK_URL",
+           "REMOTE_MOCK_DISPOSABLE")

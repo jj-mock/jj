@@ -3,6 +3,7 @@ import pytest
 import jj
 from jj.middlewares import SelfMiddleware
 from jj.mock import Mock, Mocked, RemoteMock
+from jj.mock._history import default_history_repr
 
 from .._test_utils import run
 
@@ -123,11 +124,16 @@ async def test_mocked_repr(*, disposable: bool, prefetch_history: bool):
 
     async with run(mock, middlewares=[self_middleware]) as client:
         handler = RemoteMock(client.make_url("/")).create_handler(matcher, response)
-        mocked = Mocked(handler, disposable=disposable, prefetch_history=prefetch_history)
+        history_repr = default_history_repr
+        mocked = Mocked(handler, disposable=disposable, prefetch_history=prefetch_history,
+                        history_repr=history_repr)
+        history = history_repr.parse_history(mocked.history)
         assert repr(mocked) == (f"Mocked<{handler}, "
                                 f"disposable={disposable}, "
-                                f"prefetch_history={prefetch_history}>")
+                                f"prefetch_history={prefetch_history}, "
+                                f"history={history}>")
 
         assert mocked.handler == handler
         assert mocked.disposable == disposable
         assert mocked.prefetch_history == prefetch_history
+        assert mocked.parsed_history == history
