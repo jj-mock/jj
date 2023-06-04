@@ -130,7 +130,7 @@ class Response(web.Response, StreamResponse):
         for cookie in cookies:
             response.set_cookie(**cookie)  # type: ignore
         if compression:
-            response.enable_compression(compression)
+            response.enable_compression(ContentCoding(compression))
         if chunked:
             response.enable_chunked_encoding()
         return response
