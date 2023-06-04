@@ -1,12 +1,12 @@
 import asyncio
 import threading
 from asyncio import Future
-from typing import Any, Awaitable, Callable, TypeVar
+from typing import Any, Callable, Coroutine, TypeVar
 
 __all__ = ("Thread",)
 
 T = TypeVar("T")
-TargetType = Callable[..., Awaitable[T]]
+TargetType = Callable[..., Coroutine[None, None, T]]
 
 
 class Thread(threading.Thread):
