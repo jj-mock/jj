@@ -2,6 +2,15 @@
 
 ## v2.7
 
+### v2.7.3 (2023-06-04)
+
+- Add image PORT [#43](https://github.com/tsv1/jj/pull/43)
+- Fix response compression [#43](https://github.com/tsv1/jj/pull/43)
+
+### v2.7.2 (2023-02-26)
+
+- README updates
+
 ### v2.7.1 (2022-11-25)
 
 - Add Python 3.11 support [#40](https://github.com/tsv1/jj/pull/40)
