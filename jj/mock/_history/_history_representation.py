@@ -1,57 +1,62 @@
+import json
 import os
 import shutil
-from distutils.util import strtobool
+from abc import ABC, abstractmethod
 from pprint import pformat as pf
 from typing import List, Optional, Union
 
-from ._history_item import HistoryItem
+from jj.mock._history._history_item import HistoryItem
 
-__all__ = ("default_history_repr", "HistoryType", "HistoryRepr",)
+__all__ = ("default_history_formatter", "HistoryFormatter", "PrettyHistoryFormatter",
+           "SimpleHistoryFormatter",)
 
-HistoryType = Union[List[HistoryItem], None]
 
-REMOTE_MOCK_PPRINT = os.environ.get("JJ_REMOTE_MOCK_PPRINT", "True")
-REMOTE_MOCK_PPRINT_LIMIT = os.environ.get("JJ_REMOTE_MOCK_PPRINT_LIMIT", 1000000)
+REMOTE_MOCK_PPRINT_LIMIT = os.environ.get("JJ_REMOTE_MOCK_PPRINT_LIMIT", "1000000")
 REMOTE_MOCK_PPRINT_WIDTH = os.environ.get("JJ_REMOTE_MOCK_PPRINT_WIDTH")
 
 
-class HistoryRepr:
-    def __init__(self,
-                 pretty_print: Optional[bool] = None,
-                 history_output_limit: Optional[int] = None,
+class HistoryFormatter(ABC):
+    @abstractmethod
+    def format_history(self, history: Optional[List[HistoryItem]]
+                       ) -> Union[List[str], Optional[List[HistoryItem]]]:
+        pass
+
+
+class SimpleHistoryFormatter(HistoryFormatter):
+    def __init__(self) -> None:
+        self.history_output_width = None
+
+    def format_history(self, history: Optional[List[HistoryItem]]) -> Optional[List[HistoryItem]]:
+        return history
+
+
+class PrettyHistoryFormatter(HistoryFormatter):
+    def __init__(self, history_output_limit: Optional[int] = None,
                  history_output_width: Optional[int] = None) -> None:
+        if not history_output_limit:
+            history_output_limit = int(REMOTE_MOCK_PPRINT_LIMIT) if REMOTE_MOCK_PPRINT_LIMIT \
+                else 1000000
+        if not history_output_width:
+            history_output_width = int(REMOTE_MOCK_PPRINT_WIDTH) if REMOTE_MOCK_PPRINT_WIDTH \
+                else shutil.get_terminal_size((80, 20))[0]
+        self._history_output_limit = history_output_limit
+        self.history_output_width = history_output_width
 
-        if pretty_print is None:
-            pretty_print = bool(strtobool(REMOTE_MOCK_PPRINT))
-        if history_output_limit is None:
-            history_output_limit = int(REMOTE_MOCK_PPRINT_LIMIT) \
-                if REMOTE_MOCK_PPRINT_LIMIT else None
-        if history_output_width is None:
-            history_output_width = int(REMOTE_MOCK_PPRINT_WIDTH) \
-                if REMOTE_MOCK_PPRINT_WIDTH else None
+    def __cut_str__(self, string: str, length: int, separator: str = "..") -> str:
+        assert length > len(separator)
+        if len(string) <= length:
+            return string
+        length -= len(separator)
+        return string[:length // 2] + separator + string[-length // 2:]
 
-        self._pretty_print = pretty_print if pretty_print else True
-        self._history_output_limit = history_output_limit \
-            if history_output_limit else 1000000
-        self._history_output_width = history_output_width if history_output_width \
-            else shutil.get_terminal_size((80, 20))[0]
-
-    def parse_history(self, history: Optional[List[HistoryItem]]) -> List[str]:
+    def format_history(self, history: Optional[List[HistoryItem]]) -> List[str]:
         parsed_history = [{"req": x["request"].to_dict(),
                            "res": x["response"].to_dict()} for x in history] if history else []
-
-        def cut_str(string: str, length: int, separator: str = "..") -> str:
-            assert length > len(separator)
-            if len(string) <= length:
-                return string
-            length -= len(separator)
-            return string[:length // 2] + separator + string[-length // 2:]
-
-        if self._pretty_print:
-            return [cut_str(string=pf(x, width=self._history_output_width),
-                            length=self._history_output_limit) for x in parsed_history]
-        else:
-            return []
+        history_as_strings = [self.__cut_str__(string=json.dumps(x),
+                                               length=self._history_output_limit)
+                              for x in parsed_history]
+        formatted_history = [pf(x, width=self.history_output_width) for x in history_as_strings]
+        return formatted_history
 
 
-default_history_repr = HistoryRepr()
+default_history_formatter = PrettyHistoryFormatter()

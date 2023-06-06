@@ -3,7 +3,7 @@ import pytest
 import jj
 from jj.middlewares import SelfMiddleware
 from jj.mock import Mock, Mocked, RemoteMock
-from jj.mock._history import default_history_repr
+from jj.mock._history import SimpleHistoryFormatter, default_history_formatter
 
 from .._test_utils import run
 
@@ -113,21 +113,22 @@ async def test_mocked_disposable(*, disposable: bool, status: int):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(("disposable", "prefetch_history"), [
-    (True, False),
-    (False, True),
+@pytest.mark.parametrize(("disposable", "prefetch_history", "pretty_print"), [
+    (True, True, True),
+    (False, False, False),
 ])
-async def test_mocked_repr(*, disposable: bool, prefetch_history: bool):
+async def test_mocked_repr(*, disposable: bool, prefetch_history: bool, pretty_print: bool):
     mock = Mock()
     self_middleware = SelfMiddleware(mock.resolver)
     matcher, response = jj.match("*"), jj.Response()
 
     async with run(mock, middlewares=[self_middleware]) as client:
         handler = RemoteMock(client.make_url("/")).create_handler(matcher, response)
-        history_repr = default_history_repr
+        history_formatter = default_history_formatter if pretty_print else \
+            SimpleHistoryFormatter()
         mocked = Mocked(handler, disposable=disposable, prefetch_history=prefetch_history,
-                        history_repr=history_repr)
-        history = history_repr.parse_history(mocked.history)
+                        history_formatter=history_formatter)
+        history = history_formatter.format_history(mocked.history)
         assert repr(mocked) == (f"Mocked<{handler}, "
                                 f"disposable={disposable}, "
                                 f"prefetch_history={prefetch_history}, "
@@ -136,4 +137,4 @@ async def test_mocked_repr(*, disposable: bool, prefetch_history: bool):
         assert mocked.handler == handler
         assert mocked.disposable == disposable
         assert mocked.prefetch_history == prefetch_history
-        assert mocked.parsed_history == history
+        assert mocked.get_formatted_history == history
