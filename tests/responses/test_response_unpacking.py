@@ -145,7 +145,7 @@ def test_unpack_compressed():
             "cookies": [],
             "body": b"200 OK",
             "chunked": False,
-            "compression": ContentCoding.gzip,
+            "compression": ContentCoding.gzip.value,
         }
 
     with when:

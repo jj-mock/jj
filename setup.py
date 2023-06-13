@@ -13,14 +13,14 @@ def find_dev_required():
 
 setup(
     name="jj",
-    version="2.7.1",
+    version="2.7.3",
     description="Remote HTTP Mock",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="Nikita Tsvetkov",
-    author_email="nikitanovosibirsk@yandex.com",
+    author_email="tsv1@fastmail.com",
     python_requires=">=3.7.0",
-    url="https://github.com/nikitanovosibirsk/jj",
+    url="https://github.com/tsv1/jj",
     license="Apache-2.0",
     packages=find_packages(exclude=["tests", "tests.*"]),
     package_data={"jj": ["py.typed"]},
