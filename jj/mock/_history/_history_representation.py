@@ -52,7 +52,7 @@ class PrettyHistoryFormatter(HistoryFormatter):
     def format_history(self, history: Optional[List[HistoryItem]]) -> List[str]:
         parsed_history = [{"req": x["request"].to_dict(),
                            "res": x["response"].to_dict()} for x in history] if history else []
-        history_as_strings = [self.__cut_str__(string=json.dumps(x),
+        history_as_strings = [self.__cut_str__(string=json.dumps(x, default=str),
                                                length=self._history_output_limit)
                               for x in parsed_history]
         formatted_history = [pf(x, width=self.history_output_width) for x in history_as_strings]
