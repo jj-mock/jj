@@ -129,10 +129,7 @@ async def test_mocked_repr(*, disposable: bool, prefetch_history: bool, pretty_p
         mocked = Mocked(handler, disposable=disposable, prefetch_history=prefetch_history,
                         history_formatter=history_formatter)
         history = history_formatter.format_history(mocked.history)
-        assert repr(mocked) == (f"Mocked<{handler}, "
-                                f"disposable={disposable}, "
-                                f"prefetch_history={prefetch_history}, "
-                                f"history={history}>")
+        assert repr(mocked) == history
 
         assert mocked.handler == handler
         assert mocked.disposable == disposable

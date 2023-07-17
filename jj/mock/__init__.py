@@ -1,5 +1,4 @@
 import os
-from distutils.util import strtobool
 from typing import Optional, Union
 
 from jj.expiration_policy import ExpirationPolicy
@@ -43,9 +42,9 @@ def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
            pretty_print: Optional[bool] = None,
            history_adapter: Optional[HistoryAdapterType] = default_history_adapter) -> "Mocked":
     if disposable is None:
-        disposable = bool(strtobool(REMOTE_MOCK_DISPOSABLE))
+        disposable = True if REMOTE_MOCK_DISPOSABLE.lower() == 'true' else False
     if pretty_print is None:
-        pretty_print = bool(strtobool(REMOTE_MOCK_PPRINT))
+        pretty_print = True if REMOTE_MOCK_PPRINT.lower() == 'true' else False
 
     handler = create_remote_handler(
         matcher, response, expiration_policy, history_adapter=history_adapter

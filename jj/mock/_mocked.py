@@ -44,7 +44,7 @@ class Mocked:
         return self._history
 
     @property
-    def get_formatted_history(self) -> Union[List[HistoryItem], List[str], None]:
+    def get_formatted_history(self) -> str:
         return self._history_formatter.format_history(self.history)
 
     async def wait_for_requests(self, count: int = 1, *,
@@ -86,7 +86,4 @@ class Mocked:
         return run_async(self.__aexit__, exc_type, exc_val, exc_tb)
 
     def __repr__(self) -> str:
-        return (f"Mocked<{self._handler}, "
-                f"disposable={self._disposable}, "
-                f"prefetch_history={self._prefetch_history}, "
-                f"history={self.get_formatted_history}>")
+        return self.get_formatted_history
