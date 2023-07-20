@@ -1,5 +1,4 @@
 import os
-from distutils.util import strtobool
 from typing import Optional, Union
 
 from jj.expiration_policy import ExpirationPolicy
@@ -7,11 +6,15 @@ from jj.matchers import LogicalMatcher, RequestMatcher
 
 from ._history import (
     HistoryAdapterType,
+    HistoryFormatter,
     HistoryItem,
     HistoryRepository,
     HistoryRequest,
     HistoryResponse,
+    PrettyHistoryFormatter,
+    SimpleHistoryFormatter,
     default_history_adapter,
+    default_history_formatter,
 )
 from ._mock import Mock
 from ._mocked import Mocked
@@ -23,6 +26,7 @@ from ._system_log_filter import SystemLogFilter
 
 REMOTE_MOCK_URL = os.environ.get("JJ_REMOTE_MOCK_URL", "http://localhost:8080")
 REMOTE_MOCK_DISPOSABLE = os.environ.get("JJ_REMOTE_MOCK_DISPOSABLE", "True")
+REMOTE_MOCK_PPRINT = os.environ.get("JJ_REMOTE_MOCK_PPRINT", "True")
 
 # backward compatibility
 _REMOTE_MOCK_URL = REMOTE_MOCK_URL
@@ -35,13 +39,21 @@ def mocked(matcher: Union[RequestMatcher, LogicalMatcher],
            *,
            disposable: Optional[bool] = None,
            prefetch_history: bool = True,
+           pretty_print: Optional[bool] = None,
            history_adapter: Optional[HistoryAdapterType] = default_history_adapter) -> "Mocked":
     if disposable is None:
-        disposable = bool(strtobool(REMOTE_MOCK_DISPOSABLE))
+        disposable = True if REMOTE_MOCK_DISPOSABLE.lower() == 'true' else False
+    if pretty_print is None:
+        pretty_print = True if REMOTE_MOCK_PPRINT.lower() == 'true' else False
 
-    handler = create_remote_handler(matcher, response, expiration_policy,
-                                    history_adapter=history_adapter)
-    return Mocked(handler, disposable=disposable, prefetch_history=prefetch_history)
+    handler = create_remote_handler(
+        matcher, response, expiration_policy, history_adapter=history_adapter
+    )
+    history_formatter = default_history_formatter if pretty_print else \
+        SimpleHistoryFormatter()
+
+    return Mocked(handler, disposable=disposable, prefetch_history=prefetch_history,
+                  history_formatter=history_formatter)
 
 
 def create_remote_handler(matcher: Union[RequestMatcher, LogicalMatcher],
@@ -57,5 +69,8 @@ def create_remote_handler(matcher: Union[RequestMatcher, LogicalMatcher],
 
 __all__ = ("Mock", "mocked", "stacked", "create_remote_handler", "RemoteMock", "RemoteHandler",
            "Mocked", "HistoryRepository", "HistoryRequest", "HistoryResponse", "HistoryItem",
+           "default_history_formatter", "HistoryFormatter", "PrettyHistoryFormatter",
+           "SimpleHistoryFormatter",
            "SystemLogFilter", "RemoteResponseType", "HistoryAdapterType",
-           "default_history_adapter", "REMOTE_MOCK_URL", "REMOTE_MOCK_DISPOSABLE",)
+           "default_history_adapter", "REMOTE_MOCK_URL",
+           "REMOTE_MOCK_DISPOSABLE")

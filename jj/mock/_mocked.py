@@ -4,7 +4,7 @@ from typing import List, Optional, Type, Union
 from rtry import CancelledError, retry
 from rtry.types import AttemptValue, DelayCallable, DelayValue, LoggerCallable, TimeoutValue
 
-from ._history import HistoryItem
+from ._history import HistoryFormatter, HistoryItem, PrettyHistoryFormatter
 from ._remote_handler import RemoteHandler
 from ._utils import run_async
 
@@ -14,11 +14,14 @@ __all__ = ("Mocked",)
 class Mocked:
     def __init__(self, handler: RemoteHandler, *,
                  disposable: bool = True,
-                 prefetch_history: bool = True) -> None:
+                 prefetch_history: bool = True,
+                 history_formatter: HistoryFormatter = PrettyHistoryFormatter(),
+                 ) -> None:
         self._handler = handler
         self._disposable = disposable
         self._prefetch_history = prefetch_history
         self._history: Union[List[HistoryItem], None] = None
+        self._history_formatter = history_formatter
 
     @property
     def handler(self) -> RemoteHandler:
@@ -39,6 +42,10 @@ class Mocked:
     async def fetch_history(self) -> List[HistoryItem]:
         self._history = await self._handler.fetch_history()
         return self._history
+
+    @property
+    def get_formatted_history(self) -> str:
+        return self._history_formatter.format_history(self.history)
 
     async def wait_for_requests(self, count: int = 1, *,
                                 timeout: TimeoutValue = 0,
@@ -79,6 +86,4 @@ class Mocked:
         return run_async(self.__aexit__, exc_type, exc_val, exc_tb)
 
     def __repr__(self) -> str:
-        return (f"Mocked<{self._handler}, "
-                f"disposable={self._disposable}, "
-                f"prefetch_history={self._prefetch_history}>")
+        return self.get_formatted_history
