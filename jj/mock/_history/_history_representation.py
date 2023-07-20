@@ -1,4 +1,3 @@
-import ast
 import json
 import os
 import shutil
@@ -56,16 +55,13 @@ class PrettyHistoryFormatter(HistoryFormatter):
     def format_history(self, history: Optional[List[HistoryItem]]) -> str:
         parsed_history = [{"req": x["request"].to_dict(),
                            "res": x["response"].to_dict()} for x in history] if history else []
-        history_as_strings = [self.__cut_str__(string=json.dumps(x, default=str),
-                                               length=self._history_output_limit)
-                              for x in parsed_history]
-        history_objects = [ast.literal_eval(history_string)
-                           for history_string in history_as_strings]
-        history_as_pretty_strings = [pformat(history_object, width=self.history_output_width)
-                                     for history_object in history_objects]
-        formatted_history = "\n".join(history_as_pretty_strings)
-
-        return formatted_history
+        return "\n".join([
+            self.__cut_str__(
+                string=pformat(x, width=self.history_output_width),
+                length=self._history_output_limit
+            )
+            for x in parsed_history
+        ])
 
 
 default_history_formatter = PrettyHistoryFormatter()
