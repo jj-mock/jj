@@ -66,6 +66,23 @@ class Mock(jj.App):
 
         return handler_id, matcher, response, expiration_policy
 
+    @jj.match(POST, "/__jj__/reset", headers={"x-jj-remote-mock": exists})
+    async def reset(self, request: Request) -> Response:
+        await request.read()
+
+        handlers = self._resolver.get_handlers(self._app.__class__)
+        for handler in handlers:
+            handler_id = self._resolver.get_attribute("handler_id", handler)
+            try:
+                delattr(self._app.__class__, handler_id)
+            except AttributeError:
+                pass
+            self._resolver.deregister_handler(handler, self._app.__class__)
+
+        await self._repo.clear()
+
+        return Response(status=OK, json={"status": OK})
+
     @jj.match_any([
         jj.match(POST, "/__jj__/register", headers={"x-jj-remote-mock": exists}),
         # backward compatibility
