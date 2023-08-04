@@ -2,6 +2,7 @@ import logging
 
 from ._filter import Filter
 from ._logger import Logger
+from ._request_filter import RequestFilter
 from .formatters import Formatter, SimpleFormatter
 
 __all__ = ("Logger", "Filter", "Formatter", "SimpleFormatter")
@@ -21,7 +22,9 @@ logger.propagate = False
 # Register Filter
 
 filter_ = Filter()
+request_filter_ = RequestFilter()
 logger.addFilter(filter_)
+logger.addFilter(request_filter_)
 
 # Register Handler
 

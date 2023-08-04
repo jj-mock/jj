@@ -1,3 +1,4 @@
+from os import linesep
 from unittest.mock import Mock, sentinel
 
 import pytest
@@ -39,11 +40,15 @@ def test_format_with_request(formatter: SimpleFormatter, record: TestLogRecord):
 
 def test_format_with_response(formatter: SimpleFormatter, record: TestLogRecord):
     with given:
-        record.jj_request = Mock()
+        record.jj_request = Mock(method=sentinel.method, url=Mock(path=sentinel.path))
         record.jj_response = Mock(status=sentinel.status, reason=sentinel.reason)
 
     with when:
         res = formatter.format(record)
 
     with then:
-        assert res == "<- {} {}\n".format(sentinel.status, sentinel.reason)
+        assert res == linesep.join([
+            "-> {} {}".format(sentinel.method, sentinel.path),
+            "<- {} {}".format(sentinel.status, sentinel.reason),
+            ""
+        ])

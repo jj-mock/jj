@@ -1,4 +1,5 @@
 from logging import LogRecord
+from os import linesep
 
 from ...requests import Request
 from ...responses import Response
@@ -12,4 +13,9 @@ class SimpleFormatter(Formatter):
         return "-> {} {}".format(request.method, request.url.path)
 
     def format_response(self, response: Response, request: Request, record: LogRecord) -> str:
-        return "<- {} {}\n".format(response.status, response.reason)
+        res = linesep.join([
+            "-> {} {}".format(request.method, request.url.path),
+            "<- {} {}".format(response.status, response.reason),
+            "",
+        ])
+        return res
