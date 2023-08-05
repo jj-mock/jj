@@ -391,6 +391,11 @@ def test_import_relay_response():
     from jj import RelayResponse
 
 
+def test_import_delayed_response():
+    from jj.responses import DelayedResponse
+    from jj import DelayedResponse
+
+
 # runners
 
 

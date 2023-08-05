@@ -1,5 +1,6 @@
 import os
 import sys
+from time import monotonic
 
 if sys.version_info >= (3, 8):
     from unittest import IsolatedAsyncioTestCase as TestCase
@@ -14,19 +15,19 @@ from jj.apps import create_app
 from jj.handlers import default_handler
 from jj.matchers import MethodMatcher
 from jj.resolvers import Registry, ReversedResolver
-from jj.responses import Response
+from jj.responses import DelayedResponse
 
 from .._test_utils import run
 
 
-class TestResponse(TestCase):
+class TestDelayedResponse(TestCase):
     def make_app_with_response(self, *args, **kwargs):
         class App(jj.App):
             resolver = self.resolver
 
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
-                return Response(*args, **kwargs)
+                return DelayedResponse(*args, **kwargs)
         return App()
 
     def make_path(self, path):
@@ -60,13 +61,13 @@ class TestResponse(TestCase):
         payload = "200 OK"
 
         with self.assertRaises(Exception):
-            Response(text=payload, body=payload)
+            DelayedResponse(text=payload, body=payload)
 
         with self.assertRaises(Exception):
-            Response(text=payload, json=payload)
+            DelayedResponse(text=payload, json=payload)
 
         with self.assertRaises(Exception):
-            Response(body=payload, json=payload)
+            DelayedResponse(body=payload, json=payload)
 
     # Status
 
@@ -262,3 +263,17 @@ class TestResponse(TestCase):
         async with run(app) as client:
             response = await client.get("/", headers={"Expect": "banana"})
             self.assertEqual(response.status, 417)
+
+    # Delay
+
+    @pytest.mark.asyncio
+    async def test_response_with_delay(self):
+        delay = 0.1
+        app = self.make_app_with_response(delay=delay)
+
+        async with run(app) as client:
+            start = monotonic()
+            response = await client.get("/")
+            end = monotonic()
+            self.assertEqual(response.status, 200)
+            self.assertGreaterEqual(end - start, delay)

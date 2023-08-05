@@ -235,8 +235,8 @@ class TestRelayResponse(TestCase):
                 response = await client.request(GET, "/", headers=headers)
                 body = await response.json()
                 self.assertEqual(body["method"], GET)
-                # aiohttp client не умеет отправлять несколько заголовков с одним названием,
-                # однако aiohttp server умеет их принимать
+                # aiohttp client is not capable of sending multiple headers with the same name
+                # But aiohttp server is capable of receiving them
                 self.assertEqual(body["headers"].get("x-header-1"), ["value2"])
                 self.assertEqual(body["headers"].get("x-header-2"), ["null"])
 

@@ -91,7 +91,7 @@ class TestStreamResponse(TestCase):
         async with run(app) as client:
             response = await client.get("/")
             self.assertEqual(response.status, status)
-            # aiohttp автоматически подставляет нужный reason
+            # aiohttp automatically sets the reason
             self.assertEqual(response.reason, "No Content")
 
     @pytest.mark.asyncio
@@ -130,7 +130,7 @@ class TestStreamResponse(TestCase):
         app = self.make_app_with_response()
 
         async with run(app) as client:
-            response = await client.post("/", json={}, expect100=True)
+            response = await client.get("/", expect100=True)
             self.assertEqual(response.status, 200)
 
     @pytest.mark.asyncio
@@ -138,5 +138,5 @@ class TestStreamResponse(TestCase):
         app = self.make_app_with_response()
 
         async with run(app) as client:
-            response = await client.post("/", json={}, headers={"Expect": "banana"})
+            response = await client.get("/", headers={"Expect": "banana"})
             self.assertEqual(response.status, 417)
