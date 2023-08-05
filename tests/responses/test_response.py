@@ -252,7 +252,7 @@ class TestResponse(TestCase):
         app = self.make_app_with_response()
 
         async with run(app) as client:
-            response = await client.post("/", json={}, expect100=True)
+            response = await client.get("/", expect100=True)
             self.assertEqual(response.status, 200)
 
     @pytest.mark.asyncio
@@ -260,5 +260,5 @@ class TestResponse(TestCase):
         app = self.make_app_with_response()
 
         async with run(app) as client:
-            response = await client.post("/", json={}, headers={"Expect": "banana"})
+            response = await client.get("/", headers={"Expect": "banana"})
             self.assertEqual(response.status, 417)

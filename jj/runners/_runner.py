@@ -55,6 +55,7 @@ class AppRunner(BaseRunner):
         if (expect is not None) and (request.version == HttpVersion11):
             if expect.lower() == "100-continue":
                 await request.writer.write(b"HTTP/1.1 100 Continue\r\n\r\n")
+                await request.writer.drain()
             else:
                 raise HTTPExpectationFailed()
 
