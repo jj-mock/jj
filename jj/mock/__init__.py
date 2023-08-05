@@ -20,7 +20,6 @@ from ._remote_handler import RemoteHandler
 from ._remote_mock import RemoteMock
 from ._remote_response import RemoteResponseType
 from ._stacked import stacked
-from ._system_log_filter import SystemLogFilter
 
 REMOTE_MOCK_URL = os.environ.get("JJ_REMOTE_MOCK_URL", "http://localhost:8080")
 REMOTE_MOCK_DISPOSABLE = os.environ.get("JJ_REMOTE_MOCK_DISPOSABLE", "True")

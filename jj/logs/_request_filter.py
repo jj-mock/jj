@@ -10,4 +10,4 @@ class RequestFilter(logging.Filter):
         response = getattr(record, "jj_response", None)
         if (request is not None) and (response is None):
             return False
-        return super().filter(record)
+        return super().filter(record) is not False

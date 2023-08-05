@@ -1,9 +1,4 @@
-import sys
-
-if sys.version_info >= (3, 8):
-    from unittest import IsolatedAsyncioTestCase as TestCase
-else:
-    from asynctest import TestCase
+from unittest import IsolatedAsyncioTestCase as TestCase
 
 import pytest
 
