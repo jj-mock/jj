@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.8
+
+### v2.8.0 (2023-08-05)
+
+- Add mock reset [#45](https://github.com/tsv1/jj/pull/45)
+- Add request filter [#44](https://github.com/tsv1/jj/pull/44)
+- Add history formatter [#42](https://github.com/tsv1/jj/pull/42)
+
+
 ## v2.7
 
 ### v2.7.3 (2023-06-04)
@@ -17,6 +26,7 @@
 - Add `stacked()` [#41](https://github.com/tsv1/jj/pull/41)
 - Add `create_remote_handler()` [#41](https://github.com/tsv1/jj/pull/41)
 
+
 ## v2.6
 
 ### v2.6.2 (2022-08-15)
@@ -32,11 +42,13 @@
 - Add response hook [#37](https://github.com/tsv1/jj/pull/37)
 - Add mocked (sync) [#38](https://github.com/tsv1/jj/pull/38)
 
+
 ## v2.5
 
 ### v2.5.0 (2022-06-09)
 
 - Add signal handlers [#36](https://github.com/tsv1/jj/pull/36)
+
 
 ## v2.4
 
