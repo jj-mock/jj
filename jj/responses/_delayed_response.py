@@ -1,3 +1,4 @@
+import asyncio
 import io
 from http.cookies import Morsel
 from json import dumps
@@ -16,18 +17,19 @@ from ..http.headers import CONTENT_DISPOSITION, CONTENT_TYPE
 from ._stream_response import StreamResponse
 from ._utils import cookie_to_dict, get_response_body
 
-__all__ = ("Response",)
+__all__ = ("DelayedResponse",)
 
 
-@packable("jj.responses.Response")
-class Response(web.Response, StreamResponse):
+@packable("jj.responses.DelayedResponse")
+class DelayedResponse(web.Response, StreamResponse):
     def __init__(self, *,
                  json: Any = nil,
                  body: Optional[Union[str, bytes]] = None,
                  text: Optional[str] = None,
                  status: int = 200,
                  reason: Optional[str] = None,
-                 headers: Optional[LooseHeaders] = None) -> None:
+                 headers: Optional[LooseHeaders] = None,
+                 delay: Optional[float] = None) -> None:
         headers = CIMultiDict(headers or {})
 
         if json is not nil:
@@ -44,6 +46,7 @@ class Response(web.Response, StreamResponse):
                 headers[CONTENT_DISPOSITION] = "inline"
 
         super().__init__(body=body, text=text, status=status, reason=reason, headers=headers)
+        self._delay = delay
 
     @property
     def content_coding(self) -> Optional[ContentCoding]:
@@ -53,10 +56,10 @@ class Response(web.Response, StreamResponse):
         # backward compatibility
         return cookie_to_dict(cookie)
 
-    def copy(self) -> "Response":
+    def copy(self) -> "DelayedResponse":
         assert not self.prepared
 
-        response = self.__class__(status=self.status, reason=self.reason,
+        response = self.__class__(status=self.status, reason=self.reason, delay=self._delay,
                                   headers=self.headers, body=self.body)  # type: ignore
         for cookie in self.cookies.values():
             response.set_cookie(**cookie_to_dict(cookie))  # type: ignore
@@ -70,7 +73,9 @@ class Response(web.Response, StreamResponse):
         # backward compatibility
         return get_response_body(self.body)
 
-    async def _prepare_hook(self, request: BaseRequest) -> "Response":
+    async def _prepare_hook(self, request: BaseRequest) -> "DelayedResponse":
+        if self._delay:
+            await asyncio.sleep(self._delay)
         return self
 
     async def prepare(self, request: BaseRequest) -> Optional[AbstractStreamWriter]:
@@ -99,6 +104,7 @@ class Response(web.Response, StreamResponse):
             "body": body,
             "chunked": self.chunked,
             "compression": compression,
+            "delay": self._delay,
         }
 
     @classmethod
@@ -110,8 +116,10 @@ class Response(web.Response, StreamResponse):
                      body: Optional[bytes],
                      chunked: bool,
                      compression: Optional[ContentCoding],
-                     **kwargs: Any) -> "Response":
-        response = cls(status=status, reason=reason, headers=headers, body=body)  # type: ignore
+                     delay: Optional[float],
+                     **kwargs: Any) -> "DelayedResponse":
+        response = cls(status=status, reason=reason,
+                       headers=headers, body=body, delay=delay)  # type: ignore
         for cookie in cookies:
             response.set_cookie(**cookie)  # type: ignore
         if compression:
