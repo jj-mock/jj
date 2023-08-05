@@ -2,6 +2,10 @@
 
 ## v2.8
 
+### v2.8.1 (2023-08-05)
+
+- Add DelayedResponse [#47](https://github.com/tsv1/jj/pull/47)
+
 ### v2.8.0 (2023-08-05)
 
 - Add mock reset [#45](https://github.com/tsv1/jj/pull/45)
