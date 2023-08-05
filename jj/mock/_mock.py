@@ -11,7 +11,7 @@ from jj.http.methods import ANY, DELETE, GET, POST
 from jj.matchers import LogicalMatcher, RequestMatcher, ResolvableMatcher, exists
 from jj.requests import Request
 from jj.resolvers import Registry, Resolver
-from jj.responses import RelayResponse, Response, StreamResponse, DelayedResponse
+from jj.responses import DelayedResponse, RelayResponse, Response, StreamResponse
 
 from ._history import HistoryRepository
 from ._remote_response import RemoteResponseType

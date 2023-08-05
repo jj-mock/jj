@@ -78,7 +78,7 @@ class TestResponse(TestCase):
         async with run(app) as client:
             response = await client.get("/")
             self.assertEqual(response.status, status)
-            # aiohttp автоматически подставляет нужный reason
+            # aiohttp automatically sets the reason
             self.assertEqual(response.reason, "No Content")
 
     @pytest.mark.asyncio
