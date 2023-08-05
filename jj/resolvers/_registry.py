@@ -23,5 +23,16 @@ class Registry:
         return self._registry[container][name]
 
     def remove(self, container: Any, name: str, key: Any) -> None:
+        # backward compatibility
+        return self.remove_key(container, name, key)
+
+    def remove_key(self, container: Any, name: str, key: Any) -> None:
         if (container in self._registry) and (name in self._registry[container]):
             self._registry[container][name].pop(key, None)
+
+    def remove_name(self, container: Any, name: str) -> None:
+        if container in self._registry:
+            self._registry[container].pop(name, None)
+
+    def remove_container(self, container: Any) -> None:
+        self._registry.pop(container, None)

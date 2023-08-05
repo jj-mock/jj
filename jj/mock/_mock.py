@@ -66,18 +66,48 @@ class Mock(jj.App):
 
         return handler_id, matcher, response, expiration_policy
 
+    def _register_handler(self, handler_id: str,
+                          matcher: MatcherType,
+                          response: RemoteResponseType,
+                          expiration_policy: Optional[ExpirationPolicy]) -> None:
+        async def handler(req: Request) -> RemoteResponseType:
+            res = response.copy()
+            await res._prepare_hook(req)
+            return res
+
+        self._resolver.register_attribute("handler_id", handler_id, handler)
+        self._resolver.register_attribute("expiration_policy", expiration_policy, handler)
+        setattr(self._app.__class__, handler_id, matcher(handler))
+
+    def _deregister_handler(self, handler_id: str) -> None:
+        handler = getattr(self._app.__class__, handler_id, None)
+        if handler is None:
+            return
+
+        try:
+            delattr(self._app.__class__, handler_id)
+        except AttributeError:
+            pass
+
+        matchers = self._resolver.get_matchers(handler)
+        for matcher in matchers:
+            self._resolver.deregister_matcher(matcher, handler)
+
+        attributes = self._resolver.get_attributes(handler)
+        for attribute in attributes:
+            self._resolver.deregister_attribute(attribute, handler)
+
+        self._resolver._registry.remove_container(handler)
+
     @jj.match(POST, "/__jj__/reset", headers={"x-jj-remote-mock": exists})
     async def reset(self, request: Request) -> Response:
         await request.read()
 
         handlers = self._resolver.get_handlers(self._app.__class__)
         for handler in handlers:
-            handler_id = self._resolver.get_attribute("handler_id", handler)
-            try:
-                delattr(self._app.__class__, handler_id)
-            except AttributeError:
-                pass
-            self._resolver.deregister_handler(handler, self._app.__class__)
+            handler_id = self._resolver.get_attribute("handler_id", handler, None)
+            if handler_id:
+                self._deregister_handler(handler_id)
 
         await self._repo.clear()
 
@@ -95,14 +125,7 @@ class Mock(jj.App):
         except Exception as e:
             return Response(status=BAD_REQUEST, json={"status": BAD_REQUEST, "error": str(e)})
 
-        async def handler(request: Request) -> RemoteResponseType:
-            res = response.copy()
-            await res._prepare_hook(request)
-            return res
-
-        self._resolver.register_attribute("handler_id", handler_id, handler)
-        self._resolver.register_attribute("expiration_policy", expiration_policy, handler)
-        setattr(self._app.__class__, handler_id, matcher(handler))
+        self._register_handler(handler_id, matcher, response, expiration_policy)
 
         return Response(status=OK, json={"status": OK})
 
@@ -118,12 +141,8 @@ class Mock(jj.App):
         except Exception as e:
             return Response(status=BAD_REQUEST, json={"status": BAD_REQUEST, "error": str(e)})
 
-        try:
-            delattr(self._app.__class__, handler_id)
-        except AttributeError:
-            pass
-
-        await self._repo.delete_by_tag(handler_id)
+        self._deregister_handler(handler_id)
+        await self._repo.delete_by_tag(handler_id)  # delete history
 
         return Response(status=OK, json={"status": OK})
 

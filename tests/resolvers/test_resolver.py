@@ -168,6 +168,19 @@ class TestResolver(TestCase):
         attribute_value = self.resolver.get_attribute(sentinel.name, handler, default)
         self.assertEqual(attribute_value, default)
 
+    def test_get_attributes(self):
+        handler = AsyncMock(return_value=sentinel.response)
+        self.resolver.register_handler(handler, type(self.default_app))
+
+        attributes = self.resolver.get_attributes(handler)
+        self.assertEqual(attributes, [])
+
+    def test_get_attributes_with_nonexisting_handler(self):
+        handler = AsyncMock(return_value=sentinel.response)
+
+        attributes = self.resolver.get_attributes(handler)
+        self.assertEqual(attributes, [])
+
     def test_register_attribute(self):
         handler = AsyncMock(return_value=sentinel.response)
         self.resolver.register_handler(handler, type(self.default_app))
@@ -177,6 +190,9 @@ class TestResolver(TestCase):
 
         attribute_value = self.resolver.get_attribute(sentinel.name, handler)
         self.assertEqual(attribute_value, sentinel.value)
+
+        attributes = self.resolver.get_attributes(handler)
+        self.assertEqual(attributes, [sentinel.name])
 
     def test_register_another_attribute(self):
         handler = AsyncMock(return_value=sentinel.response)
@@ -190,16 +206,22 @@ class TestResolver(TestCase):
         attribute_value1 = self.resolver.get_attribute(sentinel.name1, handler)
         self.assertEqual(attribute_value1, sentinel.value1)
 
+        attributes = self.resolver.get_attributes(handler)
+        self.assertEqual(attributes, [sentinel.name1, sentinel.name2])
+
     def test_register_attribute_twice(self):
         handler = AsyncMock(return_value=sentinel.response)
         self.resolver.register_handler(handler, type(self.default_app))
-        self.resolver.register_attribute(sentinel.name1, sentinel.value1, handler)
+        self.resolver.register_attribute(sentinel.name, sentinel.value1, handler)
 
         res = self.resolver.register_attribute(sentinel.name, sentinel.value, handler)
         self.assertIsNone(res)
 
         attribute_value = self.resolver.get_attribute(sentinel.name, handler)
         self.assertEqual(attribute_value, sentinel.value)
+
+        attributes = self.resolver.get_attributes(handler)
+        self.assertEqual(attributes, [sentinel.name])
 
     def test_deregister_attribute(self):
         handler = AsyncMock(return_value=sentinel.response)
@@ -211,6 +233,9 @@ class TestResolver(TestCase):
 
         attribute_value = self.resolver.get_attribute(sentinel.name, handler, default=None)
         self.assertEqual(attribute_value, None)
+
+        attributes = self.resolver.get_attributes(handler)
+        self.assertEqual(attributes, [])
 
     def test_deregister_nonexisting_attribute(self):
         handler = AsyncMock(return_value=sentinel.response)
