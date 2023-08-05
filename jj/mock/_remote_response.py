@@ -1,7 +1,7 @@
 from typing import Union
 
-from jj import RelayResponse, Response
+from jj import DelayedResponse, RelayResponse, Response
 
-RemoteResponseType = Union[Response, RelayResponse]
+RemoteResponseType = Union[Response, RelayResponse, DelayedResponse]
 
 __all__ = ("RemoteResponseType",)

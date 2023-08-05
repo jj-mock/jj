@@ -1,12 +1,12 @@
 import pytest
 from aiohttp.web import ContentCoding
 
-from jj.responses import Response
+from jj.responses import DelayedResponse
 
 from .._test_utils.steps import given, then, when
 
 
-def eq(r1: Response, r2: Response) -> None:
+def eq(r1: DelayedResponse, r2: DelayedResponse) -> None:
     assert r1.status == r2.status
     assert r1.reason == r2.reason
     assert r1.body == r2.body
@@ -15,6 +15,7 @@ def eq(r1: Response, r2: Response) -> None:
     assert r1.chunked == r2.chunked
     assert r1.compression == r2.compression
     assert r1.content_coding == r2.content_coding
+    assert r1.delay == r2.delay
 
 
 @pytest.mark.parametrize(("attr", "val"), [
@@ -26,10 +27,11 @@ def eq(r1: Response, r2: Response) -> None:
         ("key", "2"),
         ("another_key", "3"),
     ]),
+    ("delay", 1.0),
 ])
 def test_response_attrs(attr, val):
     with given:
-        response = Response(**{attr: val})
+        response = DelayedResponse(**{attr: val})
 
     with when:
         copy = response.copy()
@@ -40,7 +42,7 @@ def test_response_attrs(attr, val):
 
 def test_response_cookies():
     with given:
-        response = Response()
+        response = DelayedResponse()
         response.set_cookie("name", "1")
         response.set_cookie("another_name", "2")
 
@@ -53,7 +55,7 @@ def test_response_cookies():
 
 def test_response_chunked():
     with given:
-        response = Response(body=b"text")
+        response = DelayedResponse(body=b"text")
         response.enable_chunked_encoding()
 
     with when:
@@ -65,7 +67,7 @@ def test_response_chunked():
 
 def test_response_compression():
     with given:
-        response = Response(body=b"text")
+        response = DelayedResponse(body=b"text")
         response.enable_compression(ContentCoding.gzip)
 
     with when:

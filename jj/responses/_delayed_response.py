@@ -46,11 +46,15 @@ class DelayedResponse(web.Response, StreamResponse):
                 headers[CONTENT_DISPOSITION] = "inline"
 
         super().__init__(body=body, text=text, status=status, reason=reason, headers=headers)
-        self._delay = delay
+        self._delay = delay  # seconds
 
     @property
     def content_coding(self) -> Optional[ContentCoding]:
         return self._compression_force
+
+    @property
+    def delay(self) -> Union[float, None]:
+        return self._delay
 
     def _cookie_to_dict(self, cookie: "Morsel[str]") -> Dict[str, Union[str, None]]:
         # backward compatibility
