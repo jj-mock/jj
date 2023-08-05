@@ -30,3 +30,6 @@ class HistoryRepository:
 
     async def get_by_tag(self, tag: str) -> List[HistoryItem]:
         return [x for x in self._storage if tag in x["tags"]]
+
+    async def clear(self) -> None:
+        self._storage.clear()

@@ -39,7 +39,8 @@ class RemoteMock:
             history_adapter=history_adapter,
         )
 
-    async def _do_request(self, method: str, url: str, data: bytes) -> Tuple[int, bytes]:
+    async def _do_request(self, method: str, url: str,
+                          data: Optional[bytes] = None) -> Tuple[int, bytes]:
         headers = {"x-jj-remote-mock": f"v{version}"}
         async with ClientSession() as session:
             async with session.request(method, url, data=data, headers=headers) as response:
@@ -75,3 +76,10 @@ class RemoteMock:
         if status != OK:
             raise _RemoteMockError(f"Can't retrieve mock history ({body!r})")
         return cast(List[HistoryItem], unpack(body))
+
+    async def reset(self) -> "RemoteMock":
+        url = f"{self._url}/__jj__/reset"
+        status, body = await self._do_request(POST, url)
+        if status != OK:
+            raise _RemoteMockError(f"Can't reset mock ({body!r})")
+        return self

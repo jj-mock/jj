@@ -74,6 +74,10 @@ class Resolver:
         unwrapped = self.unwrap(handler)
         self._registry.remove(unwrapped, "matchers", matcher)
 
+        matchers = self._registry.get(unwrapped, "matchers")
+        if len(matchers) == 0:
+            self._registry.remove_name(unwrapped, "matchers")
+
     def get_matchers(self, handler: HandlerFunction) -> List[MatcherFunction]:
         unwrapped = self.unwrap(handler)
         matchers = self._registry.get(unwrapped, "matchers")
@@ -89,12 +93,21 @@ class Resolver:
         unwrapped = self.unwrap(handler)
         self._registry.remove(unwrapped, "attributes", attribute_name)
 
+        attributes = self._registry.get(unwrapped, "attributes")
+        if len(attributes) == 0:
+            self._registry.remove_name(unwrapped, "attributes")
+
     def get_attribute(self, attribute_name: Any,
                       handler: AppOrHandler,
                       default: Any = nil) -> Any:
         unwrapped = self.unwrap(handler)
         attributes = self._registry.get(unwrapped, "attributes")
         return attributes.get(attribute_name, default)
+
+    def get_attributes(self, handler: AppOrHandler) -> List[Any]:
+        unwrapped = self.unwrap(handler)
+        attributes = self._registry.get(unwrapped, "attributes")
+        return list(attributes.keys())
 
     # Resolve
 

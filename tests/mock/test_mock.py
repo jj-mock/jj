@@ -26,7 +26,7 @@ async def test_mock_register():
     matcher, response = jj.match("*"), jj.Response(status=200, body=b"text")
 
     async with run(mock, middlewares=[self_middleware]) as client:
-        remote_mock = RemoteMock(client.make_url("/"))
+        remote_mock = RemoteMock(client.make_url(""))
         handler = remote_mock.create_handler(matcher, response)
         await handler.register()
 
@@ -43,7 +43,7 @@ async def test_mock_register_bad_request():
     self_middleware = SelfMiddleware(mock.resolver)
 
     async with run(mock, middlewares=[self_middleware]) as client:
-        remote_mock = RemoteMock(client.make_url("/"))
+        remote_mock = RemoteMock(client.make_url(""))
         handler = remote_mock.create_handler(None, None)
 
         with raises(Exception) as exception:
@@ -58,7 +58,7 @@ async def test_mock_deregister():
     matcher, response = jj.match("*"), jj.Response(status=200, body=b"text")
 
     async with run(mock, middlewares=[self_middleware]) as client:
-        remote_mock = RemoteMock(client.make_url("/"))
+        remote_mock = RemoteMock(client.make_url(""))
         handler = remote_mock.create_handler(matcher, response)
         await handler.register()
         await handler.deregister()
@@ -74,7 +74,7 @@ async def test_mock_deregister_not_registered():
     matcher, response = jj.match("*"), jj.Response(status=200, body=b"text")
 
     async with run(mock, middlewares=[self_middleware]) as client:
-        remote_mock = RemoteMock(client.make_url("/"))
+        remote_mock = RemoteMock(client.make_url(""))
         handler = remote_mock.create_handler(matcher, response)
         await handler.deregister()
 
@@ -85,7 +85,7 @@ async def test_mock_deregister_bad_request():
     self_middleware = SelfMiddleware(mock.resolver)
 
     async with run(mock, middlewares=[self_middleware]) as client:
-        remote_mock = RemoteMock(client.make_url("/"))
+        remote_mock = RemoteMock(client.make_url(""))
         handler = remote_mock.create_handler(None, None)
 
         with raises(Exception) as exception:
@@ -101,7 +101,7 @@ async def test_mock_handler_order():
     matcher2, response2 = jj.match("*"), jj.Response(body=b"text2")
 
     async with run(mock, middlewares=[self_middleware]) as client:
-        remote_mock = RemoteMock(client.make_url("/"))
+        remote_mock = RemoteMock(client.make_url(""))
         handler1 = remote_mock.create_handler(matcher1, response1)
         handler2 = remote_mock.create_handler(matcher2, response2)
         async with handler1:
@@ -110,3 +110,72 @@ async def test_mock_handler_order():
                 assert resp.status == 200
                 body = await resp.read()
                 assert body == b"text2"
+
+
+@pytest.mark.asyncio
+async def test_mock_reset():
+    mock = Mock()
+    self_middleware = SelfMiddleware(mock.resolver)
+    matcher, response = jj.match("*"), jj.Response(status=200, body=b"text")
+
+    async with run(mock, middlewares=[self_middleware]) as client:
+        remote_mock = RemoteMock(client.make_url(""))
+        handler = remote_mock.create_handler(matcher, response)
+        await handler.register()
+
+        await remote_mock.reset()
+
+        response = await client.get("/")
+        assert response.status == 404
+
+
+@pytest.mark.asyncio
+async def test_mock_deregister_after_reset():
+    mock = Mock()
+    self_middleware = SelfMiddleware(mock.resolver)
+    matcher, response = jj.match("*"), jj.Response(status=200, body=b"text")
+
+    async with run(mock, middlewares=[self_middleware]) as client:
+        remote_mock = RemoteMock(client.make_url(""))
+        handler = remote_mock.create_handler(matcher, response)
+        await handler.register()
+        await remote_mock.reset()
+
+        await handler.deregister()
+
+
+@pytest.mark.asyncio
+async def test_mock_history():
+    mock = Mock()
+    self_middleware = SelfMiddleware(mock.resolver)
+    matcher, response = jj.match("*"), jj.Response(status=200, body=b"text")
+
+    async with run(mock, middlewares=[self_middleware]) as client:
+        remote_mock = RemoteMock(client.make_url(""))
+        handler = remote_mock.create_handler(matcher, response)
+        await handler.register()
+        response = await client.get("/")
+
+        history = await handler.fetch_history()
+        assert len(history) == 1
+        req = history[0]["request"]
+        assert req.method == "GET"
+        assert req.path == "/"
+
+
+@pytest.mark.asyncio
+async def test_mock_history_after_reset():
+    mock = Mock()
+    self_middleware = SelfMiddleware(mock.resolver)
+    matcher, response = jj.match("*"), jj.Response(status=200, body=b"text")
+
+    async with run(mock, middlewares=[self_middleware]) as client:
+        remote_mock = RemoteMock(client.make_url(""))
+        handler = remote_mock.create_handler(matcher, response)
+        await handler.register()
+        response = await client.get("/")
+
+        await remote_mock.reset()
+
+        history = await handler.fetch_history()
+        assert len(history) == 0
