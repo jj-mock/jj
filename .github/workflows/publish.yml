@@ -50,5 +50,5 @@ jobs:
       with:
         context: .
         push: true
-        tags: vedrouniverse/jj:latest,vedrouniverse/jj:${{ env.RELEASE_VERSION }}
+        tags: vedrouniverse/jj:latest,vedrouniverse/jj:v2,vedrouniverse/jj:${{ env.RELEASE_VERSION }}
         platforms: linux/amd64,linux/arm64,linux/arm/v7
