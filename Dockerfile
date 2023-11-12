@@ -5,7 +5,7 @@ WORKDIR /app
 
 RUN apk add --no-cache gcc musl-dev
 RUN pip3 install pip --upgrade
-RUN pip3 install jj==2.8.1
+RUN pip3 install jj==2.8.2
 RUN apk del gcc musl-dev
 
 COPY start_server.py .
