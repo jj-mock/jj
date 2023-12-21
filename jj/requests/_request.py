@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional
 
 from aiohttp import web
-from multidict import MultiDictProxy
+from multidict import MultiMapping
 
 from ..responses import StreamResponse
 
@@ -14,7 +14,7 @@ class Request(web.Request):
         self._segments: Optional[Dict[str, str]] = None
 
     @property
-    def params(self) -> "MultiDictProxy[str]":
+    def params(self) -> "MultiMapping[str]":
         return self.query
 
     @property
