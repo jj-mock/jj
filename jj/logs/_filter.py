@@ -9,10 +9,10 @@ __all__ = ("Filter",)
 
 class Filter(logging.Filter):
     def filter_request(self, request: Request, record: LogRecord) -> bool:
-        return super().filter(record) is True
+        return super().filter(record) is not False
 
     def filter_response(self, response: Response, request: Request, record: LogRecord) -> bool:
-        return super().filter(record) is True
+        return super().filter(record) is not False
 
     def filter(self, record: LogRecord) -> bool:
         request = getattr(record, "jj_request", None)
@@ -22,4 +22,4 @@ class Filter(logging.Filter):
         elif request is not None:
             return self.filter_request(request, record)
         else:
-            return super().filter(record) is True
+            return super().filter(record) is not False

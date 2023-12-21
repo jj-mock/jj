@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.9
+
+### v2.9.0 (2023-12-21)
+
+- Drop Python 3.7 support [#49](https://github.com/jj-mock/jj/pull/49)
+
 ## v2.8
 
 ### v2.8.1 (2023-08-05)
