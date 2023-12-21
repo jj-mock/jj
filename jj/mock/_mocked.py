@@ -1,5 +1,5 @@
 from types import TracebackType
-from typing import List, Optional, Type, Union
+from typing import Any, Generator, List, Optional, Type, Union
 
 from rtry import CancelledError, retry
 from rtry.types import AttemptValue, DelayCallable, DelayValue, LoggerCallable, TimeoutValue
@@ -56,6 +56,10 @@ class Mocked:
                         logger=logger)(self.fetch_history)()
         except CancelledError:
             pass
+
+    def __await__(self) -> Generator[Any, None, "Mocked"]:
+        yield from self._handler.register().__await__()
+        return self
 
     async def __aenter__(self) -> "Mocked":
         self._history = None

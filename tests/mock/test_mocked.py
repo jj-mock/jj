@@ -109,3 +109,20 @@ async def test_mocked_disposable(*, disposable: bool, status: int):
 
         response = await client.get("/")
         assert response.status == status
+
+
+@pytest.mark.asyncio
+async def test_mocked_awaitable():
+    remote_mock = Mock()
+    self_middleware = SelfMiddleware(remote_mock.resolver)
+    matcher, response = jj.match("*"), jj.Response(status=200)
+
+    async with run(remote_mock, middlewares=[self_middleware]) as client:
+        handler = RemoteMock(client.make_url("/")).create_handler(matcher, response)
+
+        mock = await Mocked(handler)
+
+        response = await client.get("/")
+        assert response.status == 200
+
+        assert mock.history is None
