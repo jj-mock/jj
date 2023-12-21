@@ -52,14 +52,12 @@ def test_pack_json_body():
         assert actual == default_packed(body=binary_json, headers=[
             ["Content-Type", "application/json"],
             ["Server", server_version],
-            ["Content-Length", str(len(binary_json))],
         ])
 
 
 @pytest.mark.parametrize(("body", "expected", "headers"), [
     (None, b"", [
         ["Server", server_version],
-        ["Content-Length", "0"],
         ["Content-Type", "text/plain; charset=utf-8"],
     ]),
     (b"text", b"text", [
@@ -70,24 +68,20 @@ def test_pack_json_body():
     ]),
     (memoryview(b"text"), b"text", [
         ["Server", server_version],
-        ["Content-Length", "4"],
         ["Content-Type", "application/octet-stream"],
     ]),
     ("text", b"text", [
         ["Server", server_version],
-        ["Content-Length", "4"],
         ["Content-Type", "text/plain; charset=utf-8"],
     ]),
     (StringIO("text"), b"text", [
         ["Content-Disposition", "inline"],
         ["Server", server_version],
-        ["Content-Length", "4"],
         ["Content-Type", "text/plain; charset=utf-8"],
     ]),
     (BytesIO(b"text"), b"text", [
         ["Content-Disposition", "inline"],
         ["Server", server_version],
-        ["Content-Length", "4"],
         ["Content-Type", "application/octet-stream"],
     ]),
     (TextIOWrapper(BytesIO(b"text")), b"text", [

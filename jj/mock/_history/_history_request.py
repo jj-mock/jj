@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Tuple
 
 from aiohttp.web_exceptions import HTTPRequestEntityTooLarge
-from multidict import CIMultiDict, CIMultiDictProxy, MultiDict, MultiDictProxy
+from multidict import CIMultiDict, CIMultiDictProxy, MultiDict, MultiDictProxy, MultiMapping
 from packed import packable
 
 from ...requests import Request
@@ -15,8 +15,8 @@ class HistoryRequest:
                  method: str,
                  path: str,
                  segments: Dict[str, str],
-                 params: "MultiDictProxy[str]",
-                 headers: "CIMultiDictProxy[str]",
+                 params: "MultiMapping[str]",
+                 headers: "MultiMapping[str]",
                  body: Any,
                  raw: bytes) -> None:
         self._method = method
@@ -40,11 +40,11 @@ class HistoryRequest:
         return self._segments
 
     @property
-    def params(self) -> "MultiDictProxy[str]":
+    def params(self) -> "MultiMapping[str]":
         return self._params
 
     @property
-    def headers(self) -> "CIMultiDictProxy[str]":
+    def headers(self) -> "MultiMapping[str]":
         return self._headers
 
     @property
