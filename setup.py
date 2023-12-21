@@ -19,7 +19,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Nikita Tsvetkov",
     author_email="tsv1@fastmail.com",
-    python_requires=">=3.7.0",
+    python_requires=">=3.8",
     url="https://github.com/jj-mock/jj",
     license="Apache-2.0",
     packages=find_packages(exclude=["tests", "tests.*"]),

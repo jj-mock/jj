@@ -1,11 +1,4 @@
-import sys
-
-if sys.version_info >= (3, 8):
-    from unittest.mock import AsyncMock
-else:
-    from asynctest.mock import CoroutineMock as AsyncMock
-
-from unittest.mock import Mock, call, sentinel
+from unittest.mock import AsyncMock, Mock, call, sentinel
 
 import pytest
 
