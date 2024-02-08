@@ -29,8 +29,8 @@ class ExtSimpleFormatter(SimpleFormatter):
         formatter = formatter_template.substitute(
             req_method=request.method,
             req_url=request.url,
-            req_path=request.path,
-            req_query=request.path_qs,
+            req_path=request.url.path,
+            req_query=request.url.path_qs,
             req_headers=request.headers,
             res_code=response.status,
             res_reason=response.reason,
