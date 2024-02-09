@@ -12,9 +12,9 @@ DEBUG = logging.DEBUG
 
 __all__ = ("Logger", "Filter", "Formatter", "SimpleFormatter")
 
-log_level = os.getenv('MOCK_LOG_LEVEL', INFO)
-format = os.getenv('MOCK_FORMAT', '$req_method $req_url $req_path $req_query $req_headers '
-                                  '$res_code $res_reason $res_headers $res_body')
+log_level = int(os.getenv('MOCK_LOG_LEVEL', INFO))
+format = os.getenv('MOCK_FORMAT', '$req_method $req_query $res_code $res_reason $res_body')
+# full_format '$req_method $req_query $req_headers $res_code $res_reason $res_headers $res_body'
 
 # Set custom Logger class
 
