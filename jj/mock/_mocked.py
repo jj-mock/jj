@@ -18,8 +18,8 @@ class Mocked:
                  history_formatter: Optional[HistoryFormatter] = None
                  ) -> None:
         self._handler = handler
-        self._disposable = disposable
-        self._prefetch_history = prefetch_history
+        self._disposable = disposable  # Deprecated, will be removed in future versions
+        self._prefetch_history = prefetch_history  # Enable history prefetching in a `with` context
         self._history: Union[List[HistoryItem], None] = None
         self._history_formatter = history_formatter
 
