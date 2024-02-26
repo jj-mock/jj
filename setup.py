@@ -13,7 +13,7 @@ def find_dev_required():
 
 setup(
     name="jj",
-    version="2.9.0",
+    version="2.9.1",
     description="Remote HTTP Mock",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
@@ -21,9 +21,16 @@ setup(
     author_email="tsv1@fastmail.com",
     python_requires=">=3.8",
     url="https://github.com/jj-mock/jj",
+    project_urls={
+        "Docs": "https://jj.vedro.io",
+        "GitHub": "https://github.com/jj-mock/jj",
+    },
     license="Apache-2.0",
     packages=find_packages(exclude=["tests", "tests.*"]),
     package_data={"jj": ["py.typed"]},
+    entry_points={
+        "console_scripts": ["jj = jj._entry_point:run"]
+    },
     install_requires=find_required(),
     tests_require=find_dev_required(),
     classifiers=[
