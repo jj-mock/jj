@@ -70,5 +70,5 @@ def create_remote_handler(matcher: Union[RequestMatcher, LogicalMatcher],
 
 __all__ = ("Mock", "mocked", "stacked", "create_remote_handler", "RemoteMock", "RemoteHandler",
            "Mocked", "HistoryRepository", "HistoryRequest", "HistoryResponse", "HistoryItem",
-           "SystemLogFilter", "RemoteResponseType", "HistoryAdapterType",
+           "RemoteResponseType", "HistoryAdapterType",
            "default_history_adapter", "REMOTE_MOCK_URL", "REMOTE_MOCK_DISPOSABLE",)

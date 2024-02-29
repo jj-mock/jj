@@ -12,8 +12,9 @@ DEBUG = logging.DEBUG
 
 __all__ = ("Logger", "Filter", "Formatter", "SimpleFormatter")
 
-log_level = int(os.getenv('MOCK_LOG_LEVEL', INFO))
-format = os.getenv('MOCK_FORMAT', '$req_method $req_query $res_code $res_reason $res_body')
+log_level_str = os.getenv('JJ_LOG_LEVEL', 'INFO')
+log_level = getattr(logging, log_level_str, logging.INFO)
+log_format = os.getenv('JJ_LOG_FORMAT', '$req_method $req_query $res_code $res_reason $res_body')
 # full_format '$req_method $req_query $req_headers $res_code $res_reason $res_headers $res_body'
 
 # Set custom Logger class
@@ -43,7 +44,7 @@ logger.addHandler(handler)
 
 # Register Formatter
 
-formatter = ExtSimpleFormatter()
+formatter = ExtSimpleFormatter(log_format)
 handler.setFormatter(formatter)
 
 # Restore default Logger class
