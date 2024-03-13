@@ -1,5 +1,4 @@
-import json
-from typing import Any, Callable, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Optional, Tuple, Union
 
 from packed import pack, unpack
 from yarl import URL
@@ -16,10 +15,13 @@ from jj.requests import Request
 from jj.resolvers import Registry, Resolver
 from jj.responses import DelayedResponse, RelayResponse, Response, StreamResponse
 
+from ..handlers import HandlerFunction
 from ._history import HistoryRepository
+from ._json_renderer import JsonRenderer
 from ._remote_response import RemoteResponseType
 
 __all__ = ("Mock",)
+
 
 MatcherType = Union[RequestMatcher, LogicalMatcher]
 
@@ -35,6 +37,7 @@ class Mock(jj.App):
         self._resolver = resolver_factory(Registry(), default_app, default_handler)
         self._app = app_factory(resolver=self._resolver)
         self._repo = HistoryRepository()
+        self._renderer = JsonRenderer()
 
     def _decode(self, payload: bytes) -> Tuple[str, MatcherType, RemoteResponseType,
                                                Optional[ExpirationPolicy]]:
@@ -174,65 +177,40 @@ class Mock(jj.App):
             base_url += f":{request_url.port}"
         return base_url
 
-    def _pack_value(self, value: Any) -> Any:
-        if hasattr(value, "__packed__"):
-            return {value.__class__.__name__: self._pack_value(value.__packed__())}
-        elif isinstance(value, dict):
-            return {k: self._pack_value(v) for k, v in value.items()}
-        elif isinstance(value, (list, tuple)):
-            return [self._pack_value(v) for v in value]
-        else:
-            return value
-
-    def _pack_to_json(self, value: Any) -> str:
-        packed = self._pack_value(value)
-        return json.dumps(packed, default=str, ensure_ascii=False, indent=4)
+    def _get_handler_info(self, handler: HandlerFunction) -> Dict[str, Any]:
+        return {
+            "id": self._resolver.get_attribute("handler_id", handler),
+            "expiration_policy": self._resolver.get_attribute("expiration_policy", handler),
+            "matcher": self._resolver.get_attribute("matcher", handler),
+            "response": self._resolver.get_attribute("response", handler),
+        }
 
     @jj.match(GET, "/__jj__")
     async def api_index(self, request: Request) -> Response:
         base_url = self._get_base_url(request.url)
-        return jj.Response(status=OK, json={
-            "handlers": {
-                "url": f"{base_url}/__jj__/handlers",
-            }
-        })
+        handlers_url = f"{base_url}/__jj__/handlers"
+        return jj.Response(status=OK, json={"handlers": {"url": handlers_url}})
 
     @jj.match(GET, "/__jj__/handlers")
     async def api_handlers(self, request: Request) -> Response:
         base_url = self._get_base_url(request.url)
-        payload = []
-
-        handlers = self._resolver.get_handlers(self._app.__class__)
-        for handler in reversed(handlers):
-            handler_id = self._resolver.get_attribute("handler_id", handler)
-            # latest on the top
-            payload.append({
-                "handler_id": handler_id,
-                "expiration_policy": self._resolver.get_attribute("expiration_policy", handler),
-                "matcher": self._resolver.get_attribute("matcher", handler),
-                "response": self._resolver.get_attribute("response", handler),
-                "history": {
-                    "url": f"{base_url}/__jj__/handlers/{handler_id}",
-                }
+        handler_list = self._resolver.get_handlers(self._app.__class__)
+        handlers = []
+        for handler in reversed(handler_list):
+            handler_info = self._get_handler_info(handler)
+            handler_info.update({
+                "history_url": f"{base_url}/__jj__/handlers/{handler_info['id']}/history"
             })
+            handlers.append(handler_info)
+        body = self._renderer.render_handlers(handlers)  # type: ignore
+        return Response(status=OK, body=body, headers={CONTENT_TYPE: "application/json"})
 
-        return Response(status=OK, body=self._pack_to_json(payload), headers={
-            CONTENT_TYPE: "application/json"
-        })
-
-    @jj.match(GET, "/__jj__/handlers/{handler_id}")
+    @jj.match(GET, "/__jj__/handlers/{handler_id}/history")
     async def api_history(self, request: Request) -> Response:
         handler_id = request.segments["handler_id"]
         history = await self._repo.get_by_tag(handler_id)
-
-        payload = []
-        for history_item in history:
-            # latest on the top
-            payload.append(history_item)
-
-        return Response(status=OK, body=self._pack_to_json(payload), headers={
-            CONTENT_TYPE: "application/json"
-        })
+        body = self._renderer.render_history(history)
+        return Response(status=OK, body=body, headers={CONTENT_TYPE: "application/json"})
 
     @jj.match(ANY)
     async def resolve(self, request: Request) -> StreamResponse:
