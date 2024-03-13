@@ -30,7 +30,7 @@ class JsonRenderer:
         for handler in handlers:
             result.append({
                 "id": handler["id"],
-                "registered_at": handler["registered_at"].isoformat(),
+                "registered_at": self._pack(handler["registered_at"]),
                 "expiration_policy": self._pack(handler["expiration_policy"]),
                 "matcher": self._pack(handler["matcher"]),
                 "response": self._pack_response(handler["response"]),
@@ -47,6 +47,7 @@ class JsonRenderer:
             result.append({
                 "request": self._pack(item["request"]),
                 "response": self._pack(item["response"]),
+                "created_at": self._pack(item["created_at"]),
             })
         return self._to_json(result)
 
@@ -66,6 +67,8 @@ class JsonRenderer:
             return {k: self._pack(v) for k, v in value.items()}
         elif isinstance(value, (list, tuple)):
             return [self._pack(v) for v in value]
+        elif isinstance(value, datetime):
+            return value.isoformat()
         else:
             return value
 
