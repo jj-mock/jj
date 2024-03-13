@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 from aiohttp import FormData
 
@@ -34,6 +36,9 @@ async def test_mock_history_request():
             assert res.headers.get("Server")
             assert res.reason == "OK"
             assert res.body == res.raw == b"text"
+
+            assert history[0]["tags"] == [str(handler.id)]
+            assert isinstance(history[0]["created_at"], datetime)
 
 
 @pytest.mark.asyncio
