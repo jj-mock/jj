@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from typing import Any, List, Optional, TypedDict, Union, cast
 
 from jj import DelayedResponse, RelayResponse, Response
@@ -16,7 +17,7 @@ class Handler(TypedDict):
     expiration_policy: Union[ExpirationPolicy, None]
     matcher: Union[RequestMatcher, LogicalMatcher]
     response: Union[Response, RelayResponse, DelayedResponse]
-
+    registered_at: datetime
     history_url: str
 
 
@@ -29,6 +30,7 @@ class JsonRenderer:
         for handler in handlers:
             result.append({
                 "id": handler["id"],
+                "registered_at": handler["registered_at"].isoformat(),
                 "expiration_policy": self._pack(handler["expiration_policy"]),
                 "matcher": self._pack(handler["matcher"]),
                 "response": self._pack_response(handler["response"]),

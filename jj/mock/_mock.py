@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Callable, Dict, Optional, Tuple, Union
 
 from packed import pack, unpack
@@ -81,10 +82,7 @@ class Mock(jj.App):
             await res._prepare_hook(req)
             return res
 
-        self._resolver.register_attribute("handler_id", handler_id, handler)
-        self._resolver.register_attribute("expiration_policy", expiration_policy, handler)
-        self._resolver.register_attribute("matcher", matcher, handler)
-        self._resolver.register_attribute("response", response, handler)
+        self._save_handler_info(handler, handler_id, matcher, response, expiration_policy)
 
         setattr(self._app.__class__, handler_id, matcher(handler))
 
@@ -177,12 +175,24 @@ class Mock(jj.App):
             base_url += f":{request_url.port}"
         return base_url
 
+    def _save_handler_info(self, handler: HandlerFunction,
+                           handler_id: str,
+                           matcher: MatcherType,
+                           response: RemoteResponseType,
+                           expiration_policy: Optional[ExpirationPolicy]) -> None:
+        self._resolver.register_attribute("handler_id", handler_id, handler)
+        self._resolver.register_attribute("expiration_policy", expiration_policy, handler)
+        self._resolver.register_attribute("matcher", matcher, handler)
+        self._resolver.register_attribute("response", response, handler)
+        self._resolver.register_attribute("registered_at", datetime.utcnow(), handler)
+
     def _get_handler_info(self, handler: HandlerFunction) -> Dict[str, Any]:
         return {
             "id": self._resolver.get_attribute("handler_id", handler),
             "expiration_policy": self._resolver.get_attribute("expiration_policy", handler),
             "matcher": self._resolver.get_attribute("matcher", handler),
             "response": self._resolver.get_attribute("response", handler),
+            "registered_at": self._resolver.get_attribute("registered_at", handler),
         }
 
     @jj.match(GET, "/__jj__")
