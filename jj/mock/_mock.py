@@ -195,6 +195,12 @@ class Mock(jj.App):
             "registered_at": self._resolver.get_attribute("registered_at", handler),
         }
 
+    def _get_handler_by_id(self, handler_id: str) -> Union[HandlerFunction, None]:
+        for handler in self._resolver.get_handlers(self._app.__class__):
+            if self._resolver.get_attribute("handler_id", handler) == handler_id:
+                return handler
+        return None
+
     @jj.match(GET, "/__jj__")
     async def api_index(self, request: Request) -> Response:
         base_url = self._get_base_url(request.url)
@@ -218,6 +224,9 @@ class Mock(jj.App):
     @jj.match(GET, "/__jj__/handlers/{handler_id}/history")
     async def api_history(self, request: Request) -> Response:
         handler_id = request.segments["handler_id"]
+        if not self._get_handler_by_id(handler_id):
+            return Response(status=BAD_REQUEST,
+                            json={"status": BAD_REQUEST, "error": "Handler not found"})
         history = await self._repo.get_by_tag(handler_id)
         body = self._renderer.render_history(history)
         return Response(status=OK, body=body, headers={CONTENT_TYPE: "application/json"})
