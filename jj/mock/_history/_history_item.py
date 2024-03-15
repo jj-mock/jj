@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, TypedDict
 
 from ._history_request import HistoryRequest
@@ -10,3 +11,4 @@ class HistoryItem(TypedDict):
     request: HistoryRequest
     response: HistoryResponse
     tags: List[str]
+    created_at: datetime

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 
 from ...requests import Request
@@ -16,13 +17,15 @@ class HistoryRepository:
     async def add(self,
                   request: Request,
                   response: StreamResponse,
-                  tags: Optional[List[str]] = None) -> None:
+                  tags: Optional[List[str]] = None,
+                  created_at: Optional[datetime] = None) -> None:
         req = await HistoryRequest.from_request(request)
         res = await HistoryResponse.from_response(response)
         self._storage.insert(0, {
             "request": req,
             "response": res,
             "tags": tags or [],
+            "created_at": created_at or datetime.utcnow(),
         })
 
     async def delete_by_tag(self, tag: str) -> None:
