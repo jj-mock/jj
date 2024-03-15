@@ -2,6 +2,7 @@ import os
 from typing import Optional, Union
 
 from jj.expiration_policy import ExpirationPolicy
+from jj.logs import SystemLogFilter  # backward compatibility
 from jj.matchers import LogicalMatcher, RequestMatcher
 
 from ._history import (
@@ -70,5 +71,5 @@ def create_remote_handler(matcher: Union[RequestMatcher, LogicalMatcher],
 
 __all__ = ("Mock", "mocked", "stacked", "create_remote_handler", "RemoteMock", "RemoteHandler",
            "Mocked", "HistoryRepository", "HistoryRequest", "HistoryResponse", "HistoryItem",
-           "RemoteResponseType", "HistoryAdapterType",
+           "RemoteResponseType", "HistoryAdapterType", "SystemLogFilter",
            "default_history_adapter", "REMOTE_MOCK_URL", "REMOTE_MOCK_DISPOSABLE",)

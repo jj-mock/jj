@@ -1,5 +1,5 @@
-from ._ext_simple_formater import ExtSimpleFormatter
 from ._formatter import Formatter
 from ._simple_formatter import SimpleFormatter
+from ._template_formatter import TemplateFormatter
 
-__all__ = ("Formatter", "SimpleFormatter", "ExtSimpleFormatter")
+__all__ = ("Formatter", "SimpleFormatter", "TemplateFormatter")

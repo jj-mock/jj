@@ -5,17 +5,10 @@ from ._filter import Filter
 from ._logger import Logger
 from ._request_filter import RequestFilter
 from ._system_log_filter import SystemLogFilter
-from .formatters import ExtSimpleFormatter, Formatter, SimpleFormatter
+from .formatters import Formatter, SimpleFormatter, TemplateFormatter
 
-INFO = logging.INFO
-DEBUG = logging.DEBUG
-
-__all__ = ("Logger", "Filter", "Formatter", "SimpleFormatter")
-
-log_level_str = os.getenv('JJ_LOG_LEVEL', 'INFO')
-log_level = getattr(logging, log_level_str, logging.INFO)
-log_format = os.getenv('JJ_LOG_FORMAT', '$req_method $req_query $res_code $res_reason $res_body')
-# full_format '$req_method $req_query $req_headers $res_code $res_reason $res_headers $res_body'
+__all__ = ("Logger", "Filter", "Formatter", "SimpleFormatter", "TemplateFormatter",
+           "SystemLogFilter", "RequestFilter",)
 
 # Set custom Logger class
 
@@ -25,6 +18,7 @@ logging.setLoggerClass(Logger)
 # Register Loggers
 
 logger: Logger = logging.getLogger("jj.access_logger")  # type: ignore
+log_level = getattr(logging, os.getenv("JJ_LOG_LEVEL", "INFO"))
 logger.setLevel(log_level)
 logger.propagate = False
 
@@ -34,7 +28,7 @@ filter_ = Filter()
 request_filter_ = RequestFilter()
 logger.addFilter(filter_)
 logger.addFilter(request_filter_)
-if log_level != DEBUG:
+if log_level != logging.DEBUG:
     logger.addFilter(SystemLogFilter())
 
 # Register Handler
@@ -44,7 +38,7 @@ logger.addHandler(handler)
 
 # Register Formatter
 
-formatter = ExtSimpleFormatter(log_format)
+formatter = TemplateFormatter()
 handler.setFormatter(formatter)
 
 # Restore default Logger class

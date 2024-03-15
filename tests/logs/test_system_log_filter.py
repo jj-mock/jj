@@ -3,8 +3,9 @@ from unittest.mock import Mock, sentinel
 import pytest
 
 from jj.logs import SystemLogFilter
-from tests._test_utils.steps import given, then, when
-from tests.logs._log_record import TestLogRecord
+
+from .._test_utils.steps import given, then, when
+from ._log_record import TestLogRecord
 
 
 @pytest.fixture()
