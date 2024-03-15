@@ -10,7 +10,7 @@ from .formatters import ExtSimpleFormatter, Formatter, SimpleFormatter
 INFO = logging.INFO
 DEBUG = logging.DEBUG
 
-__all__ = ("Logger", "Filter", "Formatter", "SimpleFormatter")
+__all__ = ("Logger", "Filter", "Formatter", "SimpleFormatter", "SystemLogFilter", "RequestFilter",)
 
 log_level_str = os.getenv('JJ_LOG_LEVEL', 'INFO')
 log_level = getattr(logging, log_level_str, logging.INFO)
