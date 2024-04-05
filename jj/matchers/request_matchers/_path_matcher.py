@@ -19,6 +19,10 @@ class PathMatcher(RequestMatcher):
         else:
             self._matcher = RouteMatcher(path)
 
+    @property
+    def sub_matcher(self) -> AttributeMatcher:
+        return self._matcher
+
     async def match(self, request: Request) -> bool:
         matched = await self._matcher.match(request.path)
         if matched and isinstance(self._matcher, RouteMatcher):

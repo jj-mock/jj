@@ -176,3 +176,15 @@ def test_unpack(*, resolver_):
 
     with then:
         assert isinstance(actual, ParamMatcher)
+
+
+def test_sub_matcher_property(*, resolver_):
+    with given:
+        sub_matcher = MultiDictMatcher([("key", "1"), ("key", "2")])
+        matcher = ParamMatcher(sub_matcher, resolver=resolver_)
+
+    with when:
+        actual = matcher.sub_matcher
+
+    with then:
+        assert actual == sub_matcher

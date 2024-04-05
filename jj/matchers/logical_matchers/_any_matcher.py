@@ -18,8 +18,8 @@ class AnyMatcher(LogicalMatcher):
         self._matchers = matchers
 
     @property
-    def matchers(self) -> List[ResolvableMatcher]:
-        return self._matchers
+    def sub_matchers(self) -> List[ResolvableMatcher]:
+        return self._matchers[:]
 
     async def match(self, request: Request) -> bool:
         for matcher in self._matchers:

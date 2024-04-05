@@ -19,6 +19,10 @@ class MethodMatcher(RequestMatcher):
         else:
             self._matcher = EqualMatcher(str.upper(method))
 
+    @property
+    def sub_matcher(self) -> AttributeMatcher:
+        return self._matcher
+
     async def match(self, request: Request) -> bool:
         return await self._matcher.match("*") or await self._matcher.match(request.method)
 

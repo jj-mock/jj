@@ -132,13 +132,13 @@ def test_unpack(*, resolver_):
         assert isinstance(actual, AllMatcher)
 
 
-def test_matchers_property(*, resolver_):
+def test_sub_matchers_property(*, resolver_):
     with given:
-        submatchers = [Mock(ResolvableMatcher), Mock(ResolvableMatcher)]
-        matcher = AllMatcher(submatchers, resolver=resolver_)
+        sub_matchers = [Mock(ResolvableMatcher), Mock(ResolvableMatcher)]
+        matcher = AllMatcher(sub_matchers, resolver=resolver_)
 
     with when:
-        actual = matcher.matchers
+        actual = matcher.sub_matchers
 
     with then:
-        assert actual == submatchers
+        assert actual == sub_matchers
