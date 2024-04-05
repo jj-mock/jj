@@ -19,6 +19,10 @@ class RouteMatcher(AttributeMatcher):
         self._path = path
         self._resource = _Resource(path)
 
+    @property
+    def path(self) -> str:
+        return self._path
+
     def get_segments(self, path: str) -> Dict[str, str]:
         return self._resource.match(path) or {}
 

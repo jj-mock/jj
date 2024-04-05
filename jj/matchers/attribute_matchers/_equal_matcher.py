@@ -12,6 +12,10 @@ class EqualMatcher(AttributeMatcher):
     def __init__(self, expected: Any) -> None:
         self._expected = expected
 
+    @property
+    def expected(self) -> Any:
+        return self._expected
+
     async def match(self, actual: Any) -> bool:
         return bool(self._expected == actual)  # type casting for mypy
 

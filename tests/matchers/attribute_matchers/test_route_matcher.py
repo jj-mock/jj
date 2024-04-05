@@ -52,3 +52,15 @@ def test_unpack():
 
     with then:
         assert isinstance(actual, RouteMatcher)
+
+
+def test_path_property():
+    with given:
+        path = "/"
+        matcher = RouteMatcher(path)
+
+    with when:
+        actual = matcher.path
+
+    with then:
+        assert actual == path

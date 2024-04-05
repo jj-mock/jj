@@ -15,6 +15,14 @@ class RegexMatcher(AttributeMatcher):
         self._flags = flags
         self._compiled = re.compile(self._pattern, self._flags)
 
+    @property
+    def pattern(self) -> str:
+        return self._pattern
+
+    @property
+    def flags(self) -> int:
+        return self._flags
+
     async def match(self, actual: Any) -> bool:
         return self._compiled.search(actual) is not None
 

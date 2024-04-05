@@ -93,3 +93,17 @@ def test_unpack():
 
     with then:
         assert isinstance(actual, RegexMatcher)
+
+
+def test_pattern_property():
+    with given:
+        pattern = ".*"
+        flags = re.I
+        matcher = RegexMatcher(pattern, flags)
+
+    with when:
+        actual_pattern, actual_flags = matcher.pattern, matcher.flags
+
+    with then:
+        assert actual_pattern == pattern
+        assert actual_flags == flags

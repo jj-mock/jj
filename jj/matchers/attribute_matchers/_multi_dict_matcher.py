@@ -21,6 +21,10 @@ class MultiDictMatcher(AttributeMatcher):
     def __init__(self, expected: DictOrTupleList) -> None:
         self._expected = MultiDict(expected)
 
+    @property
+    def expected(self) -> MultiDict[StrOrAttrMatcher]:
+        return self._expected
+
     async def _match_any(self, submatcher: AttributeMatcher, values: List[Any]) -> bool:
         for value in values:
             if await submatcher.match(value):
