@@ -17,6 +17,10 @@ class ExpireAfterRequests(ExpirationPolicy):
         self._max_requests_count = max_requests_count
         self._current_requests_count = 0
 
+    @property
+    def max_requests_count(self) -> int:
+        return self._max_requests_count
+
     async def is_expired(self, request: Request) -> bool:
         if self._current_requests_count < self._max_requests_count:
             self._current_requests_count += 1

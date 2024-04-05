@@ -17,6 +17,10 @@ class AnyMatcher(LogicalMatcher):
         assert len(matchers) > 0
         self._matchers = matchers
 
+    @property
+    def matchers(self) -> List[ResolvableMatcher]:
+        return self._matchers
+
     async def match(self, request: Request) -> bool:
         for matcher in self._matchers:
             if await matcher.match(request):
