@@ -130,3 +130,15 @@ def test_unpack(*, resolver_):
 
     with then:
         assert isinstance(actual, AnyMatcher)
+
+
+def test_sub_matchers_property(*, resolver_):
+    with given:
+        sub_matchers = [Mock(ResolvableMatcher), Mock(ResolvableMatcher)]
+        matcher = AnyMatcher(sub_matchers, resolver=resolver_)
+
+    with when:
+        actual = matcher.sub_matchers
+
+    with then:
+        assert actual == sub_matchers

@@ -131,3 +131,15 @@ def test_unpack():
 
     with then:
         assert isinstance(actual, MultiDictMatcher)
+
+
+def test_expected_property():
+    with given:
+        expected = {"key": "val"}
+        matcher = MultiDictMatcher(expected)
+
+    with when:
+        actual = matcher.expected
+
+    with then:
+        assert actual == MultiDict(expected)

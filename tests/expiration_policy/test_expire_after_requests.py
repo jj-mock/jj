@@ -39,3 +39,15 @@ def test_expired_after_requests_with_invalid_count_requests(count_requests: int)
 
     with then:
         assert exception.type is AssertionError
+
+
+@pytest.mark.asyncio
+async def test_max_requests_count_property():
+    with given:
+        expiration_policy = ExpireAfterRequests(1)
+
+    with when:
+        max_requests_count = expiration_policy.max_requests_count
+
+    with then:
+        assert max_requests_count == 1

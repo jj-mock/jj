@@ -22,6 +22,10 @@ class ParamMatcher(RequestMatcher):
         else:
             self._matcher = MultiDictMatcher(params)
 
+    @property
+    def sub_matcher(self) -> AttributeMatcher:
+        return self._matcher
+
     async def match(self, request: Request) -> bool:
         return await self._matcher.match(request.query)
 

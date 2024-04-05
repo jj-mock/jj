@@ -12,6 +12,10 @@ class ContainMatcher(AttributeMatcher):
     def __init__(self, expected: Any) -> None:
         self._expected = expected
 
+    @property
+    def expected(self) -> Any:
+        return self._expected
+
     async def match(self, actual: Any) -> bool:
         return self._expected in actual
 

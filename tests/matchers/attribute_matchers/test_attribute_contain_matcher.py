@@ -126,3 +126,16 @@ def test_unpack(matcher_class):
 
     with then:
         assert isinstance(actual, matcher_class)
+
+
+@pytest.mark.parametrize("matcher_class", [ContainMatcher, NotContainMatcher])
+def test_expected_property(matcher_class):
+    with given:
+        substr = "smth"
+        matcher = matcher_class(substr)
+
+    with when:
+        actual = matcher.expected
+
+    with then:
+        assert actual == substr

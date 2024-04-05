@@ -124,3 +124,16 @@ def test_unpack(matcher_class):
 
     with then:
         assert isinstance(actual, matcher_class)
+
+
+@pytest.mark.parametrize("matcher_class", [EqualMatcher, NotEqualMatcher])
+def test_expected_property(matcher_class):
+    with given:
+        expected = sentinel.expected
+        matcher = matcher_class(expected)
+
+    with when:
+        actual = matcher.expected
+
+    with then:
+        assert actual is expected
