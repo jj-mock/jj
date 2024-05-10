@@ -22,7 +22,7 @@ setup(
     python_requires=">=3.8",
     url="https://github.com/jj-mock/jj",
     project_urls={
-        "Docs": "https://jj.vedro.io",
+        "Docs": "https://jj-mock.io",
         "GitHub": "https://github.com/jj-mock/jj",
     },
     license="Apache-2.0",

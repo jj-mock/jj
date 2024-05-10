@@ -14,4 +14,4 @@ JJ is a remote HTTP mock library that simulates HTTP responses for incoming requ
 - **Real-time Interaction**: Modify mocking behavior on-the-fly without server restarts.
 
 ## Documentation
-For comprehensive guidance on utilizing JJ, including installation, setup, and usage instructions, visit the [documentation page](https://jj.vedro.io/docs/quick-start). 
+For comprehensive guidance on utilizing JJ, including installation, setup, and usage instructions, visit the [documentation page](https://jj-mock.io/docs/quick-start). 
