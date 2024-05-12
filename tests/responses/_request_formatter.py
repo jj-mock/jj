@@ -2,9 +2,11 @@ from io import SEEK_END
 
 from aiohttp.web_request import FileField
 
+from jj.requests import Request
+
 
 class RequestFormatter:
-    def __init__(self, request):
+    def __init__(self, request: Request) -> None:
         self._request = request
 
     def format_params(self, params):
