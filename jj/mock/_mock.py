@@ -201,7 +201,10 @@ class Mock(jj.App):
                 return handler
         return None
 
-    @jj.match(GET, "/__jj__")
+    @jj.match_any([
+        jj.match(GET, "/__jj__"),
+        jj.match(GET, "/__jj__/")
+    ])
     async def api_index(self, request: Request) -> Response:
         base_url = self._get_base_url(request.url)
         handlers_url = f"{base_url}/__jj__/handlers"
