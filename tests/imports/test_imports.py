@@ -396,6 +396,11 @@ def test_import_delayed_response():
     from jj import DelayedResponse
 
 
+def test_import_template_response():
+    from jj.responses import TemplateResponse
+    from jj import TemplateResponse
+
+
 # runners
 
 

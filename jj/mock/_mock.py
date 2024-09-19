@@ -14,12 +14,12 @@ from jj.http.methods import ANY, DELETE, GET, POST
 from jj.matchers import LogicalMatcher, RequestMatcher, ResolvableMatcher, exists
 from jj.requests import Request
 from jj.resolvers import Registry, Resolver
-from jj.responses import DelayedResponse, RelayResponse, Response, StreamResponse
+from jj.responses import Response, StreamResponse
 
 from ..handlers import HandlerFunction
 from ._history import HistoryRepository
 from ._json_renderer import JsonRenderer
-from ._remote_response import RemoteResponseType
+from ._remote_response import REMOTE_RESPONSES, RemoteResponseType
 
 __all__ = ("Mock",)
 
@@ -61,7 +61,7 @@ class Mock(jj.App):
             errors.append(f"Decode Error: invalid request field ({matcher!r})")
 
         response = decoded.get("response")
-        if not isinstance(response, (Response, RelayResponse, DelayedResponse)):
+        if not isinstance(response, REMOTE_RESPONSES):
             errors.append(f"Decode Error: invalid response field ({response!r})")
 
         expiration_policy = decoded.get("expiration_policy")
