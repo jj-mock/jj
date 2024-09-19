@@ -111,7 +111,7 @@ class Response(web.Response, StreamResponse):
                      chunked: bool,
                      compression: Optional[ContentCoding],
                      **kwargs: Any) -> "Response":
-        response = cls(status=status, reason=reason, headers=headers, body=body)  # type: ignore
+        response = cls(status=status, reason=reason, headers=headers, body=body)
         for cookie in cookies:
             response.set_cookie(**cookie)  # type: ignore
         if compression:

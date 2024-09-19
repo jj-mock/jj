@@ -122,8 +122,7 @@ class DelayedResponse(web.Response, StreamResponse):
                      compression: Optional[ContentCoding],
                      delay: Optional[float],
                      **kwargs: Any) -> "DelayedResponse":
-        response = cls(status=status, reason=reason,
-                       headers=headers, body=body, delay=delay)  # type: ignore
+        response = cls(status=status, reason=reason, headers=headers, body=body, delay=delay)
         for cookie in cookies:
             response.set_cookie(**cookie)  # type: ignore
         if compression:

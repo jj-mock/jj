@@ -2,9 +2,8 @@ from typing import Any, Dict, Tuple
 from urllib.parse import urljoin
 
 from aiohttp import ClientSession
-from aiohttp.typedefs import LooseHeaders
 from aiohttp.web_request import BaseRequest
-from multidict import CIMultiDict, CIMultiDictProxy
+from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping
 from packed import packable
 
 from ._response import Response
@@ -39,7 +38,7 @@ class RelayResponse(Response):
     def target(self) -> str:
         return self._target
 
-    def _filter_headers(self, headers: LooseHeaders) -> CIMultiDict[str]:
+    def _filter_headers(self, headers: MultiMapping[str]) -> CIMultiDict[str]:
         filtered: CIMultiDict[str] = CIMultiDict()
         for key, value in headers.items():
             if key.lower() not in _FILTERED_HEADERS:
