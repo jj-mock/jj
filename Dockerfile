@@ -8,8 +8,6 @@ RUN pip3 install pip --upgrade
 RUN pip3 install jj==2.10.3
 RUN apk del gcc musl-dev
 
-COPY start_server.py .
-
 EXPOSE 80
 
-CMD ["python3", "start_server.py"]
+CMD ["python3", "-m", "jj"]
