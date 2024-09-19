@@ -10,4 +10,6 @@ RUN apk del gcc musl-dev
 
 EXPOSE 80
 
-CMD ["python3", "-m", "jj"]
+ENTRYPOINT ["python3", "-m", "jj"]
+
+CMD []
