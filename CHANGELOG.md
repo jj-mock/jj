@@ -1,10 +1,38 @@
 # Changelog
 
+## v2.11
+
+## v2.11.0 ()
+
+- Add `--use-matcher` [#53](https://github.com/jj-mock/jj/pull/53)
+
+
+## v2.10
+
+### v2.10.3 (2024-06-18)
+
+### v2.10.2 (2024-05-12)
+
+### v2.10.1 (2024-04-05)
+
+- Add matchers props [#52](https://github.com/jj-mock/jj/pull/52)
+
+### v2.10.0 (2024-03-15)
+
+- Add inspect API [#50](https://github.com/jj-mock/jj/pull/50)
+- Add log formatter [#48](https://github.com/jj-mock/jj/pull/48), [#51](https://github.com/jj-mock/jj/pull/51)
+
+
 ## v2.9
+
+### v2.9.1 (2024-02-25)
+
+- Add entrypoint [#4113373](https://github.com/jj-mock/jj/commit/41133730d0362e26b32ca145e22dfce568edd3c2)
 
 ### v2.9.0 (2023-12-21)
 
 - Drop Python 3.7 support [#49](https://github.com/jj-mock/jj/pull/49)
+
 
 ## v2.8
 
