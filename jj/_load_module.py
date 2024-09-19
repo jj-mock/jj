@@ -1,8 +1,11 @@
 import importlib.util
+from importlib.abc import Loader
 from pathlib import Path
 from types import ModuleType
 
 __all__ = ("load_module",)
+
+from typing import cast
 
 
 def _path_to_module_name(path: Path) -> str:
@@ -41,6 +44,6 @@ def load_module(path: Path) -> ModuleType:
         raise ModuleNotFoundError(module_name)
 
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    cast(Loader, spec.loader).exec_module(module)
 
     return module
