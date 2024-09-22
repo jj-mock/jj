@@ -5,6 +5,8 @@ from aiohttp.web_request import BaseRequest
 from multidict import CIMultiDict
 from packed import packable
 
+from .._version import server_version
+
 try:
     import jinja2
 except ImportError:  # pragma: no cover
@@ -18,17 +20,17 @@ __all__ = ("TemplateResponse",)
 
 @packable("jj.responses.TemplateResponse")
 class TemplateResponse(Response):
-    def __init__(self, body: str, *,
+    def __init__(self, body: Optional[str] = None, *,
                  headers: Optional[LooseHeaders] = None,
                  status: Union[int, str] = 200) -> None:
         super().__init__()
 
-        self._tmpl_body = body
+        self._tmpl_body = body or ""
         self._tmpl_headers = CIMultiDict(headers or {})
         self._tmpl_status = str(status)
         self._prepare_hook_called = False
 
-        if jinja2 is None:
+        if jinja2 is None:  # pragma: no cover
             raise ImportError(
                 "Jinja2 is an optional dependency. "
                 "To use TemplateResponse, please install Jinja2 via 'pip install jinja2'"
@@ -39,11 +41,15 @@ class TemplateResponse(Response):
         if self._prepare_hook_called:
             return self
 
-        self._headers = CIMultiDict(
+        self._headers = CIMultiDict({
+            "Server": self._tmpl_headers.get("Server", server_version)
+        })
+        self._headers.extend(
             (self._render_value(key, request), self._render_value(value, request))
             for key, value in self._tmpl_headers.items()
+            if key.lower() != "server"
         )
-        self.body = self._render_value(self._tmpl_body, request)
+        self.body = self._render_value(self._tmpl_body, request)  # type: ignore
         self.set_status(int(self._render_value(self._tmpl_status, request)))
 
         self._prepare_hook_called = True
@@ -67,9 +73,9 @@ class TemplateResponse(Response):
         }
 
     @classmethod
-    def __unpacked__(cls, *,
+    def __unpacked__(cls, *,  # type: ignore
                      body: str,
                      headers: List[Tuple[str, str]],
                      status: Union[int, str],
-                     **kwargs: Any) -> "TemplateResponse":  # type: ignore
+                     **kwargs: Any) -> "TemplateResponse":
         return cls(status=status, headers=headers, body=body)
