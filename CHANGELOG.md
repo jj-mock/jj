@@ -2,8 +2,9 @@
 
 ## v2.11
 
-## v2.11.0 ()
+## v2.11.0 (2024-09-24)
 
+- Add `TemplateResponse` [](https://github.com/jj-mock/jj/pull/54)
 - Add `--use-matcher` [#53](https://github.com/jj-mock/jj/pull/53)
 
 
