@@ -80,7 +80,7 @@ class HeaderMatcher(RequestMatcher):
 
         :param headers: The headers matcher to use for this instance.
         :param resolver: The resolver to bind this matcher to.
-        :param kwargs: Additional arguments (unused in this case).
+        :param kwargs: Additional keyword arguments (ignored).
         :return: A new instance of HeaderMatcher.
         """
         return cls(headers, resolver=resolver)

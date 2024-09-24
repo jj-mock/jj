@@ -64,7 +64,7 @@ class EqualMatcher(AttributeMatcher):
         Unpack an EqualMatcher instance from its serialized form.
 
         :param expected: The expected value to use for the matcher.
-        :param kwargs: Additional arguments (unused in this case).
+        :param kwargs: Additional keyword arguments (ignored).
         :return: A new instance of EqualMatcher.
         """
         return cls(expected)
@@ -102,7 +102,7 @@ class NotEqualMatcher(EqualMatcher):
         Unpack a NotEqualMatcher instance from its serialized form.
 
         :param expected: The expected value to use for the matcher.
-        :param kwargs: Additional arguments (unused in this case).
+        :param kwargs: Additional keyword arguments (ignored).
         :return: A new instance of NotEqualMatcher.
         """
         return cls(expected)

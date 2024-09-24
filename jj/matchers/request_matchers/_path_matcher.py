@@ -83,7 +83,7 @@ class PathMatcher(RequestMatcher):
 
         :param path: The path matcher to use for this instance.
         :param resolver: The resolver to bind this matcher to.
-        :param kwargs: Additional arguments (unused in this case).
+        :param kwargs: Additional keyword arguments (ignored).
         :return: A new instance of PathMatcher.
         """
         return cls(path, resolver=resolver)

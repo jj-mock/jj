@@ -97,7 +97,7 @@ class MultiDictMatcher(AttributeMatcher):
         Unpack a MultiDictMatcher instance from its serialized form.
 
         :param expected: The expected key-value pairs to use for this matcher.
-        :param kwargs: Additional arguments (unused in this case).
+        :param kwargs: Additional keyword arguments (ignored).
         :return: A new instance of MultiDictMatcher.
         """
         return cls(expected)

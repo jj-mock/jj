@@ -38,7 +38,7 @@ class ExistMatcher(AttributeMatcher):
         """
         Unpack an ExistMatcher instance from its serialized form.
 
-        :param kwargs: Additional arguments (unused in this case).
+        :param kwargs: Additional keyword arguments (ignored).
         :return: A new instance of ExistMatcher.
         """
         return cls()

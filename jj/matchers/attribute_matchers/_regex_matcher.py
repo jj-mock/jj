@@ -80,7 +80,7 @@ class RegexMatcher(AttributeMatcher):
 
         :param pattern: The regex pattern to use for this matcher.
         :param flags: Optional regex flags.
-        :param kwargs: Additional arguments (unused in this case).
+        :param kwargs: Additional keyword arguments (ignored).
         :return: A new instance of RegexMatcher.
         """
         return cls(pattern, flags)

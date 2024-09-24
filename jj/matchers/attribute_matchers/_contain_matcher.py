@@ -63,7 +63,7 @@ class ContainMatcher(AttributeMatcher):
         Unpack a ContainMatcher instance from its serialized form.
 
         :param expected: The expected value to use for this matcher.
-        :param kwargs: Additional arguments (unused in this case).
+        :param kwargs: Additional keyword arguments (ignored).
         :return: A new instance of ContainMatcher.
         """
         return cls(expected)
@@ -100,7 +100,7 @@ class NotContainMatcher(ContainMatcher):
         Unpack a NotContainMatcher instance from its serialized form.
 
         :param expected: The expected value to use for this matcher.
-        :param kwargs: Additional arguments (unused in this case).
+        :param kwargs: Additional keyword arguments (ignored).
         :return: A new instance of NotContainMatcher.
         """
         return cls(expected)

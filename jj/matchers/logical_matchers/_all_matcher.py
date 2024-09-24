@@ -81,7 +81,7 @@ class AllMatcher(LogicalMatcher):
 
         :param matchers: The list of matchers to use for this instance.
         :param resolver: The resolver to bind this matcher to.
-        :param kwargs: Additional arguments (unused in this case).
+        :param kwargs: Additional keyword arguments (ignored).
         :return: A new instance of AllMatcher.
         """
         return cls(matchers, resolver=resolver)

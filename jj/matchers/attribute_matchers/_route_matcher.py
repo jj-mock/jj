@@ -93,7 +93,7 @@ class RouteMatcher(AttributeMatcher):
         Unpack a RouteMatcher instance from its serialized form.
 
         :param path: The expected route pattern to use for this matcher.
-        :param kwargs: Additional arguments (unused in this case).
+        :param kwargs: Additional keyword arguments (ignored).
         :return: A new instance of RouteMatcher.
         """
         return cls(path)
