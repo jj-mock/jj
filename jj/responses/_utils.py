@@ -7,6 +7,14 @@ __all__ = ("cookie_to_dict", "get_response_body",)
 
 
 def cookie_to_dict(cookie: "Morsel[str]") -> Dict[str, Union[str, None]]:
+    """
+    Convert a Morsel object into a dictionary.
+
+    :param cookie: The cookie morsel object to be converted.
+    :return: A dictionary representation of the cookie, including attributes like
+             "name", "value", "expires", "domain", "max-age", "path", "secure",
+             "httponly", and "version".
+    """
     dictionary: Dict[str, Union[str, None]] = {
         "name": cookie.key,
         "value": cookie.value,
@@ -19,6 +27,14 @@ def cookie_to_dict(cookie: "Morsel[str]") -> Dict[str, Union[str, None]]:
 
 
 def get_response_body(body: Any) -> bytes:
+    """
+    Convert the provided response body into bytes.
+
+    :param body: The response body, which can be of types like bytes, bytearray,
+                 memoryview, or specific aiohttp payloads.
+    :return: The body converted to a bytes object.
+    :raises ValueError: If the body type is unsupported.
+    """
     if isinstance(body, (bytes, bytearray, memoryview)):
         return bytes(body)
     elif isinstance(body, BytesPayload):
