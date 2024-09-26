@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 from aiohttp.typedefs import LooseHeaders
 from aiohttp.web_request import BaseRequest
@@ -37,21 +37,14 @@ class TemplateResponse(Response):
         :param body: The template string for the response body. Defaults to an empty string.
         :param headers: A dictionary of headers, which can also contain templates.
         :param status: The HTTP status code, which can be templated as well (default is 200).
-        :raises ImportError: If Jinja2 is not installed.
         """
         super().__init__()
 
         self._tmpl_body = body or ""
         self._tmpl_headers = CIMultiDict(headers or {})
         self._tmpl_status = str(status)
+        self._jinja_env: Any = None
         self._prepare_hook_called = False
-
-        if jinja2 is None:  # pragma: no cover
-            raise ImportError(
-                "Jinja2 is an optional dependency. "
-                "To use TemplateResponse, please install Jinja2 via 'pip install jinja2'"
-            )
-        self._jinja_env = jinja2.environment.Environment()
 
     async def _prepare_hook(self, request: BaseRequest) -> "TemplateResponse":
         """
@@ -62,9 +55,17 @@ class TemplateResponse(Response):
 
         :param request: The incoming HTTP request object used for rendering templates.
         :return: The `TemplateResponse` object after template rendering is complete.
+        :raises ImportError: If Jinja2 is not installed.
         """
         if self._prepare_hook_called:
             return self
+
+        if jinja2 is None:  # pragma: no cover
+            raise ImportError(
+                "Jinja2 is an optional dependency. "
+                "To use TemplateResponse, please install Jinja2 via 'pip install jinja2'"
+            )
+        self._jinja_env = jinja2.environment.Environment()
 
         self._headers = CIMultiDict({
             "Server": self._tmpl_headers.get("Server", server_version)
@@ -92,7 +93,8 @@ class TemplateResponse(Response):
         :return: The rendered template as a string.
         """
         template = self._jinja_env.from_string(value)
-        return template.render({"request": request})
+        rendered = template.render({"request": request})
+        return cast(str, rendered)
 
     def copy(self) -> "TemplateResponse":
         """
