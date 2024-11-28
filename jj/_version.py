@@ -1,6 +1,6 @@
 import aiohttp
 
-version = "2.11.0"
+version = "2.11.1"
 server_version = "jj/{} via aiohttp/{}".format(version, aiohttp.__version__)
 
 
