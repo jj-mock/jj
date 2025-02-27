@@ -8,6 +8,7 @@ from .attribute_matchers import (
     ExistMatcher,
     NotContainMatcher,
     NotEqualMatcher,
+    NotExistMatcher,
     RegexMatcher,
 )
 from .logical_matchers import AllMatcher, AnyMatcher, LogicalMatcher
@@ -28,7 +29,9 @@ __all__ = (
     "EqualMatcher",
     "equals",
     "ExistMatcher",
+    "NotExistMatcher",
     "exists",
+    "not_exists",
     "HeaderMatcher",
     "LogicalMatcher",
     "MethodMatcher",
@@ -77,3 +80,12 @@ class _exists(ExistMatcher):
 
 
 exists = _exists()
+
+
+@packable("jj.matchers.not_exists")
+class _not_exists(NotExistMatcher):
+    def __repr__(self) -> str:
+        return "not_exists"
+
+
+not_exists = _not_exists()

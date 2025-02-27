@@ -5,9 +5,9 @@ from packed import packable
 
 from ._attribute_matcher import AttributeMatcher
 from ._equal_matcher import EqualMatcher
+from ._exist_matcher import NotExistMatcher
 
 __all__ = ("MultiDictMatcher", "StrOrAttrMatcher", "DictOrTupleList",)
-
 
 StrOrAttrMatcher = Union[str, AttributeMatcher]
 DictOrTupleList = Union[
@@ -58,19 +58,24 @@ class MultiDictMatcher(AttributeMatcher):
         return False
 
     async def match(self, actual: MultiMapping[str]) -> bool:
-        """
-        Determine if the actual key-value pairs match the expected key-value pairs.
-
-        :param actual: The actual key-value pairs to be matched against.
-        :return: `True` if all expected key-value pairs are present and match, otherwise `False`.
-        """
         assert isinstance(actual, MultiMapping)
 
         for key, val in self._expected.items():
+            # 1) Special case: "key must NOT exist"
+            if isinstance(val, NotExistMatcher):
+                # If the key is present in `actual`, fail immediately
+                if key in actual:
+                    return False
+                # Otherwise, it's not present, so we pass for this key
+                continue
+
+            # 2) Normal case: key must exist, and at least one value must pass the submatcher
             submatcher = val if isinstance(val, AttributeMatcher) else EqualMatcher(val)
             values: List[Any] = actual.getall(key, [])
             if not await self._match_any(submatcher, values):
                 return False
+
+        # If we haven't failed yet, that means all conditions are satisfied
         return True
 
     def __repr__(self) -> str:
