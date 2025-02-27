@@ -4,7 +4,7 @@ from packed import packable
 
 from ._attribute_matcher import AttributeMatcher
 
-__all__ = ("ExistMatcher",)
+__all__ = ("ExistMatcher", "NotExistMatcher",)
 
 
 @packable("jj.matchers.ExistMatcher")
@@ -41,4 +41,19 @@ class ExistMatcher(AttributeMatcher):
         :param kwargs: Additional keyword arguments (ignored).
         :return: A new instance of ExistMatcher.
         """
+        return cls()
+
+
+@packable("jj.matchers.NotExistMatcher")
+class NotExistMatcher(ExistMatcher):
+    async def match(self, actual: Any) -> bool:
+        # If this method is called, it means that there is at least one value for the key.
+        # In that case, the key exists, so we return False.
+        return False
+
+    def __packed__(self) -> Dict[str, Any]:
+        return {}
+
+    @classmethod
+    def __unpacked__(cls, **kwargs: Any) -> "NotExistMatcher":
         return cls()
