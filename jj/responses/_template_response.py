@@ -1,3 +1,4 @@
+import json
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 from aiohttp.typedefs import LooseHeaders
@@ -21,28 +22,30 @@ __all__ = ("TemplateResponse",)
 @packable("jj.responses.TemplateResponse")
 class TemplateResponse(Response):
     """
-    Represents an HTTP response where the body and headers can be templated.
+    Represents an HTTP response where the body, headers, and status can be templated.
 
     The `TemplateResponse` class extends the `Response` class and allows for the use
-    of Jinja2 templates to dynamically render the response body and headers based on
-    the request context. It relies on Jinja2 as an optional dependency.
+    of Jinja2 templates to dynamically render the response body, headers, and status
+    based on the request context. It relies on Jinja2 as an optional dependency.
     """
 
     def __init__(self, body: Optional[str] = None, *,
                  headers: Optional[LooseHeaders] = None,
-                 status: Union[int, str] = 200) -> None:
+                 status: Union[int, str] = 200,
+                 context: Union[Any, None] = None) -> None:
         """
-        Initialize the TemplateResponse with optional body, headers, and status.
+        Initialize the TemplateResponse with optional templated body, headers, status, and context.
 
         :param body: The template string for the response body. Defaults to an empty string.
         :param headers: A dictionary of headers, which can also contain templates.
         :param status: The HTTP status code, which can be templated as well (default is 200).
+        :param context: The additional context data to be used in template rendering.
         """
         super().__init__()
-
         self._tmpl_body = body or ""
         self._tmpl_headers = CIMultiDict(headers or {})
         self._tmpl_status = str(status)
+        self._tmpl_context = context
         self._jinja_env: Any = None
         self._prepare_hook_called = False
 
@@ -51,7 +54,7 @@ class TemplateResponse(Response):
         Prepare the response by rendering the templates for body, headers, and status.
 
         This method is called before sending the response to the client. It renders
-        the templated body, headers, and status code using the request context.
+        the templated body, headers, and status code using the request and context data.
 
         :param request: The incoming HTTP request object used for rendering templates.
         :return: The `TemplateResponse` object after template rendering is complete.
@@ -66,34 +69,41 @@ class TemplateResponse(Response):
                 "To use TemplateResponse, please install Jinja2 via 'pip install jinja2'"
             )
         self._jinja_env = jinja2.environment.Environment()
+        # 'tojson' is a default filter provided by Jinja2
+        self._jinja_env.filters["fromjson"] = json.loads
+
+        context = {
+            "request": request,
+            "context": self._tmpl_context,
+        }
 
         self._headers = CIMultiDict({
             "Server": self._tmpl_headers.get("Server", server_version)
         })
         self._headers.extend(
-            (self._render_value(key, request), self._render_value(value, request))
+            (self._render_value(key, context), self._render_value(value, context))
             for key, value in self._tmpl_headers.items()
             if key.lower() != "server"
         )
-        self.body = self._render_value(self._tmpl_body, request)  # type: ignore
-        self.set_status(int(self._render_value(self._tmpl_status, request)))
+        self.body = self._render_value(self._tmpl_body, context)  # type: ignore
+        self.set_status(int(self._render_value(self._tmpl_status, context)))
 
         self._prepare_hook_called = True
         return self
 
-    def _render_value(self, value: str, request: BaseRequest) -> str:
+    def _render_value(self, value: str, context: Dict[str, Any]) -> str:
         """
-        Render a single template value using the request context.
+        Render a single template value using the request and context data.
 
         This method renders a given string value as a Jinja2 template, passing the
-        request object into the template context.
+        request and additional context into the template rendering.
 
         :param value: The string value to be rendered as a template.
-        :param request: The incoming request used for rendering the template.
+        :param context: The dictionary containing request and additional context data.
         :return: The rendered template as a string.
         """
         template = self._jinja_env.from_string(value)
-        rendered = template.render({"request": request})
+        rendered = template.render(context)
         return cast(str, rendered)
 
     def copy(self) -> "TemplateResponse":
@@ -111,7 +121,7 @@ class TemplateResponse(Response):
         Pack the TemplateResponse into a dictionary for serialization.
 
         This method prepares the response for serialization by packing its templated
-        body, headers, and status into a dictionary.
+        body, headers, status, and context into a dictionary.
 
         :return: A dictionary representing the packed TemplateResponse.
         """
@@ -121,6 +131,7 @@ class TemplateResponse(Response):
                 [key, val] for key, val in self._tmpl_headers.items()
             ],
             "status": self._tmpl_status,
+            "context": self._tmpl_context,
         }
 
     @classmethod
@@ -128,6 +139,7 @@ class TemplateResponse(Response):
                      body: str,
                      headers: List[Tuple[str, str]],
                      status: Union[int, str],
+                     context: Optional[Any] = None,
                      **kwargs: Any) -> "TemplateResponse":
         """
         Reconstruct a TemplateResponse instance from unpacked parameters.
@@ -135,7 +147,8 @@ class TemplateResponse(Response):
         :param body: The template string for the response body.
         :param headers: A list of headers, each represented as a tuple of (key, value).
         :param status: The HTTP status code as a string or integer.
+        :param context: The additional context data to be used in template rendering.
         :param kwargs: Additional keyword arguments (ignored).
         :return: A new instance of `TemplateResponse`.
         """
-        return cls(status=status, headers=headers, body=body)
+        return cls(status=status, headers=headers, body=body, context=context)

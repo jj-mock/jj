@@ -90,8 +90,8 @@ class HistoryRequest:
 
     @classmethod
     def from_dict(cls, request: Dict[str, Any]) -> "HistoryRequest":
-        real_params = MultiDictProxy(MultiDict(request["params"]))
-        real_headers = CIMultiDictProxy(CIMultiDict(request["headers"]))
+        real_params: MultiDictProxy[str] = MultiDictProxy(MultiDict(request["params"]))
+        real_headers: CIMultiDictProxy[str] = CIMultiDictProxy(CIMultiDict(request["headers"]))
         raw = request.get("raw", request["body"])  # backward compatibility
         return cls(
             method=request["method"],

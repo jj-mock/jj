@@ -14,7 +14,7 @@ from jj.http.methods import ANY, DELETE, GET, POST
 from jj.matchers import LogicalMatcher, RequestMatcher, ResolvableMatcher, exists
 from jj.requests import Request
 from jj.resolvers import Registry, Resolver
-from jj.responses import Response, StreamResponse
+from jj.responses import Response, StreamResponse, TemplateResponse
 
 from ..handlers import HandlerFunction
 from ._history import HistoryRepository
@@ -78,6 +78,10 @@ class Mock(jj.App):
                           response: RemoteResponseType,
                           expiration_policy: Optional[ExpirationPolicy]) -> None:
         async def handler(req: Request) -> RemoteResponseType:
+            if isinstance(response, TemplateResponse):
+                # Required to populate request body for template rendering
+                await req.read()
+                await req.post()
             res = response.copy()
             await res._prepare_hook(req)
             return res

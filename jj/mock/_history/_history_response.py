@@ -71,7 +71,7 @@ class HistoryResponse:
 
     @classmethod
     def from_dict(cls, request: Dict[str, Any]) -> "HistoryResponse":
-        real_headers = CIMultiDictProxy(CIMultiDict(request["headers"]))
+        real_headers: CIMultiDictProxy[str] = CIMultiDictProxy(CIMultiDict(request["headers"]))
         raw = request.get("raw", request["body"])  # backward compatibility
         return cls(
             status=request["status"],
