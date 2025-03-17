@@ -1,10 +1,18 @@
 # Changelog
 
+## v2.12
+
+### v2.12.0 (2025-03-17)
+
+- Add context support for template rendering [#57](https://github.com/jj-mock/jj/pull/57)
+- Add `NotExistMatcher` for attribute matching [#56](https://github.com/jj-mock/jj/pull/56)
+
+
 ## v2.11
 
-## v2.11.0 (2024-09-24)
+### v2.11.0 (2024-09-24)
 
-- Add `TemplateResponse` [](https://github.com/jj-mock/jj/pull/54)
+- Add `TemplateResponse` [#54](https://github.com/jj-mock/jj/pull/54)
 - Add `--use-matcher` [#53](https://github.com/jj-mock/jj/pull/53)
 
 
