@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
+import json
 
 from aiohttp.typedefs import LooseHeaders
 from aiohttp.web_request import BaseRequest
@@ -68,6 +69,8 @@ class TemplateResponse(Response):
                 "To use TemplateResponse, please install Jinja2 via 'pip install jinja2'"
             )
         self._jinja_env = jinja2.environment.Environment()
+        # 'tojson' is a default filter provided by Jinja2
+        self._jinja_env.filters["fromjson"] = json.loads
 
         context = {
             "request": request,
