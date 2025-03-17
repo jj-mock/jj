@@ -7,12 +7,14 @@ from jj.matchers import (
     ExistMatcher,
     NotContainMatcher,
     NotEqualMatcher,
+    NotExistMatcher,
     RegexMatcher,
     contains,
     equals,
     exists,
     not_contains,
     not_equals,
+    not_exists,
     regex,
 )
 
@@ -21,6 +23,7 @@ from ..._test_utils.steps import given, then, when
 
 @pytest.mark.parametrize(("instance_factory", "instance_class"), [
     (lambda: exists, ExistMatcher),
+    (lambda: not_exists, NotExistMatcher),
     (lambda: equals("smth"), EqualMatcher),
     (lambda: not_equals("smth"), NotEqualMatcher),
     (lambda: contains("smth"), ContainMatcher),

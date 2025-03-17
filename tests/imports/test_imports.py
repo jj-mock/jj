@@ -151,9 +151,11 @@ def test_import_match_methods():
 
 
 def test_import_matcher_shorthands():
-    from jj.matchers import exists
+    from jj.matchers import exists, not_exists
     with raises(ImportError):
         from jj import exists
+    with raises(ImportError):
+        from jj import not_exists
 
     from jj.matchers import equals, not_equals
     with raises(ImportError):

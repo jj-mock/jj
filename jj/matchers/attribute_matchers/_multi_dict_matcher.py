@@ -58,24 +58,32 @@ class MultiDictMatcher(AttributeMatcher):
         return False
 
     async def match(self, actual: MultiMapping[str]) -> bool:
-        assert isinstance(actual, MultiMapping)
+        """
+        Determine if the actual request data satisfies the expected key-value conditions.
+
+        :param actual: A MultiMapping representing request attributes (e.g., headers or
+                       query parameters).
+        :return: `True` if all expected conditions are met, otherwise `False`.
+        """
+        if not isinstance(actual, MultiMapping):
+            raise TypeError(f"Expected MultiMapping, got '{type(actual).__name__}'")
 
         for key, val in self._expected.items():
-            # 1) Special case: "key must NOT exist"
+            # 1) Special case: key must NOT exist
             if isinstance(val, NotExistMatcher):
-                # If the key is present in `actual`, fail immediately
+                # If the key exists in `actual`, fail immediately
                 if key in actual:
                     return False
-                # Otherwise, it's not present, so we pass for this key
+                # Otherwise, key does not exist, so this condition is met
                 continue
 
-            # 2) Normal case: key must exist, and at least one value must pass the submatcher
+            # 2) Normal case: key must exist, and at least one value must match
             submatcher = val if isinstance(val, AttributeMatcher) else EqualMatcher(val)
             values: List[Any] = actual.getall(key, [])
             if not await self._match_any(submatcher, values):
                 return False
 
-        # If we haven't failed yet, that means all conditions are satisfied
+        # All expected conditions are satisfied
         return True
 
     def __repr__(self) -> str:

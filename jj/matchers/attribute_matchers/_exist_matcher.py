@@ -45,15 +45,40 @@ class ExistMatcher(AttributeMatcher):
 
 
 @packable("jj.matchers.NotExistMatcher")
-class NotExistMatcher(ExistMatcher):
+class NotExistMatcher(AttributeMatcher):
+    """
+    Matches when an attribute does not exist in the HTTP request.
+
+    This matcher is used to check the absence of a value in the request attributes.
+    If the attribute exists, the matcher does not match.
+    """
+
     async def match(self, actual: Any) -> bool:
-        # If this method is called, it means that there is at least one value for the key.
-        # In that case, the key exists, so we return False.
+        """
+        Return `False` if the attribute exists in the request.
+
+        This method is called when an attribute key is present. Since this matcher
+        is designed to match when the key does not exist, it always returns `False`.
+
+        :param actual: The value to check (not used, as existence is the only criteria).
+        :return: `False`, indicating the key exists.
+        """
         return False
 
     def __packed__(self) -> Dict[str, Any]:
+        """
+        Pack the NotExistMatcher instance for serialization.
+
+        :return: An empty dictionary, as no specific state is stored.
+        """
         return {}
 
     @classmethod
     def __unpacked__(cls, **kwargs: Any) -> "NotExistMatcher":
+        """
+        Unpack a NotExistMatcher instance from its serialized form.
+
+        :param kwargs: Additional keyword arguments (ignored).
+        :return: A new instance of NotExistMatcher.
+        """
         return cls()
