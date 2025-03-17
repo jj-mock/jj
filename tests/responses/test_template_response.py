@@ -129,6 +129,36 @@ class TestTemplateResponse(TestCase):
             self.assertTrue(response.headers.get("Content-Length"))
             self.assertEqual(response.headers.get("Content-Type"), "application/json")
 
+    @pytest.mark.asyncio
+    async def test_response_template_body_with_context(self):
+        template = """
+            {% set ids = request.query.get('ids', '').split(',') %}
+            {% set users = context.users %}
+            [
+                {% for id in ids %}
+                    {% set user = users[loop.index0 % users|length] %}
+                    {"id": "{{ id }}", "name": "{{ user.name }}"}
+                    {% if not loop.last %},{% endif %}
+                {% endfor %}
+            ]
+        """
+        context = {
+            "users": [{"name": "User"}, {"name": "Another User"}]
+        }
+
+        headers = {"Content-Type": "application/json"}
+        app = self.make_app_with_response(headers=headers, context=context, body=template)
+
+        async with run(app) as client:
+            response = await client.get("/", params=[("ids", "1,2")])
+            self.assertEqual(await response.json(), [
+                {"id": "1", "name": "User"},
+                {"id": "2", "name": "Another User"},
+            ])
+
+            self.assertTrue(response.headers.get("Content-Length"))
+            self.assertEqual(response.headers.get("Content-Type"), "application/json")
+
     # pack / unpack
 
     def test_pack_default(self):
@@ -140,6 +170,7 @@ class TestTemplateResponse(TestCase):
             "body": "",
             "headers": [],
             "status": "200",
+            "context": None,
         })
 
     def test_pack(self):
@@ -155,6 +186,24 @@ class TestTemplateResponse(TestCase):
             "body": "body",
             "headers": [["key1", "val1"], ["key2", "val2"]],
             "status": "204",
+            "context": None,
+        })
+
+    def test_pack_with_context(self):
+        response = TemplateResponse(
+            body="body",
+            headers=[("key1", "val1"), ("key2", "val2")],
+            status=204,
+            context={"key": "value"},
+        )
+
+        actual = response.__packed__()
+
+        self.assertEqual(actual, {
+            "body": "body",
+            "headers": [["key1", "val1"], ["key2", "val2"]],
+            "status": "204",
+            "context": {"key": "value"},
         })
 
     def test_unpack(self):
@@ -162,6 +211,19 @@ class TestTemplateResponse(TestCase):
             "body": "body",
             "headers": [["key1", "val1"], ["key2", "val2"]],
             "status": "204",
+            "context": None,
+        }
+
+        response = TemplateResponse.__unpacked__(**packed)
+
+        self.assertEqual(response.__packed__(), packed)
+
+    def test_unpack_with_context(self):
+        packed = {
+            "body": "body",
+            "headers": [["key1", "val1"], ["key2", "val2"]],
+            "status": "204",
+            "context": {"key": "value"},
         }
 
         response = TemplateResponse.__unpacked__(**packed)
@@ -175,6 +237,19 @@ class TestTemplateResponse(TestCase):
             body="body",
             headers=[("key1", "val1"), ("key2", "val2")],
             status=204,
+        )
+
+        actual = response.copy()
+
+        self.assertEqual(actual.__packed__(), response.__packed__())
+        self.assertIsNot(actual, response)
+
+    def test_copy_with_context(self):
+        response = TemplateResponse(
+            body="body",
+            headers=[("key1", "val1"), ("key2", "val2")],
+            status=204,
+            context={"key": "value"},
         )
 
         actual = response.copy()
