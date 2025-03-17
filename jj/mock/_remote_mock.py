@@ -54,7 +54,14 @@ class RemoteMock:
             "response": handler.response,
             "expiration_policy": handler.expiration_policy,
         }
-        return pack(payload)
+        try:
+            return pack(payload)
+        except Exception as e:
+            error_message = (
+                f"Error while packing payload: {e}. "
+                "Make sure your payload is packable https://pypi.org/project/packed"
+            )
+            raise ValueError(error_message) from e
 
     async def register(self, handler: RemoteHandler) -> "RemoteMock":
         url = f"{self._url}/__jj__/register"
