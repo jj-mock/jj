@@ -1,7 +1,9 @@
-from typing import Any, Dict, Optional
+import json
+from typing import Any, Dict, Optional, Union
 
 from aiohttp import web
-from multidict import MultiMapping
+from aiohttp.web_request import FileField
+from multidict import MultiDictProxy, MultiMapping
 
 from ..responses import StreamResponse
 
@@ -63,6 +65,42 @@ class Request(web.Request):
         :param segments: A dictionary of path segments, or `None` to reset the segments.
         """
         self._segments = segments
+
+    @property
+    def raw_data(self) -> Union[bytes, None]:
+        """
+        Get the raw request body as bytes.
+
+        :return: The raw request body as bytes, or `None` if not available.
+        """
+        return self._read_bytes
+
+    @property
+    def post_data(self) -> Union[MultiDictProxy[Union[str, bytes, FileField]], None]:
+        """
+        Get the parsed form data from the request.
+
+        This property provides access to the form-encoded body of the request if available.
+
+        :return: A `MultiDictProxy` containing the form data, or `None` if not available.
+        """
+        return self._post
+
+    @property
+    def json_data(self) -> Union[Any, None]:
+        """
+        Get the request body as a parsed JSON object.
+
+        This property decodes the request body using the specified charset (defaulting to UTF-8)
+        and parses it as JSON.
+
+        :return: The parsed JSON data, or `None` if the request body is empty.
+        :raises json.JSONDecodeError: If the request body is not valid JSON.
+        """
+        if self._read_bytes is None:
+            return None
+        encoding = self.charset or "utf-8"
+        return json.loads(self._read_bytes.decode(encoding))
 
     async def _prepare_hook(self, response: StreamResponse) -> None:  # type: ignore
         """

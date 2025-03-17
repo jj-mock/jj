@@ -20,6 +20,8 @@ class TestTemplateResponse(TestCase):
 
             @MethodMatcher("*", resolver=resolver)
             async def handler(request):
+                await request.read()
+                await request.post()
                 return TemplateResponse(*args, **kwargs)
         return App()
 
@@ -155,6 +157,21 @@ class TestTemplateResponse(TestCase):
                 {"id": "1", "name": "User"},
                 {"id": "2", "name": "Another User"},
             ])
+
+            self.assertTrue(response.headers.get("Content-Length"))
+            self.assertEqual(response.headers.get("Content-Type"), "application/json")
+
+    @pytest.mark.asyncio
+    async def test_response_template_body_with_json_data(self):
+        template = """
+            {"id": "{{ request.json_data['id'] }}"}
+        """
+        headers = {"Content-Type": "application/json"}
+        app = self.make_app_with_response(headers=headers, body=template)
+
+        async with run(app) as client:
+            response = await client.post("/", json={"id": "1"})
+            self.assertEqual(await response.json(), {"id": "1"})
 
             self.assertTrue(response.headers.get("Content-Length"))
             self.assertEqual(response.headers.get("Content-Type"), "application/json")

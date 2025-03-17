@@ -98,3 +98,55 @@ class TestRequest(TestCase):
         async with run(App()) as client:
             response = await client.get("/users/1")
             self.assertEqual(response.status, 200)
+
+    @pytest.mark.asyncio
+    async def test_request_raw_data(self):
+        raw_bytes = b"sample raw data"
+
+        class App(jj.App):
+            resolver = self.resolver
+
+            @MethodMatcher("POST", resolver=resolver)
+            async def handler(request):
+                await request.read()
+                self.assertEqual(request.raw_data, raw_bytes)
+                return Response(status=200)
+
+        async with run(App()) as client:
+            response = await client.post("/", data=raw_bytes)
+            self.assertEqual(response.status, 200)
+
+    @pytest.mark.asyncio
+    async def test_request_post_data(self):
+        form_data = {"key": "value"}
+
+        class App(jj.App):
+            resolver = self.resolver
+
+            @MethodMatcher("POST", resolver=resolver)
+            async def handler(request):
+                await request.post()
+                self.assertIsInstance(request.post_data, MultiDictProxy)
+                self.assertEqual(dict(request.post_data), form_data)
+                return Response(status=200)
+
+        async with run(App()) as client:
+            response = await client.post("/", data=form_data)
+            self.assertEqual(response.status, 200)
+
+    @pytest.mark.asyncio
+    async def test_request_json_data(self):
+        json_body = {"key": "value"}
+
+        class App(jj.App):
+            resolver = self.resolver
+
+            @MethodMatcher("POST", resolver=resolver)
+            async def handler(request):
+                await request.read()
+                self.assertEqual(request.json_data, json_body)
+                return Response(status=200)
+
+        async with run(App()) as client:
+            response = await client.post("/", json=json_body)
+            self.assertEqual(response.status, 200)
