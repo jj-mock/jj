@@ -2,7 +2,7 @@ from unittest.mock import sentinel
 
 import pytest
 
-from jj.matchers import AttributeMatcher, ExistMatcher
+from jj.matchers import AttributeMatcher, ExistMatcher, NotExistMatcher
 
 from ..._test_utils.steps import given, then, when
 
@@ -20,9 +20,10 @@ async def test_exist_matcher(value):
         assert actual is True
 
 
-def test_is_instance_of_attribute_matcher():
+@pytest.mark.parametrize("matcher_class", [ExistMatcher, NotExistMatcher])
+def test_is_instance_of_attribute_matcher(matcher_class):
     with given:
-        matcher = ExistMatcher()
+        matcher = matcher_class()
 
     with when:
         actual = isinstance(matcher, AttributeMatcher)
@@ -31,20 +32,25 @@ def test_is_instance_of_attribute_matcher():
         assert actual is True
 
 
-def test_repr():
+@pytest.mark.parametrize(("matcher_class", "expected"), [
+    (ExistMatcher, "ExistMatcher()"),
+    (NotExistMatcher, "NotExistMatcher()"),
+])
+def test_repr(matcher_class, expected):
     with given:
-        matcher = ExistMatcher()
+        matcher = matcher_class()
 
     with when:
         actual = repr(matcher)
 
     with then:
-        assert actual == "ExistMatcher()"
+        assert actual == expected
 
 
-def test_pack():
+@pytest.mark.parametrize("matcher_class", [ExistMatcher, NotExistMatcher])
+def test_pack(matcher_class):
     with given:
-        matcher = ExistMatcher()
+        matcher = matcher_class()
 
     with when:
         actual = matcher.__packed__()
@@ -53,12 +59,26 @@ def test_pack():
         assert actual == {}
 
 
-def test_unpack():
+@pytest.mark.parametrize("matcher_class", [ExistMatcher, NotExistMatcher])
+def test_unpack(matcher_class):
     with given:
         kwargs = {"future_field": sentinel}
 
     with when:
-        actual = ExistMatcher.__unpacked__(**kwargs)
+        actual = matcher_class.__unpacked__(**kwargs)
 
     with then:
-        assert isinstance(actual, ExistMatcher)
+        assert isinstance(actual, matcher_class)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("value", [None, "smth", sentinel.value])
+async def test_not_exist_matcher(value):
+    with given:
+        matcher = NotExistMatcher()
+
+    with when:
+        actual = await matcher.match(value)
+
+    with then:
+        assert actual is False

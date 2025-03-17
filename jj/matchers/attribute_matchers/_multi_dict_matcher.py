@@ -5,9 +5,9 @@ from packed import packable
 
 from ._attribute_matcher import AttributeMatcher
 from ._equal_matcher import EqualMatcher
+from ._exist_matcher import NotExistMatcher
 
 __all__ = ("MultiDictMatcher", "StrOrAttrMatcher", "DictOrTupleList",)
-
 
 StrOrAttrMatcher = Union[str, AttributeMatcher]
 DictOrTupleList = Union[
@@ -59,18 +59,31 @@ class MultiDictMatcher(AttributeMatcher):
 
     async def match(self, actual: MultiMapping[str]) -> bool:
         """
-        Determine if the actual key-value pairs match the expected key-value pairs.
+        Determine if the actual request data satisfies the expected key-value conditions.
 
-        :param actual: The actual key-value pairs to be matched against.
-        :return: `True` if all expected key-value pairs are present and match, otherwise `False`.
+        :param actual: A MultiMapping representing request attributes (e.g., headers or
+                       query parameters).
+        :return: `True` if all expected conditions are met, otherwise `False`.
         """
-        assert isinstance(actual, MultiMapping)
+        if not isinstance(actual, MultiMapping):
+            raise TypeError(f"Expected MultiMapping, got '{type(actual).__name__}'")
 
         for key, val in self._expected.items():
+            # 1) Special case: key must NOT exist
+            if isinstance(val, NotExistMatcher):
+                # If the key exists in `actual`, fail immediately
+                if key in actual:
+                    return False
+                # Otherwise, key does not exist, so this condition is met
+                continue
+
+            # 2) Normal case: key must exist, and at least one value must match
             submatcher = val if isinstance(val, AttributeMatcher) else EqualMatcher(val)
             values: List[Any] = actual.getall(key, [])
             if not await self._match_any(submatcher, values):
                 return False
+
+        # All expected conditions are satisfied
         return True
 
     def __repr__(self) -> str:

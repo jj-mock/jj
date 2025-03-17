@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, Mock, call, sentinel
 import pytest
 from multidict import MultiDict
 
-from jj.matchers import AttributeMatcher
+from jj.matchers import AttributeMatcher, NotExistMatcher
 from jj.matchers.attribute_matchers import MultiDictMatcher
 
 from ..._test_utils.steps import given, then, when
@@ -78,6 +78,62 @@ async def test_multi_dict_matcher_with_value_submatchers_subset():
         assert actual is True
         assert submatcher1_.mock_calls == [call.match("1")]
         assert submatcher2_.mock_calls == [call.match("2.1"), call.match("2.2")]
+
+
+@pytest.mark.asyncio
+async def test_multi_dict_matcher_not_exists_key_absent():
+    with given:
+        matcher = MultiDictMatcher({
+            "forbidden": NotExistMatcher(),
+        })
+        # 'forbidden' key is absent in actual
+        actual = MultiDict({
+            "allowed": "value"
+        })
+
+    with when:
+        result = await matcher.match(actual)
+
+    with then:
+        assert result is True
+
+
+@pytest.mark.asyncio
+async def test_multi_dict_matcher_not_exists_key_present():
+    with given:
+        matcher = MultiDictMatcher({
+            "forbidden": NotExistMatcher(),
+        })
+        # 'forbidden' key is present in actual
+        actual = MultiDict({
+            "forbidden": "present",
+            "other": "value"
+        })
+
+    with when:
+        result = await matcher.match(actual)
+
+    with then:
+        assert result is False
+
+
+@pytest.mark.asyncio
+async def test_multi_dict_matcher_mixed_conditions():
+    with given:
+        matcher = MultiDictMatcher({
+            "key": "expected",
+            "forbidden": NotExistMatcher(),
+        })
+        # 'key' exists with correct value and 'forbidden' is absent
+        actual = MultiDict({
+            "key": "expected"
+        })
+
+    with when:
+        result = await matcher.match(actual)
+
+    with then:
+        assert result is True
 
 
 def test_is_instance_of_attribute_matcher():
