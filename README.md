@@ -1,6 +1,6 @@
 # jj
 
-[![Codecov](https://img.shields.io/codecov/c/github/jj-mock/jj/master.svg?style=flat-square)](https://codecov.io/gh/jj-mock/jj)
+[![Codecov](https://img.shields.io/codecov/c/github/jj-mock/jj/main.svg?style=flat-square)](https://codecov.io/gh/jj-mock/jj)
 [![PyPI](https://img.shields.io/pypi/v/jj.svg?style=flat-square)](https://pypi.python.org/pypi/jj)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/jj?style=flat-square)](https://pypi.python.org/pypi/jj)
 [![Python Version](https://img.shields.io/pypi/pyversions/jj.svg?style=flat-square)](https://pypi.python.org/pypi/jj)
