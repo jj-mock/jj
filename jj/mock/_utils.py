@@ -3,7 +3,7 @@ import threading
 from asyncio import Future
 from typing import Any, Callable, Coroutine, TypeVar
 
-__all__ = ("Thread",)
+__all__ = ("Thread", "run_async",)
 
 T = TypeVar("T")
 TargetType = Callable[..., Coroutine[None, None, T]]

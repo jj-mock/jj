@@ -126,3 +126,41 @@ async def test_mocked_awaitable():
         assert response.status == 200
 
         assert mock.history is None
+
+
+@pytest.mark.asyncio
+async def test_mocked_decorator():
+    remote_mock = Mock()
+    self_middleware = SelfMiddleware(remote_mock.resolver)
+    matcher, response = jj.match("*"), jj.Response(status=200)
+
+    async with run(remote_mock, middlewares=[self_middleware]) as client:
+        handler = RemoteMock(client.make_url("/")).create_handler(matcher, response)
+
+        @Mocked(handler)
+        async def test_function():
+            return await client.get("/")
+
+        response = await test_function()
+
+        assert response.status == 200
+
+
+@pytest.mark.asyncio
+async def test_mocked_with_mock_decorator():
+    remote_mock = Mock()
+    self_middleware = SelfMiddleware(remote_mock.resolver)
+    matcher, response = jj.match("*"), jj.Response(status=200)
+
+    async with run(remote_mock, middlewares=[self_middleware]) as client:
+        handler = RemoteMock(client.make_url("/")).create_handler(matcher, response)
+
+        @Mocked(handler).with_mock
+        async def test_function(mock: Mocked):
+            resp = await client.get("/")
+            return (resp, mock)
+
+        response, mock = await test_function()
+
+        assert response.status == 200
+        assert isinstance(mock, Mocked)
