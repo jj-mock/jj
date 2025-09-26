@@ -66,7 +66,7 @@ def get_remote_mock_pprint_length() -> Union[int, None]:
     return None
 
 
-def get_remote_mock_pprint_width() -> int | None:
+def get_remote_mock_pprint_width() -> Union[int, None]:
     """
     Get the remote mock pretty print width from environment variable.
 
