@@ -5,10 +5,12 @@ from jj.logs import SystemLogFilter  # backward compatibility
 from ._create_remote_handler import create_remote_handler
 from ._history import (
     HistoryAdapterType,
+    HistoryFormatter,
     HistoryItem,
     HistoryRepository,
     HistoryRequest,
     HistoryResponse,
+    PrettyHistoryFormatter,
     default_history_adapter,
 )
 from ._mock import Mock
@@ -20,10 +22,11 @@ from ._remote_response import RemoteResponseType
 from ._settings import get_remote_mock_disposable, get_remote_mock_url
 from ._stacked import stacked
 
-__all__ = ("Mock", "mocked", "stacked", "create_remote_handler", "RemoteMock", "RemoteHandler",
-           "Mocked", "HistoryRepository", "HistoryRequest", "HistoryResponse", "HistoryItem",
-           "RemoteResponseType", "HistoryAdapterType", "SystemLogFilter",
-           "default_history_adapter", "REMOTE_MOCK_URL", "REMOTE_MOCK_DISPOSABLE",
+__all__ = ("mocked", "stacked", "Mock", "Mocked", "create_remote_handler", "RemoteMock",
+           "RemoteHandler", "HistoryRepository", "HistoryRequest", "HistoryResponse",
+           "HistoryItem", "HistoryFormatter", "PrettyHistoryFormatter", "RemoteResponseType",
+           "HistoryAdapterType", "SystemLogFilter", "default_history_adapter",
+           "REMOTE_MOCK_URL", "REMOTE_MOCK_DISPOSABLE",
            "get_remote_mock_url", "get_remote_mock_disposable",)
 
 
