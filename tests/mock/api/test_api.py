@@ -1,3 +1,4 @@
+import sys
 from typing import AsyncContextManager, Callable
 from uuid import uuid4
 
@@ -107,6 +108,8 @@ async def test_api_history(make_client: ClientFixtureType,
 
         status, body = await api.get_history(handler.id)
 
+        accept_encoding = "gzip, deflate, zstd" if sys.version_info >= (3, 14) else "gzip, deflate"
+
         assert status == 200
         assert body == [{
             "request": {
@@ -118,7 +121,7 @@ async def test_api_history(make_client: ClientFixtureType,
                     "headers": [
                         ["Host", f"{api.host}:{api.port}"],
                         ["Accept", "*/*"],
-                        ["Accept-Encoding", "gzip, deflate"],
+                        ["Accept-Encoding", accept_encoding],
                         ["User-Agent", client_version],
                         ["Content-Length", "14"],
                         ["Content-Type", "application/json"]

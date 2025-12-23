@@ -248,7 +248,11 @@ class TestRelayResponse(TestCase):
                 self.assertEqual(body["headers"].get("Host"),
                                  ["{}:{}".format(server.host, server.port)])
                 self.assertEqual(body["headers"].get("Accept"), ["*/*"])
-                self.assertEqual(body["headers"].get("Accept-Encoding"), ["gzip, deflate"])
+
+                accept_encoding = body["headers"].get("Accept-Encoding")
+                self.assertIn("gzip", accept_encoding[0])
+                self.assertIn("deflate", accept_encoding[0])
+
                 self.assertEqual(body["headers"].get("Content-Type"), ["application/octet-stream"])
                 self.assertEqual(body["headers"].get("Content-Length"), ["0"])
                 self.assertIsNotNone(body["headers"].get("User-Agent"))

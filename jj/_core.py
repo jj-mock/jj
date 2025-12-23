@@ -1,4 +1,3 @@
-import asyncio
 from functools import partial
 from typing import List, Optional, Sequence, Type
 
@@ -39,13 +38,12 @@ __all__ = (
 default_app = DefaultApp()
 registry = Registry()
 resolver = ReversedResolver(registry, default_app, default_handler)
-loop = asyncio.get_event_loop()
 
 runner = partial(AppRunner, resolver=resolver, handle_signals=True, middlewares=[
     SelfMiddleware(resolver),
 ])
 # ignore because of https://github.com/python/mypy/issues/1484
-server = Server(loop, runner, web.TCPSite)  # type: ignore
+server = Server(None, runner, web.TCPSite)  # type: ignore
 
 
 class App(BaseApp):
