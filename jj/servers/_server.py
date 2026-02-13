@@ -1,3 +1,4 @@
+import asyncio
 from asyncio import AbstractEventLoop, CancelledError, Event, Task, all_tasks, gather
 from typing import Any, List, Optional, Sequence, Type
 
@@ -33,6 +34,12 @@ class Server:
             await runner.cleanup()
 
     def start(self, app: Any, host: Optional[str] = None, port: Optional[int] = None) -> None:
+        if self._loop is None:
+            try:
+                self._loop = asyncio.get_running_loop()
+            except RuntimeError:
+                self._loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(self._loop)
         event = Event()
         self._events.append(event)
         task = self._loop.create_task(self._start(app, event, host, port))
