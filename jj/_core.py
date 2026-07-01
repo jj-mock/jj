@@ -11,6 +11,7 @@ from .matchers import ResolvableMatcher
 from .matchers.logical_matchers import AllMatcher, AnyMatcher
 from .matchers.request_matchers import (
     DictOrTupleListOrAttrMatcher,
+    FormDataMatcher,
     HeaderMatcher,
     MethodMatcher,
     ParamMatcher,
@@ -29,6 +30,7 @@ __all__ = (
     "match_path",
     "match_headers", "match_header",
     "match_params", "match_param",
+    "match_form_data",
     "match_all", "match_any",
     "match",
     "start", "wait_for", "serve",
@@ -138,6 +140,17 @@ def match_param(name: str, value: StrOrAttrMatcher) -> ParamMatcher:
     :return: A `ParamMatcher` that will match requests with the specified query parameter.
     """
     return ParamMatcher([(name, value)], resolver=resolver)
+
+
+def match_form_data(key: str, value: str) -> FormDataMatcher:
+    """
+    Match an HTTP request based on a form-urlencoded body field.
+
+    :param key: The name of the form field to match.
+    :param value: The expected value of the form field.
+    :return: A `FormDataMatcher` that will match requests with the specified field value.
+    """
+    return FormDataMatcher(key, value, resolver=resolver)
 
 
 def match_all(matchers: List[ResolvableMatcher]) -> AllMatcher:

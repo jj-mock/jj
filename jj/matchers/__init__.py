@@ -13,6 +13,7 @@ from .attribute_matchers import (
 )
 from .logical_matchers import AllMatcher, AnyMatcher, LogicalMatcher
 from .request_matchers import (
+    FormDataMatcher,
     HeaderMatcher,
     MethodMatcher,
     ParamMatcher,
@@ -29,6 +30,7 @@ __all__ = (
     "EqualMatcher",
     "equals",
     "ExistMatcher",
+    "FormDataMatcher",
     "NotExistMatcher",
     "exists",
     "not_exists",

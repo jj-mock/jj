@@ -1,4 +1,5 @@
 from ..attribute_matchers import StrOrAttrMatcher
+from ._form_data_matcher import FormDataMatcher
 from ._header_matcher import HeaderMatcher
 from ._method_matcher import MethodMatcher
 from ._param_matcher import DictOrTupleListOrAttrMatcher, ParamMatcher
@@ -7,6 +8,7 @@ from ._request_matcher import RequestMatcher
 
 __all__ = (
     "DictOrTupleListOrAttrMatcher",
+    "FormDataMatcher",
     "HeaderMatcher",
     "MethodMatcher",
     "ParamMatcher",

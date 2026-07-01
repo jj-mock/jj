@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.15
+
+### v2.15.0 (2026-06-26)
+
+- Add `FormDataMatcher` and `match_form_data` for `application/x-www-form-urlencoded` body matching
+
+
 ## v2.12
 
 ### v2.12.0 (2025-03-17)
